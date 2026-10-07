@@ -1,5 +1,10 @@
 import { RepositoryPicker } from "@/components/RepositoryPicker";
-import { fetchRepositories, githubInstallHref } from "@/lib/api";
+import {
+  fetchRecentEvents,
+  fetchRepositories,
+  githubInstallHref,
+  type EventListItem,
+} from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +14,16 @@ export default async function HomePage() {
   let repositories: Awaited<
     ReturnType<typeof fetchRepositories>
   >["repositories"] = [];
+  let events: EventListItem[] = [];
 
   try {
-    const data = await fetchRepositories();
-    installation = data.installation;
-    repositories = data.repositories;
+    const [repoData, eventData] = await Promise.all([
+      fetchRepositories(),
+      fetchRecentEvents(15),
+    ]);
+    installation = repoData.installation;
+    repositories = repoData.repositories;
+    events = eventData.events;
   } catch (error) {
     loadError =
       error instanceof Error
@@ -25,9 +35,9 @@ export default async function HomePage() {
     <main>
       <h1 className="brand">OpenCompanyOS</h1>
       <p className="lede">
-        Connect a GitHub App installation, choose repositories, and store them
-        as the foundation for organizational context. AI/RAG comes later — the
-        ingestion pipeline comes first.
+        Connect a GitHub App installation, choose repositories, sync history,
+        and keep events current through webhooks. AI/RAG comes after ingestion
+        is reliable.
       </p>
 
       <div className="actions">
@@ -56,6 +66,37 @@ export default async function HomePage() {
             No installation stored yet. Click Connect GitHub to install the app
             on a personal account or organization.
           </p>
+        )}
+      </section>
+
+      <section className="panel" style={{ marginTop: "1.25rem" }}>
+        <h2>Recent events</h2>
+        {events.length === 0 ? (
+          <p className="empty">
+            No events yet. Run a sync or open an issue/PR while a webhook tunnel
+            is running.
+          </p>
+        ) : (
+          <ul className="repo-list">
+            {events.map((event) => (
+              <li className="repo-item" key={event.id}>
+                <span className="badge">{event.eventType}</span>
+                <span className="repo-name">
+                  {event.title ?? event.sourceEventId}
+                </span>
+                {event.htmlUrl ? (
+                  <a href={event.htmlUrl} target="_blank" rel="noreferrer">
+                    open
+                  </a>
+                ) : (
+                  <span />
+                )}
+                <span className="meta" style={{ margin: 0 }}>
+                  {event.fullName ?? ""}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </main>

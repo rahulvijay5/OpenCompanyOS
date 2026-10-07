@@ -3,6 +3,8 @@ import { loadEnv } from "@opencompanyos/config";
 import { createDb } from "@opencompanyos/db";
 import {
   claimNextSyncJob,
+  claimNextWebhookDelivery,
+  processWebhookDelivery,
   runRepositorySyncJob,
 } from "@opencompanyos/sync";
 import path from "node:path";
@@ -26,10 +28,19 @@ async function main() {
     clientSecret: env.GITHUB_CLIENT_SECRET,
   };
 
-  console.log("[worker] polling for queued sync jobs");
+  console.log("[worker] polling for sync jobs and webhook deliveries");
 
   for (;;) {
     try {
+      const deliveryId = await claimNextWebhookDelivery(db);
+      if (deliveryId) {
+        console.log(`[worker] processing webhook delivery ${deliveryId}`);
+        const result = await processWebhookDelivery(db, deliveryId);
+        console.log(
+          `[worker] webhook ${result.githubDeliveryId} ${result.status} (${result.eventName})`,
+        );
+      }
+
       const jobId = await claimNextSyncJob(db);
       if (jobId) {
         console.log(`[worker] running sync job ${jobId}`);
@@ -39,7 +50,7 @@ async function main() {
         );
       }
     } catch (error) {
-      console.error("[worker] sync loop error", error);
+      console.error("[worker] loop error", error);
     }
 
     await new Promise((resolve) => setTimeout(resolve, POLL_MS));

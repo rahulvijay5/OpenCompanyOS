@@ -5,12 +5,31 @@
 Create a GitHub App in GitHub Developer Settings.
 
 Set:
+
 - Homepage: `http://localhost:3000`
 - Setup URL: `http://localhost:3000/integrations/github/setup`
-- Webhook URL: public HTTPS tunnel + `/api/webhooks/github`
-- Webhook secret: generate a strong random value
+- Webhook URL: public HTTPS tunnel + `/api/webhooks/github` (see §3)
+- Webhook secret: generate a strong random value → put in `GITHUB_WEBHOOK_SECRET`
 
-Request only the read permissions needed by the MVP.
+Read permissions (MVP):
+
+- Repository metadata: read
+- Contents: read
+- Issues: read
+- Pull requests: read
+
+Subscribe to webhook events:
+
+- `installation`
+- `installation_targets`
+- `push`
+- `pull_request`
+- `issues`
+- `issue_comment`
+- `pull_request_review`
+- `pull_request_review_comment` (stored as ignored until normalized)
+
+
 
 ## 2. Run OpenCompanyOS
 
@@ -18,22 +37,47 @@ Request only the read permissions needed by the MVP.
 pnpm install
 docker compose up -d
 pnpm db:migrate
+pnpm --filter @opencompanyos/config build
+pnpm --filter @opencompanyos/db build
+pnpm --filter @opencompanyos/github build
+pnpm --filter @opencompanyos/sync build
 pnpm dev
 ```
 
+
+
 ## 3. Expose webhook endpoint
 
-For example:
+GitHub cannot reach `localhost`. Use a public HTTPS tunnel to the API.
 
-```text
-https://YOUR-TUNNEL.example/api/webhooks/github
+### Option A — Cloudflare Tunnel (quick)
+
+```bash
+# install once: brew install cloudflared
+cloudflared tunnel --url http://localhost:4000
 ```
 
-forwarding to:
+Copy the printed `https://….trycloudflare.com` URL and set the GitHub App Webhook URL to:
 
 ```text
-http://localhost:4000/api/webhooks/github
+https://YOUR-TUNNEL.trycloudflare.com/api/webhooks/github
 ```
+
+
+
+### Option B — ngrok
+
+```bash
+ngrok http 4000
+```
+
+Webhook URL:
+
+```text
+https://YOUR-ID.ngrok-free.app/api/webhooks/github
+```
+
+After changing the webhook URL in GitHub App settings, use **Recent Deliveries → Redeliver** to test.
 
 ## 4. Test the real flow
 
@@ -44,14 +88,15 @@ http://localhost:4000/api/webhooks/github
 5. Select one repository.
 6. GitHub redirects back.
 7. OpenCompanyOS records the installation.
-8. Repository appears in the UI.
-9. Start initial sync.
-10. Verify repository/PR/issue rows in Postgres.
-11. Open a new PR in GitHub.
-12. Verify a webhook is received.
-13. Verify one new event/PR state is persisted.
-14. Redeliver the same webhook.
-15. Verify no duplicate event is created.
+8. Repository appears in the UI; click **Save selection**.
+9. Click **Start sync**.
+10. Verify issues/PRs/commits appear under **Recent events** (or in Postgres `events`).
+11. Open a new issue or PR in GitHub (with the tunnel running).
+12. Verify a row in `webhook_deliveries` (`status=processed`) and a matching `events` row.
+13. In GitHub App → Recent Deliveries, **Redeliver** the same webhook.
+14. Verify delivery response is `duplicate` / no second event for the same `source_event_id`.
+
+
 
 ## 5. Important distinction
 

@@ -1,0 +1,68 @@
+import { events, type Database } from "@opencompanyos/db";
+
+export async function upsertEvent(
+  db: Database,
+  input: {
+    tenantId: string;
+    sourceEventId: string;
+    eventType: string;
+    eventTime: Date | null;
+    payload: Record<string, unknown>;
+  },
+): Promise<boolean> {
+  const observedAt = new Date();
+  const inserted = await db
+    .insert(events)
+    .values({
+      tenantId: input.tenantId,
+      sourceSystem: "github",
+      sourceEventId: input.sourceEventId,
+      eventType: input.eventType,
+      eventTime: input.eventTime,
+      observedAt,
+      payload: input.payload,
+      createdAt: observedAt,
+    })
+    .onConflictDoUpdate({
+      target: [events.tenantId, events.sourceSystem, events.sourceEventId],
+      set: {
+        eventType: input.eventType,
+        eventTime: input.eventTime,
+        observedAt,
+        payload: input.payload,
+      },
+    })
+    .returning({ id: events.id });
+
+  return inserted.length > 0;
+}
+
+export type EventSummary = {
+  id: string;
+  eventType: string;
+  sourceEventId: string;
+  eventTime: Date | null;
+  observedAt: Date;
+  payload: Record<string, unknown>;
+};
+
+export async function listRecentEvents(
+  db: Database,
+  tenantId: string,
+  limit = 20,
+): Promise<EventSummary[]> {
+  const rows = await db.query.events.findMany({
+    where: (table, { eq }) => eq(table.tenantId, tenantId),
+    orderBy: (table, { desc }) => [desc(table.observedAt)],
+    limit,
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    eventType: row.eventType,
+    sourceEventId: row.sourceEventId,
+    eventTime: row.eventTime,
+    observedAt: row.observedAt,
+    payload: row.payload,
+  }));
+}

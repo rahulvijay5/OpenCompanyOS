@@ -7,13 +7,13 @@ selection → initial sync → webhook ingestion reliable before RAG/agents.
 
 ## Specs
 
-<!-- 1. [`docs/OPENCOMPANYOS_MASTER_SPEC.md`](docs/OPENCOMPANYOS_MASTER_SPEC.md) -->
-[`docs/GITHUB_LOCAL_SETUP.md`](docs/GITHUB_LOCAL_SETUP.md)
-<!-- 3. [`docs/CURSOR_TASK_STARTER.md`](docs/CURSOR_TASK_STARTER.md) -->
+1. [`docs/OPENCOMPANYOS_MASTER_SPEC.md`](docs/OPENCOMPANYOS_MASTER_SPEC.md) (also under `gitignore/` until promoted)
+2. [`docs/GITHUB_LOCAL_SETUP.md`](docs/GITHUB_LOCAL_SETUP.md)
+3. [`docs/CURSOR_TASK_STARTER.md`](docs/CURSOR_TASK_STARTER.md) when present
 
 ## Stack
 
-pnpm workspaces · Fastify API · Next.js web · worker stub · Drizzle · PostgreSQL
+pnpm workspaces · Fastify API · Next.js web · worker · Drizzle · PostgreSQL
 
 ## Quick start
 
@@ -28,14 +28,18 @@ pnpm db:migrate
 pnpm --filter @opencompanyos/config build
 pnpm --filter @opencompanyos/db build
 pnpm --filter @opencompanyos/github build
+pnpm --filter @opencompanyos/sync build
 pnpm dev
 ```
 
 - Web: http://localhost:3000
 - API: http://localhost:4000
 - Health: `GET /health`, readiness: `GET /ready`
+- Webhooks: `POST /api/webhooks/github` (requires public tunnel — see setup doc)
 
 ## Current milestone
 
-GitHub App install → setup callback → list/select repositories → **initial sync**
-(issues / PRs / commits → `events` via worker). Webhooks come next.
+GitHub App install → select repos → initial sync → **webhook ingestion**
+(signature verify, idempotent `webhook_deliveries`, async normalize into `events`).
+
+Next: canonical entities / relationships.

@@ -19,6 +19,12 @@ export {
   type SyncedPullRequest,
 } from "./fetch.js";
 
+export {
+  normalizeGithubWebhook,
+  verifyGithubWebhookSignature,
+  type NormalizedWebhookEvent,
+} from "./webhook.js";
+
 export type GitHubInstallationAccount = {
   id: number;
   login: string;

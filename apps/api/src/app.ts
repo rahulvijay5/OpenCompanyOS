@@ -6,8 +6,10 @@ import {
 } from "@opencompanyos/db";
 import Fastify, { type FastifyInstance } from "fastify";
 import { getRuntimeEnv, tryGetEnv } from "./env.js";
+import { registerEventRoutes } from "./routes/events.js";
 import { registerGithubRoutes } from "./routes/github.js";
 import { registerHealthRoutes } from "./routes/health.js";
+import { registerWebhookRoutes } from "./routes/webhooks.js";
 
 export type AppContext = {
   db: Database;
@@ -35,6 +37,8 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await registerHealthRoutes(app, ctx);
   await registerGithubRoutes(app, ctx, () => tryGetEnv());
+  await registerEventRoutes(app, ctx);
+  await registerWebhookRoutes(app, ctx, () => tryGetEnv());
 
   return app;
 }

@@ -121,6 +121,27 @@ export async function fetchSyncJob(jobId: string) {
   return (await response.json()) as { job: SyncJobSummary };
 }
 
+export type EventListItem = {
+  id: string;
+  eventType: string;
+  sourceEventId: string;
+  eventTime: string | null;
+  observedAt: string;
+  title: string | null;
+  htmlUrl: string | null;
+  fullName: string | null;
+};
+
+export async function fetchRecentEvents(limit = 20) {
+  const url = new URL(`${API_URL}/api/v1/events`);
+  url.searchParams.set("limit", String(limit));
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Failed to load events (${response.status})`);
+  }
+  return (await response.json()) as { events: EventListItem[] };
+}
+
 export function githubInstallHref(): string {
   return `${API_URL}/api/v1/integrations/github/install`;
 }

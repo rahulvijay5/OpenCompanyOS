@@ -1,5 +1,4 @@
 import {
-  events,
   githubInstallations,
   repositories,
   syncJobs,
@@ -12,6 +11,14 @@ import {
   type GitHubAppCredentials,
 } from "@opencompanyos/github";
 import { and, eq } from "drizzle-orm";
+import { upsertEvent } from "./events.js";
+
+export { listRecentEvents, upsertEvent, type EventSummary } from "./events.js";
+export {
+  claimNextWebhookDelivery,
+  processWebhookDelivery,
+  type WebhookDeliveryView,
+} from "./webhooks.js";
 
 export type SyncJobView = {
   id: string;
@@ -24,43 +31,6 @@ export type SyncJobView = {
   completedAt: Date | null;
   createdAt: Date;
 };
-
-async function upsertEvent(
-  db: Database,
-  input: {
-    tenantId: string;
-    sourceEventId: string;
-    eventType: string;
-    eventTime: Date | null;
-    payload: Record<string, unknown>;
-  },
-): Promise<boolean> {
-  const observedAt = new Date();
-  const inserted = await db
-    .insert(events)
-    .values({
-      tenantId: input.tenantId,
-      sourceSystem: "github",
-      sourceEventId: input.sourceEventId,
-      eventType: input.eventType,
-      eventTime: input.eventTime,
-      observedAt,
-      payload: input.payload,
-      createdAt: observedAt,
-    })
-    .onConflictDoUpdate({
-      target: [events.tenantId, events.sourceSystem, events.sourceEventId],
-      set: {
-        eventType: input.eventType,
-        eventTime: input.eventTime,
-        observedAt,
-        payload: input.payload,
-      },
-    })
-    .returning({ id: events.id });
-
-  return inserted.length > 0;
-}
 
 export async function enqueueRepositorySync(
   db: Database,
