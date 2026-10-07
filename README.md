@@ -7,9 +7,9 @@ selection → initial sync → webhook ingestion reliable before RAG/agents.
 
 ## Specs
 
-1. [`docs/OPENCOMPANYOS_MASTER_SPEC.md`](docs/OPENCOMPANYOS_MASTER_SPEC.md)
-2. [`docs/GITHUB_LOCAL_SETUP.md`](docs/GITHUB_LOCAL_SETUP.md)
-3. [`docs/CURSOR_TASK_STARTER.md`](docs/CURSOR_TASK_STARTER.md)
+<!-- 1. [`docs/OPENCOMPANYOS_MASTER_SPEC.md`](docs/OPENCOMPANYOS_MASTER_SPEC.md) -->
+[`docs/GITHUB_LOCAL_SETUP.md`](docs/GITHUB_LOCAL_SETUP.md)
+<!-- 3. [`docs/CURSOR_TASK_STARTER.md`](docs/CURSOR_TASK_STARTER.md) -->
 
 ## Stack
 
