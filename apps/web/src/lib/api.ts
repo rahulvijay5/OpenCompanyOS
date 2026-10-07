@@ -1,0 +1,126 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+
+export type InstallationSummary = {
+  id: string;
+  githubInstallationId: number;
+  accountLogin: string;
+  accountType: string;
+  status: string;
+};
+
+export type RepositorySummary = {
+  id: string;
+  githubRepositoryId: number;
+  fullName: string;
+  ownerLogin: string;
+  name: string;
+  defaultBranch: string | null;
+  visibility: string | null;
+  htmlUrl: string | null;
+  selected: boolean;
+};
+
+export async function fetchRepositories(installationId?: string) {
+  const url = new URL(`${API_URL}/api/v1/integrations/github/repositories`);
+  if (installationId) {
+    url.searchParams.set("installationId", installationId);
+  }
+
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Failed to load repositories (${response.status})`);
+  }
+
+  return (await response.json()) as {
+    installation: InstallationSummary | null;
+    repositories: RepositorySummary[];
+  };
+}
+
+export async function completeGithubSetup(installationId: string) {
+  const url = new URL(`${API_URL}/api/v1/integrations/github/setup`);
+  url.searchParams.set("installation_id", installationId);
+
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as {
+      message?: string;
+      error?: string;
+    } | null;
+    throw new Error(
+      body?.message ?? body?.error ?? `Setup failed (${response.status})`,
+    );
+  }
+
+  return (await response.json()) as {
+    installation: InstallationSummary & { setupAction: string | null };
+    repositoryCount: number;
+  };
+}
+
+export async function selectRepositories(
+  installationId: string,
+  githubRepositoryIds: number[],
+) {
+  const response = await fetch(
+    `${API_URL}/api/v1/integrations/github/repositories/select`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ installationId, githubRepositoryIds }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to select repositories (${response.status})`);
+  }
+
+  return response.json();
+}
+
+export type SyncJobSummary = {
+  id: string;
+  status: string;
+  objectType: string | null;
+  processedCount: number;
+  error: string | null;
+  repositoryId: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+};
+
+export async function startRepositorySync(
+  installationId: string,
+  repositoryId: string,
+) {
+  const response = await fetch(`${API_URL}/api/v1/integrations/github/sync`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ installationId, repositoryId }),
+  });
+
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+    throw new Error(body?.error ?? `Failed to start sync (${response.status})`);
+  }
+
+  return (await response.json()) as { job: SyncJobSummary };
+}
+
+export async function fetchSyncJob(jobId: string) {
+  const response = await fetch(
+    `${API_URL}/api/v1/integrations/github/sync/${jobId}`,
+    { cache: "no-store" },
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to load sync job (${response.status})`);
+  }
+  return (await response.json()) as { job: SyncJobSummary };
+}
+
+export function githubInstallHref(): string {
+  return `${API_URL}/api/v1/integrations/github/install`;
+}

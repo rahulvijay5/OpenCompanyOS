@@ -1,2 +1,32 @@
-/OpenCompanyOS-spec
-/docs
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.next/
+out/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs / OS
+*.log
+.DS_Store
+
+# Test / coverage
+coverage/
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Secrets / keys
+*.pem
+!docs/**/*.pem.example
+
+/gitignore

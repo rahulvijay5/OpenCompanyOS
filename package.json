@@ -1,0 +1,21 @@
+{
+  "name": "opencompanyos",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter @opencompanyos/config --filter @opencompanyos/db --filter @opencompanyos/github --filter @opencompanyos/sync --filter @opencompanyos/api --filter @opencompanyos/web --filter @opencompanyos/worker run dev",
+    "dev:apps": "pnpm -r --parallel --filter @opencompanyos/api --filter @opencompanyos/web --filter @opencompanyos/worker run dev",
+    "build": "pnpm -r run build",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test",
+    "db:generate": "pnpm --filter @opencompanyos/db generate",
+    "db:migrate": "pnpm --filter @opencompanyos/db migrate",
+    "db:studio": "pnpm --filter @opencompanyos/db studio"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
+  }
+}
