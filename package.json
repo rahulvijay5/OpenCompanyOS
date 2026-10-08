@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "packageManager": "pnpm@9.15.9",
   "scripts": {
-    "dev": "pnpm -r --parallel --filter @opencompanyos/config --filter @opencompanyos/db --filter @opencompanyos/github --filter @opencompanyos/sync --filter @opencompanyos/api --filter @opencompanyos/web --filter @opencompanyos/worker run dev",
+    "dev": "pnpm -r --parallel --filter @opencompanyos/config --filter @opencompanyos/db --filter @opencompanyos/github --filter @opencompanyos/sync --filter @opencompanyos/retrieval --filter @opencompanyos/api --filter @opencompanyos/web --filter @opencompanyos/worker run dev",
     "dev:apps": "pnpm -r --parallel --filter @opencompanyos/api --filter @opencompanyos/web --filter @opencompanyos/worker run dev",
     "build": "pnpm -r run build",
     "typecheck": "pnpm -r run typecheck",

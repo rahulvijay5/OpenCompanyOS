@@ -17,8 +17,10 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@opencompanyos/config": "workspace:*",
     "@opencompanyos/db": "workspace:*",
     "@opencompanyos/github": "workspace:*",
+    "@opencompanyos/retrieval": "workspace:*",
     "drizzle-orm": "^0.40.1"
   },
   "devDependencies": {

@@ -1,3 +1,4 @@
+import { customType } from "drizzle-orm/pg-core";
 import {
   bigint,
   boolean,
@@ -12,6 +13,33 @@ import {
   unique,
   uuid,
 } from "drizzle-orm/pg-core";
+
+/** Matches the default LiteLLM embedding alias (Gemini embedding-001 at 768). */
+export const EMBEDDING_DIMENSIONS = 768;
+
+const vector = customType<{
+  data: number[];
+  driverData: string;
+  config: { dimensions: number };
+}>({
+  dataType(config) {
+    return `vector(${config?.dimensions ?? 1536})`;
+  },
+  toDriver(value: number[]) {
+    return `[${value.join(",")}]`;
+  },
+  fromDriver(value: unknown) {
+    if (typeof value !== "string") {
+      return [];
+    }
+    return value
+      .replace(/^\[/, "")
+      .replace(/\]$/, "")
+      .split(",")
+      .filter((part) => part.length > 0)
+      .map((part) => Number(part));
+  },
+});
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -198,6 +226,111 @@ export const relationships = pgTable(
     ),
     index("relationships_target_idx").on(table.targetEntityId),
   ],
+);
+
+export const documents = pgTable(
+  "documents",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    entityId: uuid("entity_id").references(() => entities.id, {
+      onDelete: "set null",
+    }),
+    sourceSystem: text("source_system").notNull(),
+    sourceId: text("source_id").notNull(),
+    title: text("title"),
+    body: text("body"),
+    url: text("url"),
+    metadata: jsonb("metadata")
+      .notNull()
+      .default({})
+      .$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("documents_tenant_source_unique").on(
+      table.tenantId,
+      table.sourceSystem,
+      table.sourceId,
+    ),
+  ],
+);
+
+export const documentChunks = pgTable(
+  "document_chunks",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    chunkIndex: integer("chunk_index").notNull(),
+    content: text("content").notNull(),
+    embedding: vector("embedding", { dimensions: EMBEDDING_DIMENSIONS }),
+    metadata: jsonb("metadata")
+      .notNull()
+      .default({})
+      .$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("document_chunks_doc_index_unique").on(
+      table.documentId,
+      table.chunkIndex,
+    ),
+  ],
+);
+
+export const evidence = pgTable("evidence", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  sourceSystem: text("source_system").notNull(),
+  sourceType: text("source_type").notNull(),
+  sourceId: text("source_id").notNull(),
+  entityId: uuid("entity_id").references(() => entities.id, {
+    onDelete: "set null",
+  }),
+  title: text("title"),
+  snippet: text("snippet"),
+  url: text("url"),
+  eventId: uuid("event_id").references(() => events.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const queries = pgTable("queries", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  queryText: text("query_text").notNull(),
+  answerText: text("answer_text"),
+  model: text("model"),
+  latencyMs: integer("latency_ms"),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const queryEvidence = pgTable(
+  "query_evidence",
+  {
+    queryId: uuid("query_id")
+      .notNull()
+      .references(() => queries.id, { onDelete: "cascade" }),
+    evidenceId: uuid("evidence_id")
+      .notNull()
+      .references(() => evidence.id, { onDelete: "cascade" }),
+    rank: integer("rank"),
+    score: real("score"),
+  },
+  (table) => [primaryKey({ columns: [table.queryId, table.evidenceId] })],
 );
 
 export const webhookDeliveries = pgTable("webhook_deliveries", {

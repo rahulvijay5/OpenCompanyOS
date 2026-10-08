@@ -1,3 +1,4 @@
+import { QueryBox } from "@/components/QueryBox";
 import { RepositoryPicker } from "@/components/RepositoryPicker";
 import {
   fetchEntities,
@@ -55,6 +56,11 @@ export default async function HomePage() {
       </div>
 
       {loadError ? <p className="error">{loadError}</p> : null}
+
+      <section className="panel" style={{ marginBottom: "1.25rem" }}>
+        <h2>Query</h2>
+        <QueryBox />
+      </section>
 
       <section className="panel">
         <h2>GitHub installation</h2>

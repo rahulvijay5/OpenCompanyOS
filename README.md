@@ -5,11 +5,9 @@ Open-source organizational context layer for AI agents. MVP is GitHub-only.
 **Do not build the AI layer first.** Make GitHub App installation → repository
 selection → initial sync → webhook ingestion reliable before RAG/agents.
 
-## Specs
+## Specs:
 
-1. [`docs/OPENCOMPANYOS_MASTER_SPEC.md`](docs/OPENCOMPANYOS_MASTER_SPEC.md) (also under `gitignore/` until promoted)
-2. [`docs/GITHUB_LOCAL_SETUP.md`](docs/GITHUB_LOCAL_SETUP.md)
-3. [`docs/CURSOR_TASK_STARTER.md`](docs/CURSOR_TASK_STARTER.md) when present
+[`docs/GITHUB_LOCAL_SETUP.md`](docs/GITHUB_LOCAL_SETUP.md)
 
 ## Stack
 
@@ -40,7 +38,17 @@ pnpm dev
 ## Current milestone
 
 GitHub App install → select repos → initial sync → webhook ingestion →
-**canonical entities and relationships** (Person, Repository, Issue, PullRequest,
-Commit, Comment plus AUTHORED / BELONGS_TO / MODIFIES / DISCUSSES / REVIEWED).
+**canonical entities and relationships**, plus **search / embeddings / query**.
 
-Next: search, embeddings, and the query API.
+`POST /api/v1/query` retrieves with Postgres full-text search and pgvector, then
+asks a model to answer only from those snippets. Models go through a
+[LiteLLM](https://docs.litellm.ai/docs/) proxy (`LITELLM_BASE_URL`), so Gemini,
+Groq, or another provider is a config change: set `CHAT_MODEL` to `gemini` or
+`groq` and put the provider key in `.env`. Without `LITELLM_BASE_URL`, keyword
+retrieval still runs and the API refuses to invent an answer.
+
+```bash
+docker compose up -d   # postgres + LiteLLM on :4001
+```
+
+Next: temporal change detection and evaluation.

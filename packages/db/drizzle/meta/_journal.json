@@ -15,6 +15,20 @@
       "when": 1791409837504,
       "tag": "0001_quick_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791468508055,
+      "tag": "0002_loving_salo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791470000000,
+      "tag": "0003_embedding_dimensions",
+      "breakpoints": true
     }
   ]
 }

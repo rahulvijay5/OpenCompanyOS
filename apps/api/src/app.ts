@@ -10,11 +10,13 @@ import { registerEntityRoutes } from "./routes/entities.js";
 import { registerEventRoutes } from "./routes/events.js";
 import { registerGithubRoutes } from "./routes/github.js";
 import { registerHealthRoutes } from "./routes/health.js";
+import { registerQueryRoutes } from "./routes/query.js";
 import { registerWebhookRoutes } from "./routes/webhooks.js";
 
 export type AppContext = {
   db: Database;
   tenantId: string;
+  userId: string;
 };
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -34,12 +36,14 @@ export async function buildApp(): Promise<FastifyInstance> {
   const ctx: AppContext = {
     db,
     tenantId: bootstrap.tenantId,
+    userId: bootstrap.userId,
   };
 
   await registerHealthRoutes(app, ctx);
   await registerGithubRoutes(app, ctx, () => tryGetEnv());
   await registerEventRoutes(app, ctx);
   await registerEntityRoutes(app, ctx);
+  await registerQueryRoutes(app, ctx, () => tryGetEnv());
   await registerWebhookRoutes(app, ctx, () => tryGetEnv());
 
   return app;

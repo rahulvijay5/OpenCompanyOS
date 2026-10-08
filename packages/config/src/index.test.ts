@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loadEnv, loadRuntimeEnv } from "./index.js";
+import { llmConfigFromEnv, loadEnv, loadRuntimeEnv } from "./index.js";
 
 const validGithubEnv = {
   NODE_ENV: "development",
@@ -50,6 +50,27 @@ describe("loadEnv", () => {
     expect(env.GITHUB_PRIVATE_KEY).toContain(
       "-----BEGIN RSA PRIVATE KEY-----\nABCDEFGHIJKLMNOP\n-----END RSA PRIVATE KEY-----",
     );
+  });
+
+  it("builds a LiteLLM client config from the proxy URL and model aliases", () => {
+    const env = loadEnv({
+      ...validGithubEnv,
+      LITELLM_BASE_URL: "http://localhost:4001/v1/",
+      LITELLM_API_KEY: "sk-local-dev",
+      CHAT_MODEL: "groq",
+      EMBEDDING_MODEL: "embedding",
+    });
+    expect(llmConfigFromEnv(env)).toEqual({
+      baseUrl: "http://localhost:4001/v1",
+      apiKey: "sk-local-dev",
+      chatModel: "groq",
+      embeddingModel: "embedding",
+      embeddingDimensions: 768,
+    });
+  });
+
+  it("leaves the model unset when LiteLLM is not configured", () => {
+    expect(llmConfigFromEnv(loadEnv({ ...validGithubEnv }))).toBeNull();
   });
 
   it("rejects missing GitHub credentials", () => {

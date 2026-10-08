@@ -16,5 +16,18 @@ services:
       timeout: 5s
       retries: 10
 
+  litellm:
+    image: docker.litellm.ai/berriai/litellm:main-latest
+    restart: unless-stopped
+    ports:
+      - "4001:4000"
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_API_KEY:-sk-local-dev}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+    volumes:
+      - ./litellm.config.yaml:/app/config.yaml
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+
 volumes:
   postgres_data:

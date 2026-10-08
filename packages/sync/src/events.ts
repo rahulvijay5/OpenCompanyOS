@@ -1,4 +1,6 @@
+import { llmConfigFromEnv, loadEnv } from "@opencompanyos/config";
 import { events, type Database } from "@opencompanyos/db";
+import { indexEvent } from "@opencompanyos/retrieval";
 import { materializeEventGraph } from "./entities.js";
 
 export async function upsertEvent(
@@ -48,7 +50,17 @@ export async function upsertEvent(
     payload: input.payload,
   });
 
+  await indexEvent(db, eventId, llmConfigFromProcess());
+
   return eventId;
+}
+
+function llmConfigFromProcess() {
+  try {
+    return llmConfigFromEnv(loadEnv());
+  } catch {
+    return null;
+  }
 }
 
 export type EventSummary = {

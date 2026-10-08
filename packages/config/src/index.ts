@@ -15,6 +15,11 @@ const envSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string().min(1),
   GITHUB_PRIVATE_KEY: z.string().min(1),
   GITHUB_WEBHOOK_SECRET: z.string().min(1),
+  LITELLM_BASE_URL: z.string().url().optional(),
+  LITELLM_API_KEY: z.string().min(1).optional(),
+  EMBEDDING_MODEL: z.string().min(1).default("embedding"),
+  EMBEDDING_DIMENSIONS: z.coerce.number().int().positive().default(768),
+  CHAT_MODEL: z.string().min(1).default("gemini"),
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
     .default("info"),
@@ -97,4 +102,26 @@ export function loadRuntimeEnv(
     throw new Error(`Invalid runtime environment: ${details}`);
   }
   return parsed.data;
+}
+
+export type LlmConfig = {
+  baseUrl: string;
+  apiKey: string;
+  chatModel: string;
+  embeddingModel: string;
+  embeddingDimensions: number;
+};
+
+/** Present only when a LiteLLM (OpenAI-compatible) base URL is configured. */
+export function llmConfigFromEnv(env: Env): LlmConfig | null {
+  if (!env.LITELLM_BASE_URL) {
+    return null;
+  }
+  return {
+    baseUrl: env.LITELLM_BASE_URL.replace(/\/$/, ""),
+    apiKey: env.LITELLM_API_KEY ?? "local",
+    chatModel: env.CHAT_MODEL,
+    embeddingModel: env.EMBEDDING_MODEL,
+    embeddingDimensions: env.EMBEDDING_DIMENSIONS,
+  };
 }

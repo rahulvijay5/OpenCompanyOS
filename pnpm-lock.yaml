@@ -29,6 +29,9 @@ importers:
       '@opencompanyos/github':
         specifier: workspace:*
         version: link:../../packages/github
+      '@opencompanyos/retrieval':
+        specifier: workspace:*
+        version: link:../../packages/retrieval
       '@opencompanyos/sync':
         specifier: workspace:*
         version: link:../../packages/sync
@@ -168,14 +171,39 @@ importers:
         specifier: ^3.0.9
         version: 3.2.7(@types/node@22.20.5)(tsx@4.23.15)
 
+  packages/retrieval:
+    dependencies:
+      '@opencompanyos/config':
+        specifier: workspace:*
+        version: link:../config
+      '@opencompanyos/db':
+        specifier: workspace:*
+        version: link:../db
+      drizzle-orm:
+        specifier: ^0.40.1
+        version: 0.40.1(gel@2.2.1)(postgres@3.4.9)
+    devDependencies:
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.9
+        version: 3.2.7(@types/node@22.20.5)(tsx@4.23.15)
+
   packages/sync:
     dependencies:
+      '@opencompanyos/config':
+        specifier: workspace:*
+        version: link:../config
       '@opencompanyos/db':
         specifier: workspace:*
         version: link:../db
       '@opencompanyos/github':
         specifier: workspace:*
         version: link:../github
+      '@opencompanyos/retrieval':
+        specifier: workspace:*
+        version: link:../retrieval
       drizzle-orm:
         specifier: ^0.40.1
         version: 0.40.1(gel@2.2.1)(postgres@3.4.9)
