@@ -1,10 +1,12 @@
 import {
   bigint,
   boolean,
+  index,
   integer,
   jsonb,
   pgTable,
   primaryKey,
+  real,
   text,
   timestamp,
   unique,
@@ -89,6 +91,47 @@ export const repositories = pgTable(
   ],
 );
 
+export const entities = pgTable(
+  "entities",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
+    canonicalName: text("canonical_name").notNull(),
+    description: text("description"),
+    sourceSystem: text("source_system"),
+    sourceId: text("source_id"),
+    metadata: jsonb("metadata")
+      .notNull()
+      .default({})
+      .$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("entities_tenant_type_source_unique").on(
+      table.tenantId,
+      table.type,
+      table.sourceSystem,
+      table.sourceId,
+    ),
+  ],
+);
+
+export const entityAliases = pgTable("entity_aliases", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  entityId: uuid("entity_id")
+    .notNull()
+    .references(() => entities.id, { onDelete: "cascade" }),
+  alias: text("alias").notNull(),
+  sourceSystem: text("source_system"),
+  sourceId: text("source_id"),
+  confidence: real("confidence"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const events = pgTable(
   "events",
   {
@@ -99,8 +142,12 @@ export const events = pgTable(
     sourceSystem: text("source_system").notNull(),
     sourceEventId: text("source_event_id").notNull(),
     eventType: text("event_type").notNull(),
-    actorEntityId: uuid("actor_entity_id"),
-    objectEntityId: uuid("object_entity_id"),
+    actorEntityId: uuid("actor_entity_id").references(() => entities.id, {
+      onDelete: "set null",
+    }),
+    objectEntityId: uuid("object_entity_id").references(() => entities.id, {
+      onDelete: "set null",
+    }),
     eventTime: timestamp("event_time", { withTimezone: true }),
     observedAt: timestamp("observed_at", { withTimezone: true }).notNull(),
     payload: jsonb("payload").notNull().$type<Record<string, unknown>>(),
@@ -112,6 +159,44 @@ export const events = pgTable(
       table.sourceSystem,
       table.sourceEventId,
     ),
+  ],
+);
+
+export const relationships = pgTable(
+  "relationships",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    sourceEntityId: uuid("source_entity_id")
+      .notNull()
+      .references(() => entities.id, { onDelete: "cascade" }),
+    relationshipType: text("relationship_type").notNull(),
+    targetEntityId: uuid("target_entity_id")
+      .notNull()
+      .references(() => entities.id, { onDelete: "cascade" }),
+    confidence: real("confidence"),
+    validFrom: timestamp("valid_from", { withTimezone: true }),
+    validTo: timestamp("valid_to", { withTimezone: true }),
+    observedAt: timestamp("observed_at", { withTimezone: true }).notNull(),
+    sourceEventId: uuid("source_event_id").references(() => events.id, {
+      onDelete: "set null",
+    }),
+    metadata: jsonb("metadata")
+      .notNull()
+      .default({})
+      .$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("relationships_edge_unique").on(
+      table.tenantId,
+      table.sourceEntityId,
+      table.relationshipType,
+      table.targetEntityId,
+    ),
+    index("relationships_target_idx").on(table.targetEntityId),
   ],
 );
 

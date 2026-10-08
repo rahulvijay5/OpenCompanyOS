@@ -39,7 +39,8 @@ pnpm dev
 
 ## Current milestone
 
-GitHub App install → select repos → initial sync → **webhook ingestion**
-(signature verify, idempotent `webhook_deliveries`, async normalize into `events`).
+GitHub App install → select repos → initial sync → webhook ingestion →
+**canonical entities and relationships** (Person, Repository, Issue, PullRequest,
+Commit, Comment plus AUTHORED / BELONGS_TO / MODIFIES / DISCUSSES / REVIEWED).
 
-Next: canonical entities / relationships.
+Next: search, embeddings, and the query API.

@@ -1,8 +1,11 @@
 import { RepositoryPicker } from "@/components/RepositoryPicker";
 import {
+  fetchEntities,
   fetchRecentEvents,
   fetchRepositories,
   githubInstallHref,
+  type EntityCount,
+  type EntityListItem,
   type EventListItem,
 } from "@/lib/api";
 
@@ -15,15 +18,20 @@ export default async function HomePage() {
     ReturnType<typeof fetchRepositories>
   >["repositories"] = [];
   let events: EventListItem[] = [];
+  let entityCounts: EntityCount[] = [];
+  let entities: EntityListItem[] = [];
 
   try {
-    const [repoData, eventData] = await Promise.all([
+    const [repoData, eventData, entityData] = await Promise.all([
       fetchRepositories(),
       fetchRecentEvents(15),
+      fetchEntities(30),
     ]);
     installation = repoData.installation;
     repositories = repoData.repositories;
     events = eventData.events;
+    entityCounts = entityData.counts;
+    entities = entityData.entities;
   } catch (error) {
     loadError =
       error instanceof Error
@@ -66,6 +74,34 @@ export default async function HomePage() {
             No installation stored yet. Click Connect GitHub to install the app
             on a personal account or organization.
           </p>
+        )}
+      </section>
+
+      <section className="panel" style={{ marginTop: "1.25rem" }}>
+        <h2>Canonical entities</h2>
+        {entityCounts.length === 0 ? (
+          <p className="empty">
+            No entities yet. Sync a repository or receive a webhook to project
+            people, issues, pull requests, and commits.
+          </p>
+        ) : (
+          <>
+            <p className="meta">
+              {entityCounts
+                .map((row) => `${row.type} ${row.count}`)
+                .join(" · ")}
+            </p>
+            <ul className="repo-list">
+              {entities.slice(0, 12).map((entity) => (
+                <li className="repo-item" key={entity.id}>
+                  <span className="badge">{entity.type}</span>
+                  <span className="repo-name">{entity.canonicalName}</span>
+                  <span />
+                  <span />
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </section>
 

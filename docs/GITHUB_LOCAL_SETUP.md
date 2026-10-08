@@ -5,31 +5,26 @@
 Create a GitHub App in GitHub Developer Settings.
 
 Set:
-
 - Homepage: `http://localhost:3000`
 - Setup URL: `http://localhost:3000/integrations/github/setup`
 - Webhook URL: public HTTPS tunnel + `/api/webhooks/github` (see §3)
 - Webhook secret: generate a strong random value → put in `GITHUB_WEBHOOK_SECRET`
 
 Read permissions (MVP):
-
 - Repository metadata: read
 - Contents: read
 - Issues: read
 - Pull requests: read
 
 Subscribe to webhook events:
-
 - `installation`
-- `installation_targets`
+- `installation_repositories`
 - `push`
 - `pull_request`
 - `issues`
 - `issue_comment`
 - `pull_request_review`
 - `pull_request_review_comment` (stored as ignored until normalized)
-
-
 
 ## 2. Run OpenCompanyOS
 
@@ -43,8 +38,6 @@ pnpm --filter @opencompanyos/github build
 pnpm --filter @opencompanyos/sync build
 pnpm dev
 ```
-
-
 
 ## 3. Expose webhook endpoint
 
@@ -62,8 +55,6 @@ Copy the printed `https://….trycloudflare.com` URL and set the GitHub App Webh
 ```text
 https://YOUR-TUNNEL.trycloudflare.com/api/webhooks/github
 ```
-
-
 
 ### Option B — ngrok
 
@@ -95,8 +86,6 @@ After changing the webhook URL in GitHub App settings, use **Recent Deliveries �
 12. Verify a row in `webhook_deliveries` (`status=processed`) and a matching `events` row.
 13. In GitHub App → Recent Deliveries, **Redeliver** the same webhook.
 14. Verify delivery response is `duplicate` / no second event for the same `source_event_id`.
-
-
 
 ## 5. Important distinction
 

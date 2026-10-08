@@ -15,6 +15,16 @@ import { upsertEvent } from "./events.js";
 
 export { listRecentEvents, upsertEvent, type EventSummary } from "./events.js";
 export {
+  countEntitiesByType,
+  getEntity,
+  listEntities,
+  listEntityRelationships,
+  listEntityTimeline,
+  projectStoredEvents,
+  type EntitySummary,
+} from "./entities.js";
+export { projectCanonicalGraph } from "./graph.js";
+export {
   claimNextWebhookDelivery,
   processWebhookDelivery,
   type WebhookDeliveryView,

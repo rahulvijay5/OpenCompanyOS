@@ -132,6 +132,28 @@ export type EventListItem = {
   fullName: string | null;
 };
 
+export type EntityCount = { type: string; count: number };
+
+export type EntityListItem = {
+  id: string;
+  type: string;
+  canonicalName: string;
+  sourceId: string | null;
+};
+
+export async function fetchEntities(limit = 40) {
+  const url = new URL(`${API_URL}/api/v1/entities`);
+  url.searchParams.set("limit", String(limit));
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Failed to load entities (${response.status})`);
+  }
+  return (await response.json()) as {
+    counts: EntityCount[];
+    entities: EntityListItem[];
+  };
+}
+
 export async function fetchRecentEvents(limit = 20) {
   const url = new URL(`${API_URL}/api/v1/events`);
   url.searchParams.set("limit", String(limit));

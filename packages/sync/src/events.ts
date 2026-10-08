@@ -1,4 +1,5 @@
 import { events, type Database } from "@opencompanyos/db";
+import { materializeEventGraph } from "./entities.js";
 
 export async function upsertEvent(
   db: Database,
@@ -9,7 +10,7 @@ export async function upsertEvent(
     eventTime: Date | null;
     payload: Record<string, unknown>;
   },
-): Promise<boolean> {
+): Promise<string> {
   const observedAt = new Date();
   const inserted = await db
     .insert(events)
@@ -34,7 +35,20 @@ export async function upsertEvent(
     })
     .returning({ id: events.id });
 
-  return inserted.length > 0;
+  const eventId = inserted[0]?.id;
+  if (!eventId) {
+    throw new Error("failed_to_upsert_event");
+  }
+
+  await materializeEventGraph(db, {
+    tenantId: input.tenantId,
+    eventId,
+    sourceEventId: input.sourceEventId,
+    eventTime: input.eventTime,
+    payload: input.payload,
+  });
+
+  return eventId;
 }
 
 export type EventSummary = {
