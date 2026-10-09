@@ -60,6 +60,7 @@ export async function completeGroundedAnswer(
 ): Promise<{
   answer: string;
   confidence: number;
+  evidenceIds: string[];
   inputTokens: number | null;
   outputTokens: number | null;
 }> {
@@ -67,7 +68,7 @@ export async function completeGroundedAnswer(
     {
       role: "system",
       content:
-        'You answer questions about engineering activity using ONLY the evidence snippets. If the snippets do not support an answer, say so. Never invent people, dates, repositories, or URLs. Return JSON {"answer": string, "confidence": number from 0 to 1}.',
+        'You answer questions about engineering activity using ONLY the evidence snippets. If the snippets do not support an answer, say so. Never invent people, dates, repositories, or URLs. Return JSON {"answer": string, "confidence": number from 0 to 1, "evidenceIds": string[]}. evidenceIds must be ids copied from the evidence list. A URL in the answer is not a citation.',
     },
     {
       role: "user",
@@ -87,10 +88,14 @@ export async function completeGroundedAnswer(
     typeof parsed.confidence === "number"
       ? Math.min(1, Math.max(0, parsed.confidence))
       : 0;
+  const evidenceIds = Array.isArray(parsed.evidenceIds)
+    ? parsed.evidenceIds.filter((id): id is string => typeof id === "string")
+    : [];
 
   return {
     answer,
     confidence,
+    evidenceIds,
     inputTokens: body.usage?.prompt_tokens ?? null,
     outputTokens: body.usage?.completion_tokens ?? null,
   };
@@ -141,6 +146,7 @@ function postChat(
 function parseAnswerJson(content: string): {
   answer?: unknown;
   confidence?: unknown;
+  evidenceIds?: unknown;
 } {
   const fenced = content
     .replace(/^```json\s*/i, "")
@@ -148,7 +154,11 @@ function parseAnswerJson(content: string): {
     .replace(/\s*```$/, "")
     .trim();
   try {
-    return JSON.parse(fenced) as { answer?: unknown; confidence?: unknown };
+    return JSON.parse(fenced) as {
+      answer?: unknown;
+      confidence?: unknown;
+      evidenceIds?: unknown;
+    };
   } catch {
     const start = fenced.indexOf("{");
     const end = fenced.lastIndexOf("}");
@@ -157,11 +167,12 @@ function parseAnswerJson(content: string): {
         return JSON.parse(fenced.slice(start, end + 1)) as {
           answer?: unknown;
           confidence?: unknown;
+          evidenceIds?: unknown;
         };
       } catch {
         // The model answered in prose. Keep that text.
       }
     }
-    return { answer: fenced, confidence: 0.5 };
+    return { answer: fenced, confidence: 0.5, evidenceIds: [] };
   }
 }

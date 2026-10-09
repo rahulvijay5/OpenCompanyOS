@@ -7,6 +7,7 @@ import {
 import Fastify, { type FastifyInstance } from "fastify";
 import { getRuntimeEnv, tryGetEnv } from "./env.js";
 import { registerChangeRoutes } from "./routes/changes.js";
+import { registerContextRoutes } from "./routes/context.js";
 import { registerEntityRoutes } from "./routes/entities.js";
 import { registerEventRoutes } from "./routes/events.js";
 import { registerGithubRoutes } from "./routes/github.js";
@@ -45,6 +46,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerEventRoutes(app, ctx);
   await registerEntityRoutes(app, ctx);
   await registerChangeRoutes(app, ctx);
+  await registerContextRoutes(app, ctx, () => tryGetEnv());
   await registerQueryRoutes(app, ctx, () => tryGetEnv());
   await registerWebhookRoutes(app, ctx, () => tryGetEnv());
 

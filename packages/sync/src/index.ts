@@ -27,6 +27,7 @@ export { projectCanonicalGraph } from "./graph.js";
 export {
   claimNextWebhookDelivery,
   processWebhookDelivery,
+  tenantForGithubInstallation,
   type WebhookDeliveryView,
 } from "./webhooks.js";
 

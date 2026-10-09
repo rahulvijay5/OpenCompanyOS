@@ -81,7 +81,7 @@ export async function processWebhookDelivery(
 
     const tenantId =
       delivery.tenantId ??
-      (await resolveTenantIdFromPayload(db, delivery.payload));
+      (await tenantForGithubInstallation(db, delivery.payload));
 
     if (!tenantId) {
       throw new Error("tenant_not_resolved");
@@ -167,7 +167,7 @@ export async function processWebhookDelivery(
   }
 }
 
-async function resolveTenantIdFromPayload(
+export async function tenantForGithubInstallation(
   db: Database,
   payload: Record<string, unknown>,
 ): Promise<string | null> {
@@ -185,7 +185,10 @@ async function resolveTenantIdFromPayload(
         githubInstallationId,
       ),
     });
-    return row?.tenantId ?? null;
+    if (!row) {
+      throw new Error("unknown_installation");
+    }
+    return row.tenantId;
   }
   return null;
 }

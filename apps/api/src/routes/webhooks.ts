@@ -1,10 +1,7 @@
 import type { Env } from "@opencompanyos/config";
-import {
-  githubInstallations,
-  webhookDeliveries,
-} from "@opencompanyos/db";
+import { webhookDeliveries } from "@opencompanyos/db";
 import { verifyGithubWebhookSignature } from "@opencompanyos/github";
-import { eq } from "drizzle-orm";
+import { tenantForGithubInstallation } from "@opencompanyos/sync";
 import type { FastifyInstance } from "fastify";
 import type { AppContext } from "../app.js";
 
@@ -18,24 +15,9 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 async function resolveTenantId(
   ctx: AppContext,
   payload: Record<string, unknown>,
-): Promise<string | null> {
-  const installation = asRecord(payload.installation);
-  const githubInstallationId =
-    installation && typeof installation.id === "number"
-      ? installation.id
-      : null;
-
-  if (githubInstallationId == null) {
-    return ctx.tenantId;
-  }
-
-  const row = await ctx.db.query.githubInstallations.findFirst({
-    where: eq(
-      githubInstallations.githubInstallationId,
-      githubInstallationId,
-    ),
-  });
-  return row?.tenantId ?? ctx.tenantId;
+): Promise<string> {
+  const resolved = await tenantForGithubInstallation(ctx.db, payload);
+  return resolved ?? ctx.tenantId;
 }
 
 export async function registerWebhookRoutes(
@@ -103,7 +85,37 @@ export async function registerWebhookRoutes(
         return reply.code(400).send({ error: "invalid_json" });
       }
 
-      const tenantId = await resolveTenantId(ctx, payload);
+      let tenantId: string;
+      try {
+        tenantId = await resolveTenantId(ctx, payload);
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          error.message === "unknown_installation"
+        ) {
+          await ctx.db
+            .insert(webhookDeliveries)
+            .values({
+              tenantId: null,
+              githubDeliveryId,
+              eventName,
+              payload,
+              receivedAt: new Date(),
+              processedAt: new Date(),
+              status: "failed",
+              error: "unknown_installation",
+            })
+            .onConflictDoNothing({
+              target: webhookDeliveries.githubDeliveryId,
+            });
+          return reply.code(202).send({
+            status: "rejected",
+            error: "unknown_installation",
+            deliveryId: githubDeliveryId,
+          });
+        }
+        throw error;
+      }
       const receivedAt = new Date();
 
       const inserted = await ctx.db

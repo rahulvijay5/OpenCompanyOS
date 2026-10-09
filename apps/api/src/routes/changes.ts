@@ -1,3 +1,4 @@
+import { resolveScope } from "@opencompanyos/context";
 import { CHANGE_KINDS, getChange, listChanges } from "@opencompanyos/retrieval";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
@@ -25,10 +26,15 @@ export async function registerChangeRoutes(
       ? new Date(query.data.since)
       : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
+    const scope = await resolveScope(
+      ctx.db,
+      ctx.tenantId,
+      query.data.repositoryId ? [query.data.repositoryId] : null,
+    );
     const changes = await listChanges(ctx.db, ctx.tenantId, {
       since,
       until: query.data.until ? new Date(query.data.until) : null,
-      repositoryId: query.data.repositoryId ?? null,
+      repositoryIds: scope.repositoryIds,
       kind: query.data.kind ?? null,
       limit: query.data.limit,
     });

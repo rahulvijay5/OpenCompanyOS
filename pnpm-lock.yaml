@@ -23,6 +23,9 @@ importers:
       '@opencompanyos/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@opencompanyos/context':
+        specifier: workspace:*
+        version: link:../../packages/context
       '@opencompanyos/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -123,6 +126,34 @@ importers:
         specifier: ^3.24.2
         version: 3.25.76
     devDependencies:
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.9
+        version: 3.2.7(@types/node@22.20.5)(tsx@4.23.15)
+
+  packages/context:
+    dependencies:
+      '@opencompanyos/config':
+        specifier: workspace:*
+        version: link:../config
+      '@opencompanyos/db':
+        specifier: workspace:*
+        version: link:../db
+      '@opencompanyos/retrieval':
+        specifier: workspace:*
+        version: link:../retrieval
+      drizzle-orm:
+        specifier: ^0.40.1
+        version: 0.40.1(gel@2.2.1)(postgres@3.4.9)
+    devDependencies:
+      '@opencompanyos/sync':
+        specifier: workspace:*
+        version: link:../sync
+      postgres:
+        specifier: ^3.4.5
+        version: 3.4.9
       typescript:
         specifier: ^5.8.2
         version: 5.9.3

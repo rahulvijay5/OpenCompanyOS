@@ -145,14 +145,17 @@ export async function listChanges(
   options: {
     since?: Date | null;
     until?: Date | null;
-    repositoryId?: string | null;
+    repositoryIds: string[];
     kind?: ChangeKind | null;
     limit?: number;
-  } = {},
+  },
 ): Promise<ChangeRecord[]> {
+  if (options.repositoryIds.length === 0) {
+    return [];
+  }
   const since = options.since?.toISOString() ?? null;
   const until = options.until?.toISOString() ?? null;
-  const repositoryId = options.repositoryId ?? null;
+  const repositoryIds = options.repositoryIds;
   const kind = options.kind ?? null;
   const limit = options.limit ?? 50;
   const rows = await db.execute<ChangeRow>(sql`
@@ -175,10 +178,10 @@ export async function listChanges(
       AND e.record_kind = 'occurrence'
       AND (${since}::timestamptz IS NULL OR e.event_time >= ${since})
       AND (${until}::timestamptz IS NULL OR e.event_time <= ${until})
-      AND (
-        ${repositoryId}::text IS NULL
-        OR e.payload->>'repositoryId' = ${repositoryId}
-      )
+      AND e.payload->>'repositoryId' IN (${sql.join(
+        repositoryIds.map((id) => sql`${id}`),
+        sql`, `,
+      )})
       AND (${kind}::text IS NULL OR ${kindExpression} = ${kind})
     ORDER BY e.event_time DESC NULLS LAST
     LIMIT ${limit}

@@ -1,12 +1,10 @@
-import { llmConfigFromEnv, type Env } from "@opencompanyos/config";
-import { answerQuery, reindexTenant } from "@opencompanyos/retrieval";
+import { answerFromPackage } from "@opencompanyos/context";
+import { buildContext } from "@opencompanyos/context";
+import { reindexTenant } from "@opencompanyos/retrieval";
 import type { FastifyInstance } from "fastify";
-import { z } from "zod";
 import type { AppContext } from "../app.js";
-
-function llmConfigFromEnvOrNull(env: Env | null) {
-  return env ? llmConfigFromEnv(env) : null;
-}
+import { contextBodySchema, contextInput } from "./context.js";
+import { llmConfigFromEnv, type Env } from "@opencompanyos/config";
 
 export async function registerQueryRoutes(
   app: FastifyInstance,
@@ -14,28 +12,31 @@ export async function registerQueryRoutes(
   getEnv: () => Env | null,
 ): Promise<void> {
   app.post("/api/v1/query", async (request, reply) => {
-    const parsed = z
-      .object({ query: z.string().min(1).max(2000) })
-      .safeParse(request.body);
+    const parsed = contextBodySchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: "invalid_body" });
     }
 
-    const result = await answerQuery(ctx.db, {
+    const env = getEnv();
+    const built = await buildContext(
+      ctx.db,
+      contextInput(ctx.tenantId, parsed.data, env),
+    );
+    return answerFromPackage(ctx.db, {
       tenantId: ctx.tenantId,
       userId: ctx.userId,
       query: parsed.data.query,
-      config: llmConfigFromEnvOrNull(getEnv()),
+      package: built,
+      config: env ? llmConfigFromEnv(env) : null,
     });
-
-    return result;
   });
 
   app.post("/api/v1/search/reindex", async () => {
+    const env = getEnv();
     const processed = await reindexTenant(
       ctx.db,
       ctx.tenantId,
-      llmConfigFromEnvOrNull(getEnv()),
+      env ? llmConfigFromEnv(env) : null,
     );
     return { processedEvents: processed };
   });

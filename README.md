@@ -49,7 +49,9 @@ Issues and pull requests from the initial sync are snapshots of current state. W
 
 ## Query
 
-`POST /api/v1/query` uses Postgres full text and pgvector, then asks a model to answer only from those snippets. Models go through a [LiteLLM](https://docs.litellm.ai/docs/) proxy (`LITELLM_BASE_URL`). Set `CHAT_MODEL` to `gemini` or `groq` and put the provider key in `.env`. The response includes `latencyMs`, `inputTokens`, and `outputTokens`.
+`POST /api/v1/context` builds a versioned context package for the local tenant. `scope.authorization` is the literal `local-owner`: this prototype has one bootstrapped user and no per-user checks. Authentication is required before a second user or tenant. Repository scope is the installation's selected repositories. Requested repository ids are kept only when they are selected for that tenant.
+
+`POST /api/v1/query` uses that same package. Postgres full text and pgvector supply evidence. The model may cite evidence ids from the package. The server drops any other id and copies URLs from the stored records. Models go through a [LiteLLM](https://docs.litellm.ai/docs/) proxy (`LITELLM_BASE_URL`). Set `CHAT_MODEL` to `gemini` or `groq` and put the provider key in `.env`. The response includes `latencyMs`, `inputTokens`, `outputTokens`, and `uncertainties`.
 
 Change questions also attach occurrence rows from the requested time window.
 

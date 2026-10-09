@@ -7,11 +7,12 @@ export {
   type ChangeKind,
   type ChangeRecord,
 } from "./changes.js";
+export { completeGroundedAnswer, embedTexts } from "./llm.js";
 export {
-  answerQuery,
   indexEvent,
   reindexTenant,
-  type QueryAnswer,
+  searchEvidence,
+  type EvidenceSearchHit,
 } from "./search.js";
 export {
   scoreQueryCase,

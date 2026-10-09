@@ -5,8 +5,13 @@ import { useState, type FormEvent } from "react";
 type QueryResponse = {
   answer: string;
   confidence: number;
-  evidence: Array<{ title: string | null; url: string | null; snippet: string | null }>;
-  entities: Array<{ id: string; type: string; canonicalName: string }>;
+  evidence: Array<{
+    id: string;
+    title: string | null;
+    url: string | null;
+    snippet: string | null;
+  }>;
+  uncertainties: Array<{ code: string; message: string }>;
   traceId: string;
   latencyMs?: number;
   inputTokens?: number | null;
@@ -76,10 +81,22 @@ export function QueryBox() {
             {result.latencyMs != null ? ` · ${result.latencyMs}ms` : ""} · trace{" "}
             {result.traceId.slice(0, 8)}
           </p>
+          {(result.uncertainties ?? []).length > 0 ? (
+            <ul className="repo-list">
+              {(result.uncertainties ?? []).map((item) => (
+                <li className="repo-item" key={item.code}>
+                  <span className="badge">{item.code}</span>
+                  <span className="repo-name">{item.message}</span>
+                  <span />
+                  <span />
+                </li>
+              ))}
+            </ul>
+          ) : null}
           {result.evidence.length > 0 ? (
             <ul className="repo-list">
               {result.evidence.map((item) => (
-                <li className="repo-item" key={`${item.url ?? ""}-${item.title ?? ""}`}>
+                <li className="repo-item" key={item.id}>
                   <span className="badge">evidence</span>
                   <span className="repo-name">{item.title ?? "untitled"}</span>
                   {item.url ? (
