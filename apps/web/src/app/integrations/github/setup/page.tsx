@@ -24,8 +24,8 @@ export default async function GithubSetupPage({
         <p className="error">
           Missing <code>installation_id</code> from GitHub setup redirect.
         </p>
-        <Link className="button button-secondary" href="/">
-          Back home
+        <Link className="button button-secondary" href="/app">
+          Back to the app
         </Link>
       </main>
     );
@@ -40,15 +40,15 @@ export default async function GithubSetupPage({
   }
 
   if (!setupError) {
-    redirect("/?connected=1");
+    redirect("/app?connected=1");
   }
 
   return (
     <main>
       <h1 className="brand">OpenCompanyOS</h1>
       <p className="error">{setupError}</p>
-      <Link className="button button-secondary" href="/">
-        Back home
+      <Link className="button button-secondary" href="/app">
+        Back to the app
       </Link>
     </main>
   );

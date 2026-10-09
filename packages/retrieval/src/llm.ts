@@ -145,6 +145,23 @@ function parseAnswerJson(content: string): {
   const fenced = content
     .replace(/^```json\s*/i, "")
     .replace(/^```\s*/i, "")
-    .replace(/\s*```$/, "");
-  return JSON.parse(fenced) as { answer?: unknown; confidence?: unknown };
+    .replace(/\s*```$/, "")
+    .trim();
+  try {
+    return JSON.parse(fenced) as { answer?: unknown; confidence?: unknown };
+  } catch {
+    const start = fenced.indexOf("{");
+    const end = fenced.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      try {
+        return JSON.parse(fenced.slice(start, end + 1)) as {
+          answer?: unknown;
+          confidence?: unknown;
+        };
+      } catch {
+        // The model answered in prose. Keep that text.
+      }
+    }
+    return { answer: fenced, confidence: 0.5 };
+  }
 }

@@ -8,12 +8,15 @@ type QueryResponse = {
   evidence: Array<{ title: string | null; url: string | null; snippet: string | null }>;
   entities: Array<{ id: string; type: string; canonicalName: string }>;
   traceId: string;
+  latencyMs?: number;
+  inputTokens?: number | null;
+  outputTokens?: number | null;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 export function QueryBox() {
-  const [query, setQuery] = useState("What changed in company-brain?");
+  const [query, setQuery] = useState("What changed this week?");
   const [result, setResult] = useState<QueryResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -69,7 +72,9 @@ export function QueryBox() {
         <div>
           <p>{result.answer}</p>
           <p className="meta">
-            confidence {result.confidence.toFixed(2)} · trace {result.traceId.slice(0, 8)}
+            confidence {result.confidence.toFixed(2)}
+            {result.latencyMs != null ? ` · ${result.latencyMs}ms` : ""} · trace{" "}
+            {result.traceId.slice(0, 8)}
           </p>
           {result.evidence.length > 0 ? (
             <ul className="repo-list">

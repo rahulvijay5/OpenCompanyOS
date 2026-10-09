@@ -186,6 +186,9 @@ export type QueryAnswer = {
   evidence: Array<{ title: string | null; url: string | null; snippet: string | null }>;
   entities: Array<{ id: string; type: string; canonicalName: string }>;
   traceId: string;
+  latencyMs: number;
+  inputTokens: number | null;
+  outputTokens: number | null;
 };
 
 export async function answerQuery(
@@ -250,6 +253,9 @@ export async function answerQuery(
       evidence: [],
       entities: [],
       traceId: savedQuery.id,
+      latencyMs: Date.now() - started,
+      inputTokens: null,
+      outputTokens: null,
     };
   }
 
@@ -297,9 +303,15 @@ export async function answerQuery(
       outputTokens = completion.outputTokens;
     } catch (error) {
       console.error("[retrieval] answer generation failed", error);
+      const titles = docs
+        .map((doc) => doc.title)
+        .filter((title): title is string => Boolean(title))
+        .slice(0, 5);
       answer =
-        "Matching activity was retrieved, but the model could not produce a grounded answer.";
-      confidence = 0;
+        titles.length > 0
+          ? `The model is unavailable, so this is the matching activity:\n\n${titles.map((title) => `• ${title}`).join("\n")}`
+          : "Matching activity was retrieved, but the model could not produce a grounded answer.";
+      confidence = docs[0]?.score ?? 0;
     }
   }
 
@@ -324,6 +336,9 @@ export async function answerQuery(
     })),
     entities: entityRows,
     traceId: savedQuery.id,
+    latencyMs: Date.now() - started,
+    inputTokens,
+    outputTokens,
   };
 }
 

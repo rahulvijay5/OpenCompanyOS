@@ -172,3 +172,18 @@ main {
 .empty {
   color: var(--muted);
 }
+
+.topnav .brand {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.topnav nav {
+  display: flex;
+  gap: 1rem;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 560;
+}

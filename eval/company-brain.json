@@ -1,0 +1,11 @@
+{
+  "name": "opencompanyos-org/company-brain",
+  "notes": "Checks the indexed context without calling a model. Confirms the repository entity, that timelines are occurrences, and that the change feed stays inside its window.",
+  "entities": [
+    { "type": "Repository", "nameIncludes": "company-brain" }
+  ],
+  "changes": {
+    "allowedKinds": ["opened", "closed", "merged", "pushed", "commented", "reviewed", "updated"],
+    "maxAgeDays": 7
+  }
+}

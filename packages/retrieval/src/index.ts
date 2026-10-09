@@ -13,6 +13,11 @@ export {
   reindexTenant,
   type QueryAnswer,
 } from "./search.js";
+export {
+  scoreQueryCase,
+  type EvalExpectation,
+  type QueryScore,
+} from "./eval.js";
 export type { LlmConfig } from "@opencompanyos/config";
 export {
   chunkText,

@@ -104,6 +104,7 @@ function titleFromPayload(payload: Record<string, unknown> | null): string | nul
   return (
     asString(payload.title) ??
     asString(payload.message)?.split("\n")[0] ??
+    asString(payload.body)?.replace(/\s+/g, " ").slice(0, 120) ??
     null
   );
 }

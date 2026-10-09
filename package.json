@@ -12,7 +12,8 @@
     "test": "pnpm -r run test",
     "db:generate": "pnpm --filter @opencompanyos/db generate",
     "db:migrate": "pnpm --filter @opencompanyos/db migrate",
-    "db:studio": "pnpm --filter @opencompanyos/db studio"
+    "db:studio": "pnpm --filter @opencompanyos/db studio",
+    "eval": "node scripts/benchmark.mjs"
   },
   "devDependencies": {
     "typescript": "^5.8.2",

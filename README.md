@@ -1,17 +1,16 @@
 # OpenCompanyOS
 
-Open-source organizational context layer for AI agents. MVP is GitHub-only.
+Open-source organizational context layer for AI agents. The MVP is GitHub-only:
+connect an organization, sync repositories, keep new activity through webhooks,
+and ask what changed with stored evidence beside the answer.
 
-**Do not build the AI layer first.** Make GitHub App installation → repository
-selection → initial sync → webhook ingestion reliable before RAG/agents.
-
-## Specs:
+## Specs
 
 [`docs/GITHUB_LOCAL_SETUP.md`](docs/GITHUB_LOCAL_SETUP.md)
 
 ## Stack
 
-pnpm workspaces · Fastify API · Next.js web · worker · Drizzle · PostgreSQL
+pnpm workspaces · Fastify API · Next.js web · worker · Drizzle · PostgreSQL · pgvector · LiteLLM
 
 ## Quick start
 
@@ -21,34 +20,39 @@ cp .env.example .env
 
 pnpm install
 docker compose up -d
-pnpm db:generate   # first time / after schema changes
 pnpm db:migrate
 pnpm --filter @opencompanyos/config build
 pnpm --filter @opencompanyos/db build
 pnpm --filter @opencompanyos/github build
+pnpm --filter @opencompanyos/retrieval build
 pnpm --filter @opencompanyos/sync build
 pnpm dev
 ```
 
-- Web: http://localhost:3000
+- Home: http://localhost:3000
+- Workspace: http://localhost:3000/app
 - API: http://localhost:4000
 - Health: `GET /health`, readiness: `GET /ready`
-- Webhooks: `POST /api/webhooks/github` (requires public tunnel — see setup doc)
+- Webhooks: `POST /api/webhooks/github` (requires a public tunnel — see the setup doc)
+- LiteLLM proxy: http://localhost:4001 (`docker compose up -d` starts Postgres and LiteLLM)
 
-## Current milestone
+## Demo
 
-GitHub App install → select repos → initial sync → webhook ingestion →
-**canonical entities and relationships**, plus **search / embeddings / query**.
+1. Open `/app` and connect the GitHub App. After GitHub redirects, you land back on `/app`.
+2. Select `opencompanyos-org/company-brain` (or your own repo) and start a sync.
+3. Ask “What changed this week?”. The answer cites stored rows. A question the index cannot support says so.
+4. Open an entity to see its current snapshot, occurrence timeline, and relationships. Open a change to see that occurrence beside the current snapshot.
 
-`POST /api/v1/query` retrieves with Postgres full-text search and pgvector, then
-asks a model to answer only from those snippets. Models go through a
-[LiteLLM](https://docs.litellm.ai/docs/) proxy (`LITELLM_BASE_URL`), so Gemini,
-Groq, or another provider is a config change: set `CHAT_MODEL` to `gemini` or
-`groq` and put the provider key in `.env`. Without `LITELLM_BASE_URL`, keyword
-retrieval still runs and the API refuses to invent an answer.
+`/` is the front door. The workspace stays at `/app`.
 
-```bash
-docker compose up -d   # postgres + LiteLLM on :4001
-```
+Issues and pull requests from the initial sync are snapshots of current state. Webhook transitions after install are occurrences and show up under Changes. Commits, comments, and reviews are occurrences already.
 
-Next: temporal change detection and evaluation.
+## Query
+
+`POST /api/v1/query` uses Postgres full text and pgvector, then asks a model to answer only from those snippets. Models go through a [LiteLLM](https://docs.litellm.ai/docs/) proxy (`LITELLM_BASE_URL`). Set `CHAT_MODEL` to `gemini` or `groq` and put the provider key in `.env`. The response includes `latencyMs`, `inputTokens`, and `outputTokens`.
+
+Change questions also attach occurrence rows from the requested time window.
+
+## Evaluation
+
+`pnpm eval` checks the indexed context on a running API. It confirms the repository entity, that a repository timeline is made of occurrences, and that the change feed stays inside the last 7 days. It does not call a model.

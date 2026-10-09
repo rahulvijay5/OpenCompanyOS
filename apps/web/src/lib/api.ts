@@ -175,6 +175,104 @@ export async function fetchChanges(limit = 20) {
   return (await response.json()) as { changes: ChangeListItem[] };
 }
 
+export async function fetchEntity(id: string) {
+  const response = await fetch(`${API_URL}/api/v1/entities/${id}`, {
+    cache: "no-store",
+  });
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to load entity (${response.status})`);
+  }
+  return (await response.json()) as {
+    entity: {
+      id: string;
+      type: string;
+      canonicalName: string;
+      description: string | null;
+      sourceSystem: string | null;
+      sourceId: string | null;
+      metadata: Record<string, unknown>;
+    };
+  };
+}
+
+export type TimelineEvent = {
+  id: string;
+  eventType: string;
+  sourceEventId: string;
+  eventTime: string | null;
+  recordKind: string;
+  title: string | null;
+  htmlUrl: string | null;
+};
+
+export async function fetchEntityTimeline(id: string) {
+  const response = await fetch(`${API_URL}/api/v1/entities/${id}/timeline`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to load timeline (${response.status})`);
+  }
+  return (await response.json()) as {
+    entity: {
+      id: string;
+      type: string;
+      canonicalName: string;
+      state: string | null;
+      title: string;
+    };
+    events: TimelineEvent[];
+  };
+}
+
+export type RelationshipItem = {
+  id: string;
+  relationshipType: string;
+  sourceEntityId: string;
+  targetEntityId: string;
+  direction: "outgoing" | "incoming";
+  validFrom: string | null;
+  validTo: string | null;
+};
+
+export async function fetchEntityRelationships(id: string) {
+  const response = await fetch(
+    `${API_URL}/api/v1/entities/${id}/relationships`,
+    { cache: "no-store" },
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to load relationships (${response.status})`);
+  }
+  return (await response.json()) as { relationships: RelationshipItem[] };
+}
+
+export async function fetchChange(id: string) {
+  const response = await fetch(`${API_URL}/api/v1/changes/${id}`, {
+    cache: "no-store",
+  });
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to load change (${response.status})`);
+  }
+  return (await response.json()) as {
+    change: ChangeListItem & {
+      eventType: string;
+      sourceEventId: string;
+      object: { id: string; type: string; name: string } | null;
+    };
+    snapshot: {
+      id: string;
+      type: string;
+      canonicalName: string;
+      metadata: Record<string, unknown>;
+    } | null;
+  };
+}
+
 export async function fetchRecentEvents(limit = 20) {
   const url = new URL(`${API_URL}/api/v1/events`);
   url.searchParams.set("limit", String(limit));
