@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { MarkdownAnswer } from "@/components/MarkdownAnswer";
 
 type QueryResponse = {
   answer: string;
@@ -48,69 +49,72 @@ export function QueryBox() {
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form className="query-form" onSubmit={onSubmit}>
       <label className="meta" htmlFor="org-query">
         Ask about indexed GitHub activity
       </label>
-      <div className="actions">
+      <div className="query-row">
         <input
           id="org-query"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          style={{
-            flex: 1,
-            minWidth: "16rem",
-            background: "transparent",
-            color: "inherit",
-            border: "1px solid var(--border)",
-            borderRadius: 8,
-            padding: "0.7rem 0.8rem",
-            font: "inherit",
-          }}
         />
-        <button className="button button-primary" type="submit" disabled={pending}>
+        <button className="site-btn" type="submit" disabled={pending}>
           {pending ? "Searching…" : "Ask"}
         </button>
       </div>
       {error ? <p className="error">{error}</p> : null}
       {result ? (
-        <div>
-          <p>{result.answer}</p>
-          <p className="meta">
-            confidence {result.confidence.toFixed(2)}
-            {result.latencyMs != null ? ` · ${result.latencyMs}ms` : ""} · trace{" "}
-            {result.traceId.slice(0, 8)}
-          </p>
-          {(result.uncertainties ?? []).length > 0 ? (
-            <ul className="repo-list">
-              {(result.uncertainties ?? []).map((item) => (
-                <li className="repo-item" key={item.code}>
-                  <span className="badge">{item.code}</span>
-                  <span className="repo-name">{item.message}</span>
-                  <span />
-                  <span />
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {result.evidence.length > 0 ? (
-            <ul className="repo-list">
-              {result.evidence.map((item) => (
-                <li className="repo-item" key={item.id}>
-                  <span className="badge">evidence</span>
-                  <span className="repo-name">{item.title ?? "untitled"}</span>
-                  {item.url ? (
-                    <a href={item.url} target="_blank" rel="noreferrer">
-                      open
-                    </a>
-                  ) : (
-                    <span />
-                  )}
-                  <span />
-                </li>
-              ))}
-            </ul>
-          ) : null}
+        <div className="answer-layout">
+          <article className="answer-prose" aria-label="Answer">
+            <MarkdownAnswer source={result.answer} />
+          </article>
+          <aside className="answer-rail" aria-label="Answer details">
+            <dl>
+              <div>
+                <dt>Confidence</dt>
+                <dd>{result.confidence.toFixed(2)}</dd>
+              </div>
+              {result.latencyMs != null ? (
+                <div>
+                  <dt>Latency</dt>
+                  <dd>{result.latencyMs} ms</dd>
+                </div>
+              ) : null}
+              <div>
+                <dt>Trace</dt>
+                <dd>{result.traceId.slice(0, 8)}</dd>
+              </div>
+            </dl>
+            {(result.uncertainties ?? []).length > 0 ? (
+              <>
+                <h3>Notes</h3>
+                <ul>
+                  {(result.uncertainties ?? []).map((item) => (
+                    <li key={item.code}>{item.message}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            <h3>Evidence</h3>
+            {result.evidence.length === 0 ? (
+              <p>No source records were attached to this answer.</p>
+            ) : (
+              <ol>
+                {result.evidence.map((item) => (
+                  <li key={item.id}>
+                    {item.url ? (
+                      <a href={item.url} target="_blank" rel="noreferrer">
+                        {item.title ?? "Untitled record"}
+                      </a>
+                    ) : (
+                      (item.title ?? "Untitled record")
+                    )}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </aside>
         </div>
       ) : null}
     </form>

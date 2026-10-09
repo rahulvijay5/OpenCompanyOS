@@ -5,6 +5,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "OpenCompanyOS",
   description: "Organizational context layer for AI agents — GitHub MVP",
+  icons: {
+    icon: [{ url: "/opencompanyos.avif", type: "image/avif" }],
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

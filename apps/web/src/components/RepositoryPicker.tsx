@@ -100,11 +100,11 @@ export function RepositoryPicker({ installation, repositories }: Props) {
 
   return (
     <div>
-      <ul className="repo-list">
+      <ul className="record-list">
         {repositories.map((repo) => {
           const isSelected = selected.has(repo.githubRepositoryId);
           return (
-            <li className="repo-item" key={repo.id}>
+            <li className="record repo-row" key={repo.id}>
               <label>
                 <input
                   type="checkbox"
@@ -113,14 +113,13 @@ export function RepositoryPicker({ installation, repositories }: Props) {
                 />
                 <span className="repo-name">{repo.fullName}</span>
               </label>
-              <span className={`badge${isSelected ? " badge-selected" : ""}`}>
+              <span className="record-kind">
                 {isSelected ? "selected" : repo.visibility ?? "repo"}
               </span>
               {isSelected ? (
                 <button
                   type="button"
-                  className="button button-secondary"
-                  style={{ padding: "0.35rem 0.7rem", fontSize: "0.85rem" }}
+                  className="site-btn site-btn-quiet"
                   disabled={pending || syncingRepoId === repo.id}
                   onClick={() => onSync(repo.id)}
                 >
@@ -133,10 +132,10 @@ export function RepositoryPicker({ installation, repositories }: Props) {
           );
         })}
       </ul>
-      <div className="actions" style={{ marginTop: "1rem", marginBottom: 0 }}>
+      <div className="query-row picker-actions">
         <button
           type="button"
-          className="button button-primary"
+          className="site-btn"
           disabled={pending || selected.size === 0}
           onClick={onSave}
         >

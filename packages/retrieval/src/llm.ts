@@ -68,7 +68,7 @@ export async function completeGroundedAnswer(
     {
       role: "system",
       content:
-        'You answer questions about engineering activity using ONLY the evidence snippets. If the snippets do not support an answer, say so. Never invent people, dates, repositories, or URLs. Return JSON {"answer": string, "confidence": number from 0 to 1, "evidenceIds": string[]}. evidenceIds must be ids copied from the evidence list. A URL in the answer is not a citation.',
+        "You answer questions about engineering activity using ONLY the evidence snippets. If the snippets do not support an answer, say so. Never invent people, dates, repositories, or URLs. Return JSON only with keys answer, confidence, and evidenceIds. confidence is a number from 0 to 1. The answer value must be Markdown and nothing else: short paragraphs, headings, and lists. Do not include evidence ids, UUIDs, confidence, latency, or trace ids in the answer. evidenceIds must be ids copied from the evidence list. A URL in the answer is not a citation.",
     },
     {
       role: "user",

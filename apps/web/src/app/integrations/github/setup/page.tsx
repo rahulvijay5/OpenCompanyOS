@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { SiteShell } from "@/components/SiteShell";
 import { completeGithubSetup } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -19,15 +20,21 @@ export default async function GithubSetupPage({
 
   if (!installationId) {
     return (
-      <main>
-        <h1 className="brand">OpenCompanyOS</h1>
-        <p className="error">
-          Missing <code>installation_id</code> from GitHub setup redirect.
-        </p>
-        <Link className="button button-secondary" href="/app">
-          Back to the app
-        </Link>
-      </main>
+      <SiteShell>
+        <main className="workspace">
+          <header className="workspace-header">
+            <p className="kicker">GitHub</p>
+            <h1>Setup did not finish</h1>
+            <p className="error">
+              Missing <code>installation_id</code> from the GitHub setup
+              redirect.
+            </p>
+            <Link className="site-btn" href="/app">
+              Back to the experiment
+            </Link>
+          </header>
+        </main>
+      </SiteShell>
     );
   }
 
@@ -44,12 +51,17 @@ export default async function GithubSetupPage({
   }
 
   return (
-    <main>
-      <h1 className="brand">OpenCompanyOS</h1>
-      <p className="error">{setupError}</p>
-      <Link className="button button-secondary" href="/app">
-        Back to the app
-      </Link>
-    </main>
+    <SiteShell>
+      <main className="workspace">
+        <header className="workspace-header">
+          <p className="kicker">GitHub</p>
+          <h1>Setup did not finish</h1>
+          <p className="error">{setupError}</p>
+          <Link className="site-btn" href="/app">
+            Back to the experiment
+          </Link>
+        </header>
+      </main>
+    </SiteShell>
   );
 }

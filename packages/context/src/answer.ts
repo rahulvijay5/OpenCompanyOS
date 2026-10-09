@@ -149,7 +149,7 @@ function titlesAnswer(items: ContextEvidence[]): string {
   if (titles.length === 0) {
     return "Matching activity was retrieved, but the model could not produce a grounded answer.";
   }
-  return `The model is unavailable, so this is the matching activity:\n\n${titles
-    .map((title) => `• ${title}`)
+  return `The model is unavailable. Matching activity:\n\n${titles
+    .map((title) => `- ${title}`)
     .join("\n")}`;
 }
