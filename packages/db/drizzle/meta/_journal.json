@@ -29,6 +29,13 @@
       "when": 1791470000000,
       "tag": "0003_embedding_dimensions",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791474000000,
+      "tag": "0004_event_record_kind",
+      "breakpoints": true
     }
   ]
 }

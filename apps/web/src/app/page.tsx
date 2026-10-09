@@ -1,10 +1,12 @@
 import { QueryBox } from "@/components/QueryBox";
 import { RepositoryPicker } from "@/components/RepositoryPicker";
 import {
+  fetchChanges,
   fetchEntities,
   fetchRecentEvents,
   fetchRepositories,
   githubInstallHref,
+  type ChangeListItem,
   type EntityCount,
   type EntityListItem,
   type EventListItem,
@@ -21,18 +23,21 @@ export default async function HomePage() {
   let events: EventListItem[] = [];
   let entityCounts: EntityCount[] = [];
   let entities: EntityListItem[] = [];
+  let changes: ChangeListItem[] = [];
 
   try {
-    const [repoData, eventData, entityData] = await Promise.all([
+    const [repoData, eventData, entityData, changeData] = await Promise.all([
       fetchRepositories(),
       fetchRecentEvents(15),
       fetchEntities(30),
+      fetchChanges(20),
     ]);
     installation = repoData.installation;
     repositories = repoData.repositories;
     events = eventData.events;
     entityCounts = entityData.counts;
     entities = entityData.entities;
+    changes = changeData.changes;
   } catch (error) {
     loadError =
       error instanceof Error
@@ -108,6 +113,40 @@ export default async function HomePage() {
               ))}
             </ul>
           </>
+        )}
+      </section>
+
+      <section className="panel" style={{ marginTop: "1.25rem" }}>
+        <h2>Changes</h2>
+        <p className="meta">
+          Activity recorded since webhooks started. Synced issues and pull
+          requests stay the current snapshot and are not listed here as history.
+        </p>
+        {changes.length === 0 ? (
+          <p className="empty">No recorded changes in the last 7 days.</p>
+        ) : (
+          <ul className="repo-list">
+            {changes.map((change) => (
+              <li className="repo-item" key={change.id}>
+                <span className="badge">{change.kind}</span>
+                <span className="repo-name">
+                  {change.title ?? change.eventType}
+                </span>
+                {change.url ? (
+                  <a href={change.url} target="_blank" rel="noreferrer">
+                    open
+                  </a>
+                ) : (
+                  <span />
+                )}
+                <span className="meta" style={{ margin: 0 }}>
+                  {[change.repository?.name, change.actor?.name, change.eventTime]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 

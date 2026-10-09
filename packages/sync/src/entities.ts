@@ -93,6 +93,7 @@ export async function materializeEventGraph(
     ref ? (ids.get(`${ref.type}:${ref.sourceId}`) ?? null) : null;
 
   const observedAt = input.eventTime ?? new Date();
+  const observedAtIso = observedAt.toISOString();
   for (const edge of projection.relationships) {
     const sourceEntityId = resolve(edge.source);
     const targetEntityId = resolve(edge.target);
@@ -124,6 +125,7 @@ export async function materializeEventGraph(
           observedAt,
           sourceEventId: input.eventId,
           confidence: 1,
+          validFrom: sql`least(coalesce(${relationships.validFrom}, ${observedAtIso}::timestamptz), ${observedAtIso}::timestamptz)`,
         },
       });
   }
@@ -237,13 +239,46 @@ export async function listEntityTimeline(
   db: Database,
   tenantId: string,
   entityId: string,
+  options: { since?: Date | null; until?: Date | null; limit?: number } = {},
 ) {
-  return db.query.events.findMany({
-    where: and(
-      eq(events.tenantId, tenantId),
-      or(eq(events.actorEntityId, entityId), eq(events.objectEntityId, entityId)),
-    ),
-    orderBy: (table, { desc }) => [desc(table.eventTime)],
-    limit: 50,
-  });
+  const since = options.since?.toISOString() ?? null;
+  const until = options.until?.toISOString() ?? null;
+  const limit = options.limit ?? 50;
+  const rows = await db.execute<{
+    id: string;
+    event_type: string;
+    source_event_id: string;
+    event_time: Date | string | null;
+    payload: Record<string, unknown>;
+    record_kind: string;
+  }>(sql`
+    SELECT e.id, e.event_type, e.source_event_id, e.event_time, e.payload, e.record_kind
+    FROM events e
+    WHERE e.tenant_id = ${tenantId}
+      AND e.record_kind = 'occurrence'
+      AND (${since}::timestamptz IS NULL OR e.event_time >= ${since})
+      AND (${until}::timestamptz IS NULL OR e.event_time <= ${until})
+      AND (
+        e.actor_entity_id = ${entityId}
+        OR e.object_entity_id = ${entityId}
+        OR e.object_entity_id IN (
+          SELECT r.source_entity_id
+          FROM relationships r
+          WHERE r.tenant_id = ${tenantId}
+            AND r.target_entity_id = ${entityId}
+            AND r.relationship_type IN ('BELONGS_TO', 'MODIFIES', 'DISCUSSES')
+        )
+      )
+    ORDER BY e.event_time DESC NULLS LAST
+    LIMIT ${limit}
+  `);
+
+  return rows.map((row) => ({
+    id: row.id,
+    eventType: row.event_type,
+    sourceEventId: row.source_event_id,
+    eventTime: row.event_time,
+    payload: row.payload ?? {},
+    recordKind: row.record_kind,
+  }));
 }

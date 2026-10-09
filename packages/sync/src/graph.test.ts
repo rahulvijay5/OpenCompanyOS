@@ -62,4 +62,34 @@ describe("projectCanonicalGraph", () => {
     );
     expect(graph.object?.type).toBe("Commit");
   });
+
+  it("projects opened and closed occurrences onto one issue", () => {
+    const opened = projectCanonicalGraph({
+      sourceEventId: "github:issue:42:opened:2026-01-01T00:00:00Z",
+      payload: {
+        id: 42,
+        title: "Fix billing",
+        number: 7,
+        state: "open",
+        userLogin: "alice",
+        fullName: "opencompanyos-org/company-brain",
+      },
+    });
+    const closed = projectCanonicalGraph({
+      sourceEventId: "github:issue:42:closed:2026-01-02T00:00:00Z",
+      payload: {
+        id: 42,
+        title: "Fix billing",
+        number: 7,
+        state: "closed",
+        userLogin: "alice",
+        fullName: "opencompanyos-org/company-brain",
+      },
+    });
+
+    expect(opened.object?.sourceId).toBe("github:issue:42");
+    expect(closed.object?.sourceId).toBe("github:issue:42");
+    const issue = closed.entities.find((entity) => entity.type === "Issue");
+    expect(issue?.metadata.state).toBe("closed");
+  });
 });

@@ -3,6 +3,21 @@ import { events, type Database } from "@opencompanyos/db";
 import { indexEvent } from "@opencompanyos/retrieval";
 import { materializeEventGraph } from "./entities.js";
 
+export type RecordKind = "snapshot" | "occurrence";
+
+export function recordKindForSource(sourceEventId: string): RecordKind {
+  if (
+    sourceEventId.startsWith("github:commit:") ||
+    sourceEventId.startsWith("github:issue_comment:") ||
+    sourceEventId.startsWith("github:pull_request_review:") ||
+    /^github:issue:\d+:/.test(sourceEventId) ||
+    /^github:pull_request:\d+:/.test(sourceEventId)
+  ) {
+    return "occurrence";
+  }
+  return "snapshot";
+}
+
 export async function upsertEvent(
   db: Database,
   input: {
@@ -11,9 +26,11 @@ export async function upsertEvent(
     eventType: string;
     eventTime: Date | null;
     payload: Record<string, unknown>;
+    recordKind?: RecordKind;
   },
 ): Promise<string> {
   const observedAt = new Date();
+  const recordKind = input.recordKind ?? recordKindForSource(input.sourceEventId);
   const inserted = await db
     .insert(events)
     .values({
@@ -24,16 +41,24 @@ export async function upsertEvent(
       eventTime: input.eventTime,
       observedAt,
       payload: input.payload,
+      recordKind,
       createdAt: observedAt,
     })
     .onConflictDoUpdate({
       target: [events.tenantId, events.sourceSystem, events.sourceEventId],
-      set: {
-        eventType: input.eventType,
-        eventTime: input.eventTime,
-        observedAt,
-        payload: input.payload,
-      },
+      set:
+        recordKind === "occurrence"
+          ? {
+              observedAt,
+              payload: input.payload,
+            }
+          : {
+              eventType: input.eventType,
+              eventTime: input.eventTime,
+              observedAt,
+              payload: input.payload,
+              recordKind,
+            },
     })
     .returning({ id: events.id });
 

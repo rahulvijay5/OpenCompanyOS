@@ -55,10 +55,45 @@ describe("normalizeGithubWebhook", () => {
       repository: { id: 99, full_name: "org/repo" },
     });
 
-    expect(events).toHaveLength(1);
+    expect(events).toHaveLength(2);
     expect(events?.[0]?.sourceEventId).toBe("github:issue:42");
-    expect(events?.[0]?.eventType).toBe("issues.opened");
-    expect(events?.[0]?.githubRepositoryId).toBe(99);
+    expect(events?.[0]?.recordKind).toBe("snapshot");
+    expect(events?.[1]?.sourceEventId).toBe(
+      "github:issue:42:opened:2026-01-01T00:00:00Z",
+    );
+    expect(events?.[1]?.eventType).toBe("issues.opened");
+    expect(events?.[1]?.recordKind).toBe("occurrence");
+    expect(events?.[1]?.githubRepositoryId).toBe(99);
+  });
+
+  it("keeps a close as a new occurrence and refreshes the same snapshot", () => {
+    const opened = normalizeGithubWebhook("issues", {
+      action: "opened",
+      issue: {
+        id: 42,
+        number: 3,
+        title: "Hello",
+        state: "open",
+        updated_at: "2026-01-01T00:00:00Z",
+      },
+    });
+    const closed = normalizeGithubWebhook("issues", {
+      action: "closed",
+      issue: {
+        id: 42,
+        number: 3,
+        title: "Hello",
+        state: "closed",
+        updated_at: "2026-01-02T00:00:00Z",
+      },
+    });
+
+    expect(opened?.[0]?.sourceEventId).toBe(closed?.[0]?.sourceEventId);
+    expect(opened?.[1]?.sourceEventId).not.toBe(closed?.[1]?.sourceEventId);
+    expect(closed?.[1]?.sourceEventId).toBe(
+      "github:issue:42:closed:2026-01-02T00:00:00Z",
+    );
+    expect(closed?.[0]?.eventType).toBe("issues.closed");
   });
 
   it("returns null for unsupported event names", () => {

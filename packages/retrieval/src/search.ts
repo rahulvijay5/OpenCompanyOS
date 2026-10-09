@@ -11,6 +11,7 @@ import {
 } from "@opencompanyos/db";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import type { LlmConfig } from "@opencompanyos/config";
+import { asksAboutChanges, listChanges, type ChangeRecord } from "./changes.js";
 import { completeGroundedAnswer, embedTexts } from "./llm.js";
 import {
   chunkText,
@@ -136,6 +137,39 @@ async function upsertDocument(
   );
 }
 
+function changeToDoc(change: ChangeRecord): RetrievedDoc {
+  const who = change.actor?.name ?? "someone";
+  const where = change.repository?.name ? ` in ${change.repository.name}` : "";
+  return {
+    documentId: change.id,
+    title: change.title ?? change.eventType,
+    snippet: `${change.kind} by ${who}${where} at ${change.eventTime ?? "unknown time"}`,
+    url: change.url,
+    entityId: change.object?.id ?? null,
+    sourceId: change.sourceEventId,
+    score: 1,
+  };
+}
+
+function mergeEvidence(
+  changes: RetrievedDoc[],
+  searched: RetrievedDoc[],
+): RetrievedDoc[] {
+  const seen = new Set<string>();
+  const merged: RetrievedDoc[] = [];
+  for (const doc of [...changes, ...searched]) {
+    if (seen.has(doc.sourceId)) {
+      continue;
+    }
+    seen.add(doc.sourceId);
+    merged.push(doc);
+    if (merged.length === 8) {
+      break;
+    }
+  }
+  return merged;
+}
+
 type RetrievedDoc = {
   documentId: string;
   title: string | null;
@@ -165,12 +199,25 @@ export async function answerQuery(
 ): Promise<QueryAnswer> {
   const started = Date.now();
   const constraints = extractQueryConstraints(input.query);
-  const textHits = await searchText(db, input.tenantId, constraints);
+  const changeIntent = asksAboutChanges(input.query);
+  const changeSince =
+    constraints.since ??
+    (changeIntent ? new Date(started - 7 * 24 * 60 * 60 * 1000) : null);
+  const searchConstraints = changeIntent
+    ? { ...constraints, since: changeSince }
+    : constraints;
+
+  const recordedChanges = changeIntent
+    ? await listChanges(db, input.tenantId, { since: changeSince, limit: 8 })
+    : [];
+
+  const textHits = await searchText(db, input.tenantId, searchConstraints);
   const vectorHits = input.config
-    ? await searchVectors(db, input.tenantId, input.config, constraints)
+    ? await searchVectors(db, input.tenantId, input.config, searchConstraints)
     : [];
   const fused = fuseHits(textHits, vectorHits).slice(0, 8);
-  const docs = await loadDocuments(db, input.tenantId, fused);
+  const searched = await loadDocuments(db, input.tenantId, fused);
+  const docs = mergeEvidence(recordedChanges.map(changeToDoc), searched);
 
   const [savedQuery] = await db
     .insert(queries)
@@ -186,8 +233,9 @@ export async function answerQuery(
   }
 
   if (docs.length === 0) {
-    const answer =
-      "I don't have evidence in the indexed GitHub activity to answer that.";
+    const answer = changeIntent
+      ? "The indexed activity has no recorded changes in that window."
+      : "I don't have evidence in the indexed GitHub activity to answer that.";
     await db
       .update(queries)
       .set({
@@ -284,7 +332,7 @@ async function searchText(
   tenantId: string,
   constraints: { since: Date | null; text: string },
 ): Promise<Array<{ documentId: string; score: number }>> {
-  const since = constraints.since;
+  const since = constraints.since?.toISOString() ?? null;
   const orQuery = keywordOrQuery(constraints.text);
   if (!orQuery) {
     return [];
@@ -332,7 +380,7 @@ async function searchVectors(
   }
 
   const literal = `[${vector.join(",")}]`;
-  const since = constraints.since;
+  const since = constraints.since?.toISOString() ?? null;
   const rows = await db.execute<{ document_id: string; score: number }>(sql`
     SELECT c.document_id, (1 - (c.embedding <=> ${literal}::vector)) AS score
     FROM document_chunks c

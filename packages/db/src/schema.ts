@@ -179,6 +179,7 @@ export const events = pgTable(
     eventTime: timestamp("event_time", { withTimezone: true }),
     observedAt: timestamp("observed_at", { withTimezone: true }).notNull(),
     payload: jsonb("payload").notNull().$type<Record<string, unknown>>(),
+    recordKind: text("record_kind").notNull().default("snapshot"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
@@ -186,6 +187,11 @@ export const events = pgTable(
       table.tenantId,
       table.sourceSystem,
       table.sourceEventId,
+    ),
+    index("events_tenant_kind_time_idx").on(
+      table.tenantId,
+      table.recordKind,
+      table.eventTime,
     ),
   ],
 );

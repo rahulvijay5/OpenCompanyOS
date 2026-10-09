@@ -95,7 +95,14 @@ export async function registerEntityRoutes(
 
   app.get("/api/v1/entities/:id/timeline", async (request, reply) => {
     const params = z.object({ id: z.string().uuid() }).safeParse(request.params);
-    if (!params.success) {
+    const query = z
+      .object({
+        since: z.string().datetime({ offset: true }).optional(),
+        until: z.string().datetime({ offset: true }).optional(),
+        limit: z.coerce.number().int().min(1).max(200).default(50),
+      })
+      .safeParse(request.query);
+    if (!params.success || !query.success) {
       return reply.code(400).send({ error: "invalid_params" });
     }
 
@@ -108,14 +115,28 @@ export async function registerEntityRoutes(
       ctx.db,
       ctx.tenantId,
       params.data.id,
+      {
+        since: query.data.since ? new Date(query.data.since) : null,
+        until: query.data.until ? new Date(query.data.until) : null,
+        limit: query.data.limit,
+      },
     );
+    const metadata = entity.metadata ?? {};
 
     return {
+      entity: {
+        id: entity.id,
+        type: entity.type,
+        canonicalName: entity.canonicalName,
+        state: typeof metadata.state === "string" ? metadata.state : null,
+        title: entity.canonicalName,
+      },
       events: timeline.map((event) => ({
         id: event.id,
         eventType: event.eventType,
         sourceEventId: event.sourceEventId,
         eventTime: event.eventTime,
+        recordKind: event.recordKind,
         title:
           typeof event.payload.title === "string"
             ? event.payload.title

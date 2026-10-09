@@ -6,6 +6,7 @@ import {
 } from "@opencompanyos/db";
 import Fastify, { type FastifyInstance } from "fastify";
 import { getRuntimeEnv, tryGetEnv } from "./env.js";
+import { registerChangeRoutes } from "./routes/changes.js";
 import { registerEntityRoutes } from "./routes/entities.js";
 import { registerEventRoutes } from "./routes/events.js";
 import { registerGithubRoutes } from "./routes/github.js";
@@ -43,6 +44,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerGithubRoutes(app, ctx, () => tryGetEnv());
   await registerEventRoutes(app, ctx);
   await registerEntityRoutes(app, ctx);
+  await registerChangeRoutes(app, ctx);
   await registerQueryRoutes(app, ctx, () => tryGetEnv());
   await registerWebhookRoutes(app, ctx, () => tryGetEnv());
 

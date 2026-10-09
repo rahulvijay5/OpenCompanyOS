@@ -1,4 +1,13 @@
 export {
+  CHANGE_KINDS,
+  asksAboutChanges,
+  classifyChangeKind,
+  getChange,
+  listChanges,
+  type ChangeKind,
+  type ChangeRecord,
+} from "./changes.js";
+export {
   answerQuery,
   indexEvent,
   reindexTenant,

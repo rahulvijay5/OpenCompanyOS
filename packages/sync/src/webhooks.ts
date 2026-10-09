@@ -108,6 +108,7 @@ export async function processWebhookDelivery(
           sourceEventId: event.sourceEventId,
           eventType: event.eventType,
           eventTime: event.eventTime,
+          recordKind: event.recordKind,
           payload: {
             ...event.payload,
             repositoryId: repo.id,
@@ -121,6 +122,7 @@ export async function processWebhookDelivery(
           sourceEventId: event.sourceEventId,
           eventType: event.eventType,
           eventTime: event.eventTime,
+          recordKind: event.recordKind,
           payload: {
             ...event.payload,
             githubDeliveryId: delivery.githubDeliveryId,

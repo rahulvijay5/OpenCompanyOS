@@ -1,9 +1,12 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
+export type RecordKind = "snapshot" | "occurrence";
+
 export type NormalizedWebhookEvent = {
   sourceEventId: string;
   eventType: string;
   eventTime: Date | null;
+  recordKind: RecordKind;
   payload: Record<string, unknown>;
   /** GitHub repository id when the event is repo-scoped. */
   githubRepositoryId: number | null;
@@ -66,6 +69,10 @@ function parseDate(value: unknown): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
+function occurrenceStamp(value: unknown): string {
+  return typeof value === "string" && value.length > 0 ? value : "unknown";
+}
+
 /**
  * Maps a GitHub webhook event into one or more canonical event rows.
  * Returns null for unsupported event names (caller should mark ignored).
@@ -84,35 +91,47 @@ export function normalizeGithubWebhook(
       }
       const id = asNumber(issue.id)!;
       const state = asString(issue.state) ?? "unknown";
-      const eventType =
+      const actionName =
         action === "closed"
-          ? "issues.closed"
+          ? "closed"
           : action === "reopened"
-            ? "issues.open"
-            : action
-              ? `issues.${action}`
-              : `issues.${state}`;
+            ? "reopened"
+            : action ?? state;
+      const eventType = `issues.${actionName}`;
+      const eventTime = parseDate(issue.updated_at) ?? parseDate(issue.created_at);
+      const body = {
+        id,
+        number: issue.number,
+        title: issue.title,
+        state: issue.state,
+        htmlUrl: issue.html_url,
+        userLogin: asRecord(issue.user)?.login ?? null,
+        createdAt: issue.created_at,
+        updatedAt: issue.updated_at,
+        closedAt: issue.closed_at,
+        body: issue.body,
+        action,
+      };
+      const githubRepositoryId = repoIdFromPayload(payload);
 
       return [
         {
           sourceEventId: `github:issue:${id}`,
-          eventType,
-          eventTime: parseDate(issue.updated_at) ?? parseDate(issue.created_at),
-          githubRepositoryId: repoIdFromPayload(payload),
+          eventType: `issues.${state}`,
+          eventTime,
+          recordKind: "snapshot",
+          githubRepositoryId,
           installationScoped: false,
-          payload: {
-            id,
-            number: issue.number,
-            title: issue.title,
-            state: issue.state,
-            htmlUrl: issue.html_url,
-            userLogin: asRecord(issue.user)?.login ?? null,
-            createdAt: issue.created_at,
-            updatedAt: issue.updated_at,
-            closedAt: issue.closed_at,
-            body: issue.body,
-            action,
-          },
+          payload: body,
+        },
+        {
+          sourceEventId: `github:issue:${id}:${actionName}:${occurrenceStamp(issue.updated_at ?? issue.created_at)}`,
+          eventType,
+          eventTime,
+          recordKind: "occurrence",
+          githubRepositoryId,
+          installationScoped: false,
+          payload: body,
         },
       ];
     }
@@ -123,34 +142,52 @@ export function normalizeGithubWebhook(
         return [];
       }
       const id = asNumber(pr.id)!;
-      const merged = Boolean(pr.merged_at) || action === "closed" && pr.merged === true;
-      let eventType = action ? `pull_request.${action}` : `pull_request.${asString(pr.state) ?? "unknown"}`;
-      if (action === "closed" && merged) {
-        eventType = "pull_request.merged";
-      }
+      const merged = Boolean(pr.merged_at) || (action === "closed" && pr.merged === true);
+      const state = asString(pr.state) ?? "unknown";
+      const actionName =
+        action === "closed" && merged
+          ? "merged"
+          : action === "reopened"
+            ? "reopened"
+            : action ?? state;
+      const eventType =
+        actionName === "merged" ? "pull_request.merged" : `pull_request.${actionName}`;
+      const eventTime = parseDate(pr.updated_at) ?? parseDate(pr.created_at);
+      const body = {
+        id,
+        number: pr.number,
+        title: pr.title,
+        state: pr.state,
+        merged,
+        htmlUrl: pr.html_url,
+        userLogin: asRecord(pr.user)?.login ?? null,
+        createdAt: pr.created_at,
+        updatedAt: pr.updated_at,
+        closedAt: pr.closed_at,
+        mergedAt: pr.merged_at,
+        body: pr.body,
+        action,
+      };
+      const githubRepositoryId = repoIdFromPayload(payload);
 
       return [
         {
           sourceEventId: `github:pull_request:${id}`,
-          eventType,
-          eventTime: parseDate(pr.updated_at) ?? parseDate(pr.created_at),
-          githubRepositoryId: repoIdFromPayload(payload),
+          eventType: merged ? "pull_request.merged" : `pull_request.${state}`,
+          eventTime,
+          recordKind: "snapshot",
+          githubRepositoryId,
           installationScoped: false,
-          payload: {
-            id,
-            number: pr.number,
-            title: pr.title,
-            state: pr.state,
-            merged,
-            htmlUrl: pr.html_url,
-            userLogin: asRecord(pr.user)?.login ?? null,
-            createdAt: pr.created_at,
-            updatedAt: pr.updated_at,
-            closedAt: pr.closed_at,
-            mergedAt: pr.merged_at,
-            body: pr.body,
-            action,
-          },
+          payload: body,
+        },
+        {
+          sourceEventId: `github:pull_request:${id}:${actionName}:${occurrenceStamp(pr.updated_at ?? pr.created_at)}`,
+          eventType,
+          eventTime,
+          recordKind: "occurrence",
+          githubRepositoryId,
+          installationScoped: false,
+          payload: body,
         },
       ];
     }
@@ -172,6 +209,7 @@ export function normalizeGithubWebhook(
           sourceEventId: `github:commit:${sha}`,
           eventType: "push.commit",
           eventTime: parseDate(commit.timestamp),
+          recordKind: "occurrence",
           githubRepositoryId: repoIdFromPayload(payload),
           installationScoped: false,
           payload: {
@@ -205,6 +243,7 @@ export function normalizeGithubWebhook(
             : "issue_comment.created",
           eventTime:
             parseDate(comment.updated_at) ?? parseDate(comment.created_at),
+          recordKind: "occurrence",
           githubRepositoryId: repoIdFromPayload(payload),
           installationScoped: false,
           payload: {
@@ -236,6 +275,7 @@ export function normalizeGithubWebhook(
             ? `pull_request_review.${action}`
             : "pull_request_review.submitted",
           eventTime: parseDate(review.submitted_at),
+          recordKind: "occurrence",
           githubRepositoryId: repoIdFromPayload(payload),
           installationScoped: false,
           payload: {
@@ -269,6 +309,7 @@ export function normalizeGithubWebhook(
             ? `${eventName}.${action}`
             : `${eventName}.updated`,
           eventTime: new Date(),
+          recordKind: "snapshot",
           githubRepositoryId: null,
           installationScoped: true,
           payload: {

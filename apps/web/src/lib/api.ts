@@ -154,6 +154,27 @@ export async function fetchEntities(limit = 40) {
   };
 }
 
+export type ChangeListItem = {
+  id: string;
+  kind: string;
+  eventType: string;
+  eventTime: string | null;
+  title: string | null;
+  url: string | null;
+  actor: { id: string; name: string } | null;
+  repository: { id: string | null; name: string | null } | null;
+};
+
+export async function fetchChanges(limit = 20) {
+  const url = new URL(`${API_URL}/api/v1/changes`);
+  url.searchParams.set("limit", String(limit));
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Failed to load changes (${response.status})`);
+  }
+  return (await response.json()) as { changes: ChangeListItem[] };
+}
+
 export async function fetchRecentEvents(limit = 20) {
   const url = new URL(`${API_URL}/api/v1/events`);
   url.searchParams.set("limit", String(limit));

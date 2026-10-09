@@ -50,6 +50,18 @@ function ref(type: string, sourceId: string) {
   return { type, sourceId };
 }
 
+function stableSourceId(
+  prefix: "github:issue" | "github:pull_request",
+  sourceEventId: string,
+  payload: Record<string, unknown>,
+): string {
+  if (typeof payload.id === "number") {
+    return `${prefix}:${payload.id}`;
+  }
+  const match = new RegExp(`^(${prefix}:\\d+)`).exec(sourceEventId);
+  return match?.[1] ?? sourceEventId;
+}
+
 /**
  * Projects a stored GitHub event into canonical entities and relationships.
  * Identity keys match sync/webhook source ids so reprocessing is idempotent.
@@ -75,7 +87,7 @@ export function projectCanonicalGraph(input: {
     const number = payload.number;
     const issue: EntityDraft = {
       type: "Issue",
-      sourceId: input.sourceEventId,
+      sourceId: stableSourceId("github:issue", input.sourceEventId, payload),
       canonicalName:
         typeof number === "number" ? `#${number} ${title}` : title,
       description: asString(payload.body),
@@ -116,7 +128,7 @@ export function projectCanonicalGraph(input: {
     const number = payload.number;
     const pr: EntityDraft = {
       type: "PullRequest",
-      sourceId: input.sourceEventId,
+      sourceId: stableSourceId("github:pull_request", input.sourceEventId, payload),
       canonicalName:
         typeof number === "number" ? `#${number} ${title}` : title,
       description: asString(payload.body),
