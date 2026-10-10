@@ -207,8 +207,22 @@ export function exitCodeFor(report: EvalReport): number {
 export async function writeEvalReport(report: EvalReport): Promise<string> {
   const directory = path.join(repoRoot(), "eval/context-quality/reports");
   await mkdir(directory, { recursive: true });
-  const file = path.join(directory, "latest.json");
+  const stamp =
+    report.runId ??
+    `skipped-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+  const fileName = `${stamp}.json`;
+  const file = path.join(directory, fileName);
   await writeFile(file, `${JSON.stringify(report, null, 2)}\n`);
+  const pointer = {
+    runId: report.runId,
+    path: `eval/context-quality/reports/${fileName}`,
+    suiteVersion: report.suiteVersion,
+    note: "Pointer to the newest evaluation report. The score lives in path, not in this file.",
+  };
+  await writeFile(
+    path.join(directory, "latest.json"),
+    `${JSON.stringify(pointer, null, 2)}\n`,
+  );
   return file;
 }
 

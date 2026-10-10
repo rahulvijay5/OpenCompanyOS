@@ -28,7 +28,7 @@ export type EvalReport = {
   contextPackage: CountSummary & { cases: CaseResult[] };
   database: {
     status: DatabaseStatus;
-    source: "EVAL_DATABASE_URL" | "DATABASE_URL" | null;
+    source: "EVAL_DATABASE_URL" | null;
     reason: string | null;
   } & CountSummary & { cases: CaseResult[] };
   optionalLlm: {

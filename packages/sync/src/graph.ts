@@ -239,7 +239,30 @@ export function projectCanonicalGraph(input: {
         target: ref(repo.type, repo.sourceId),
       });
     }
-    if (typeof payload.issueId === "number" && object) {
+    if (typeof payload.pullRequestId === "number" && typeof payload.issueId !== "number" && object) {
+      const pullSourceId = `github:pull_request:${payload.pullRequestId}`;
+      entities.push({
+        type: "PullRequest",
+        sourceId: pullSourceId,
+        canonicalName:
+          typeof payload.pullRequestNumber === "number"
+            ? `#${payload.pullRequestNumber}`
+            : typeof payload.issueNumber === "number"
+              ? `#${payload.issueNumber}`
+              : pullSourceId,
+        description: null,
+        metadata: {
+          number: payload.pullRequestNumber ?? payload.issueNumber ?? null,
+          fullName,
+        },
+        alias: null,
+      });
+      relationships.push({
+        source: object,
+        relationshipType: "DISCUSSES",
+        target: ref("PullRequest", pullSourceId),
+      });
+    } else if (typeof payload.issueId === "number" && object) {
       const issueSourceId = `github:issue:${payload.issueId}`;
       entities.push({
         type: "Issue",

@@ -13,8 +13,10 @@ Set:
 Read permissions (MVP):
 - Repository metadata: read
 - Contents: read
-- Issues: read
-- Pull requests: read
+- Issues: read (`GET /repos/{owner}/{repo}/issues/comments` is included)
+- Pull requests: read (`GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews` is included)
+
+Inline review comments, linked issues, and file contents are not backfilled.
 
 Subscribe to webhook events:
 - `installation`

@@ -20,6 +20,25 @@ export {
 } from "./fetch.js";
 
 export {
+  discussionClientFromOctokit,
+  fetchIssueComments,
+  fetchPullRequestReviews,
+  issueNumberFromUrl,
+  mapIssueComment,
+  mapPullRequestReview,
+  type DiscussionClient,
+  type DiscussionFetch,
+  type DiscussionRecord,
+  type GitHubPage,
+} from "./discussions.js";
+
+export {
+  RateLimitExceeded,
+  RetryableHttpError,
+  withBoundedRetry,
+} from "./retry.js";
+
+export {
   normalizeGithubWebhook,
   verifyGithubWebhookSignature,
   type NormalizedWebhookEvent,

@@ -8,9 +8,9 @@ An issue snapshot's `event_time` is the fixture `updated_at`. A close time is th
 
 ## Commands
 
-`pnpm test` runs the existing tests, the dataset checks, and the judge budget tests. Package-contract tests run only when `EVAL_DATABASE_URL` is set, or when `EVAL_ALLOW_APP_DATABASE=1` is set. Otherwise those tests are skipped.
+`pnpm test` runs the existing tests, the dataset checks, and the judge budget tests. Package-contract tests and other tests that create tenants run only when `EVAL_DATABASE_URL` is set. They do not fall back to `DATABASE_URL`.
 
-`pnpm eval:context` writes `eval/context-quality/reports/latest.json`.
+`pnpm eval:context` writes one report per run at `eval/context-quality/reports/{runId}.json`. `latest.json` is only a pointer to that file: `runId`, `path`, and `suiteVersion`. The score is not copied into `latest.json`.
 
 - Exit `0` when every context-package case passed.
 - Exit `1` when dataset integrity fails, the database run fails, or a context-package case fails.
@@ -24,16 +24,16 @@ An issue snapshot's `event_time` is the fixture `updated_at`. A close time is th
 
 Set `EVAL_DATABASE_URL` to a Postgres database that is not the application database. The runner creates a tenant whose slug includes a unique run id, scores it, and deletes only that tenant and user in a `finally` block. It does not delete a tenant it did not insert.
 
-`DATABASE_URL` is ignored unless `EVAL_ALLOW_APP_DATABASE=1`. That opt-in can read and write the application database, including rows outside this suite if a later bug is wider than the run id. Prefer `EVAL_DATABASE_URL`.
+`DATABASE_URL` is not read for this suite.
 
 The local tenant, the company-brain index, and the product git remote are not part of this runner.
 
 ## Report sections
 
-`latest.json` keeps separate counts for dataset integrity, context-package assertions, database status, optional LLM judging, and unsupported categories. Each section has `total`, `passed`, `failed`, `skipped`, and `inconclusive`. Unsupported categories stay inconclusive. Generated questions in `generated-questions.json` stay `verified: false` and are not scored.
+`latest.json` points at the newest per-run report. That report keeps separate counts for dataset integrity, context-package assertions, database status, optional LLM judging, and unsupported categories. Each section has `total`, `passed`, `failed`, `skipped`, and `inconclusive`. Unsupported categories stay inconclusive. Generated questions in `generated-questions.json` stay `verified: false` and are not scored.
 
 ## What the fixture can show
 
 The fixture covers subject resolution, an ambiguous issue number, selected and unselected repository scope, evidence source ids, relationship endpoints, occurrence timestamps at `2026-03-15T00:00:00.000Z`, a missing event time, required uncertainty codes, and invalid evidence ids dropped by the answer path.
 
-It does not establish complete review history, inline review comments, linked issues, pre-install transitions, or why an issue was closed. Reviews and review comments in the product are still webhook-only. The package keeps `reviews_only_from_webhooks` and `no_reconstructed_history` for that reason.
+It does not establish complete review history, inline review comments, linked issues, pre-install transitions, or why an issue was closed. A repository sync can backfill the current issue-comment and pull-request review records. Inline review comments are still ignored. The package still includes `reviews_only_from_webhooks` and `no_reconstructed_history`.

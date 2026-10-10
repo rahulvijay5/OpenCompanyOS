@@ -11,6 +11,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@opencompanyos/sync": path.resolve(root, "../sync/src/index.ts"),
+      "@opencompanyos/github": path.resolve(root, "../github/src/index.ts"),
     },
   },
 });

@@ -38,7 +38,7 @@ describe("evaluation database selection", () => {
     expect(resolution.status).toBe("skipped");
   });
 
-  it("prefers EVAL_DATABASE_URL when both variables are present", () => {
+  it("uses EVAL_DATABASE_URL even when DATABASE_URL is also set", () => {
     const resolution = resolveEvalDatabaseUrl({
       EVAL_DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/opencompanyos_eval",
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/opencompanyos",
@@ -51,12 +51,12 @@ describe("evaluation database selection", () => {
     });
   });
 
-  it("uses the application database only with an explicit opt-in", () => {
+  it("does not opt in to the application database", () => {
     const resolution = resolveEvalDatabaseUrl({
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/opencompanyos",
       EVAL_ALLOW_APP_DATABASE: "1",
     });
-    expect(resolution).toMatchObject({ status: "ready", source: "DATABASE_URL" });
+    expect(resolution.status).toBe("skipped");
   });
 });
 

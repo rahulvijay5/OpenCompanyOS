@@ -1,5 +1,4 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { randomUUID } from "node:crypto";
 import { schema } from "@opencompanyos/db";
 import { processWebhookDelivery } from "@opencompanyos/sync";
 import { eq } from "drizzle-orm";
@@ -8,20 +7,11 @@ import postgres from "postgres";
 import { afterAll, describe, expect, it } from "vitest";
 import { answerFromPackage } from "./answer.js";
 import { buildContext } from "./build.js";
+import { resolveEvalDatabaseUrl } from "./quality/database.js";
 
 function databaseUrl(): string | undefined {
-  if (process.env.DATABASE_URL) {
-    return process.env.DATABASE_URL;
-  }
-  try {
-    const path = fileURLToPath(new URL("../../../.env", import.meta.url));
-    const line = readFileSync(path, "utf8")
-      .split("\n")
-      .find((entry) => entry.startsWith("DATABASE_URL="));
-    return line?.slice("DATABASE_URL=".length).trim().replace(/^"|"$/g, "");
-  } catch {
-    return undefined;
-  }
+  const resolution = resolveEvalDatabaseUrl(process.env);
+  return resolution.status === "ready" ? resolution.url : undefined;
 }
 
 const url = databaseUrl();
@@ -34,37 +24,32 @@ describe.skipIf(!db)("context package against postgres", () => {
   let userId = "";
   let selectedId = "";
   let issueId = "";
+  let deliveryId = "";
+  const runId = randomUUID();
 
   afterAll(async () => {
+    if (deliveryId) {
+      await database
+        .delete(schema.webhookDeliveries)
+        .where(eq(schema.webhookDeliveries.id, deliveryId));
+    }
     if (tenantId) {
       await database.delete(schema.tenants).where(eq(schema.tenants.id, tenantId));
-    } else {
-      await database
-        .delete(schema.tenants)
-        .where(eq(schema.tenants.slug, "context-engine-test"));
     }
-    await database
-      .delete(schema.users)
-      .where(eq(schema.users.email, "context-engine-test@opencompanyos.dev"));
-    await database
-      .delete(schema.webhookDeliveries)
-      .where(
-        eq(
-          schema.webhookDeliveries.githubDeliveryId,
-          "context-engine-unknown-installation",
-        ),
-      );
+    if (userId) {
+      await database.delete(schema.users).where(eq(schema.users.id, userId));
+    }
     await sqlClient?.end();
   });
 
   it("scopes search, keeps snapshots distinct, rejects unknown installations, and reports model failure", async () => {
     const [user] = await database
       .insert(schema.users)
-      .values({ email: "context-engine-test@opencompanyos.dev", name: "Context test" })
+      .values({ email: `context-engine-${runId}@opencompanyos.dev`, name: "Context test" })
       .returning({ id: schema.users.id });
     const [tenant] = await database
       .insert(schema.tenants)
-      .values({ name: "Context engine test", slug: "context-engine-test" })
+      .values({ name: "Context engine test", slug: `context-engine-${runId}` })
       .returning({ id: schema.tenants.id });
     if (!user || !tenant) {
       throw new Error("fixture_insert_failed");
@@ -72,12 +57,14 @@ describe.skipIf(!db)("context package against postgres", () => {
     userId = user.id;
     tenantId = tenant.id;
 
+    const installationNumber =
+      8_100_000_000 + Number.parseInt(runId.replace(/-/g, "").slice(0, 6), 16);
     const [installation] = await database
       .insert(schema.githubInstallations)
       .values({
         tenantId,
-        githubInstallationId: 880000001,
-        githubAccountId: 880000002,
+        githubInstallationId: installationNumber,
+        githubAccountId: installationNumber + 1,
         githubAccountLogin: "context-test",
         githubAccountType: "Organization",
         status: "active",
@@ -246,7 +233,7 @@ describe.skipIf(!db)("context package against postgres", () => {
       .insert(schema.webhookDeliveries)
       .values({
         tenantId: null,
-        githubDeliveryId: "context-engine-unknown-installation",
+        githubDeliveryId: `context-engine-${runId}`,
         eventName: "issues",
         status: "received",
         receivedAt: now,
@@ -267,6 +254,7 @@ describe.skipIf(!db)("context package against postgres", () => {
     if (!delivery) {
       throw new Error("delivery_insert_failed");
     }
+    deliveryId = delivery.id;
 
     await expect(processWebhookDelivery(database, delivery.id)).rejects.toThrow(
       "unknown_installation",
