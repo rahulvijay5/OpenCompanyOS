@@ -1,6 +1,8 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useLayoutEffect, useRef, useState } from "react";
+import { playThemeReveal } from "@/components/themeReveal";
 
 const STORAGE_KEY = "ocos-theme";
 
@@ -28,7 +30,9 @@ function applyTheme(theme: Appearance) {
 }
 
 export function ThemeToggle() {
+  const pathname = usePathname();
   const [appearance, setAppearance] = useState<Appearance>("light");
+  const pointer = useRef<{ x: number; y: number } | null>(null);
 
   useLayoutEffect(() => {
     const stored = readTheme();
@@ -38,15 +42,36 @@ export function ThemeToggle() {
 
   const next: Appearance = appearance === "dark" ? "light" : "dark";
 
+  function commit(theme: Appearance) {
+    setAppearance(theme);
+    applyTheme(theme);
+  }
+
   return (
     <button
       type="button"
       className="theme-toggle"
       data-next={next}
       aria-label={`Switch to ${next} theme`}
+      onPointerUp={(event) => {
+        if (event.pointerType !== "mouse" || event.button !== 0) {
+          pointer.current = null;
+          return;
+        }
+        pointer.current = { x: event.clientX, y: event.clientY };
+      }}
       onClick={() => {
-        setAppearance(next);
-        applyTheme(next);
+        const origin = pointer.current;
+        pointer.current = null;
+        if (pathname === "/" && origin) {
+          void playThemeReveal(next, origin).then((result) => {
+            if (result !== "busy") {
+              commit(next);
+            }
+          });
+          return;
+        }
+        commit(next);
       }}
     >
       {next}
