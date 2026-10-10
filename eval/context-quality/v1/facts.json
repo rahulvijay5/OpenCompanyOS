@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "referenceTime": "2026-03-15T00:00:00.000Z",
+  "notes": "Hand-authored fixture facts. Snapshot updated_at and lifecycle transition times are different facts. Do not infer a close time from updated_at.",
+  "facts": [
+    {
+      "id": "subject.issue-12",
+      "kind": "subject",
+      "status": "resolved",
+      "sourceId": "github:issue:120012",
+      "entityType": "Issue"
+    },
+    {
+      "id": "subject.issue-7-ambiguous",
+      "kind": "subject",
+      "status": "ambiguous",
+      "sourceIds": ["github:issue:70001", "github:issue:70002"]
+    },
+    {
+      "id": "subject.pr-40",
+      "kind": "subject",
+      "status": "resolved",
+      "sourceId": "github:pull_request:40040",
+      "entityType": "PullRequest"
+    },
+    {
+      "id": "subject.commit",
+      "kind": "subject",
+      "status": "resolved",
+      "sourceId": "github:commit:abc123def4567890abcd1234ef567890abcd1234",
+      "entityType": "Commit"
+    },
+    {
+      "id": "subject.not-review-entity",
+      "kind": "subject_type_excluded",
+      "entityType": "Review"
+    },
+    {
+      "id": "scope.selected-a",
+      "kind": "scope_includes",
+      "repositoryKey": "selected-a"
+    },
+    {
+      "id": "scope.selected-b",
+      "kind": "scope_includes",
+      "repositoryKey": "selected-b"
+    },
+    {
+      "id": "scope.not-selected-b",
+      "kind": "scope_excludes",
+      "repositoryKey": "selected-b"
+    },
+    {
+      "id": "scope.not-hidden",
+      "kind": "scope_excludes",
+      "repositoryKey": "hidden"
+    },
+    {
+      "id": "evidence.issue-12",
+      "kind": "evidence_includes",
+      "sourceId": "github:issue:120012"
+    },
+    {
+      "id": "evidence.not-hidden",
+      "kind": "evidence_excludes",
+      "sourceId": "github:issue:990099"
+    },
+    {
+      "id": "rel.authored-12",
+      "kind": "relationship",
+      "relationshipType": "AUTHORED",
+      "source": "github:user:ada",
+      "target": "github:issue:120012"
+    },
+    {
+      "id": "rel.belongs-12",
+      "kind": "relationship",
+      "relationshipType": "BELONGS_TO",
+      "source": "github:issue:120012",
+      "target": "github:repo:eval-fixture/engine-a"
+    },
+    {
+      "id": "rel.discusses-12",
+      "kind": "relationship",
+      "relationshipType": "DISCUSSES",
+      "source": "github:issue_comment:501",
+      "target": "github:issue:120012"
+    },
+    {
+      "id": "rel.reviewed-40",
+      "kind": "relationship",
+      "relationshipType": "REVIEWED",
+      "source": "github:user:grace",
+      "target": "github:pull_request:40040"
+    },
+    {
+      "id": "rel.modifies-commit",
+      "kind": "relationship",
+      "relationshipType": "MODIFIES",
+      "source": "github:commit:abc123def4567890abcd1234ef567890abcd1234",
+      "target": "github:repo:eval-fixture/engine-a"
+    },
+    {
+      "id": "time.issue-12.updated",
+      "kind": "snapshot_event_time",
+      "sourceId": "github:issue:120012",
+      "eventTime": "2026-03-02T12:00:00.000Z"
+    },
+    {
+      "id": "time.issue-12.closed",
+      "kind": "occurrence_event_time",
+      "sourceId": "github:issue:120012:closed",
+      "eventTime": "2026-03-10T15:00:00.000Z"
+    },
+    {
+      "id": "time.issue-12.older-absent",
+      "kind": "occurrence_absent",
+      "sourceId": "github:issue:120012:labeled"
+    },
+    {
+      "id": "time.issue-12.untimed-absent",
+      "kind": "occurrence_absent",
+      "sourceId": "github:issue:120012:untimed"
+    },
+    {
+      "id": "time.issue-12.distinct",
+      "kind": "timestamps_distinct",
+      "snapshotFactId": "time.issue-12.updated",
+      "transitionFactId": "time.issue-12.closed"
+    },
+    {
+      "id": "uncertainty.history",
+      "kind": "uncertainty",
+      "code": "no_reconstructed_history"
+    },
+    {
+      "id": "uncertainty.reviews",
+      "kind": "uncertainty",
+      "code": "reviews_only_from_webhooks"
+    },
+    {
+      "id": "uncertainty.missing-time",
+      "kind": "uncertainty",
+      "code": "event_time_missing"
+    },
+    {
+      "id": "uncertainty.ambiguous",
+      "kind": "uncertainty",
+      "code": "ambiguous_subject"
+    },
+    {
+      "id": "uncertainty.scope",
+      "kind": "uncertainty",
+      "code": "repository_not_in_scope"
+    },
+    {
+      "id": "citation.drops-unknown",
+      "kind": "citation_drops_unknown",
+      "unknownEvidenceId": "not-a-real-evidence-id"
+    }
+  ]
+}

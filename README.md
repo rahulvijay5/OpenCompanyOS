@@ -58,3 +58,5 @@ Change questions also attach occurrence rows from the requested time window.
 ## Evaluation
 
 `pnpm eval` checks the indexed context on a running API. It confirms the repository entity, that a repository timeline is made of occurrences, and that the change feed stays inside the last 7 days. It does not call a model.
+
+`pnpm eval:context` scores a hand-authored ContextPackage fixture suite. It uses `EVAL_DATABASE_URL` and does not call a model or read the company-brain index. See [eval/context-quality/README.md](eval/context-quality/README.md).

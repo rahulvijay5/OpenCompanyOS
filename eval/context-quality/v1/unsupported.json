@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "notes": "These categories are not scored as retrieval successes. Listing them does not mean the engine answered them.",
+  "cases": [
+    {
+      "id": "why-closed",
+      "category": "causal",
+      "query": "Why was #12 closed?"
+    },
+    {
+      "id": "all-reviews",
+      "category": "complete_review_history",
+      "query": "List every review on #40."
+    },
+    {
+      "id": "inline-review-comments",
+      "category": "inline_review_comments",
+      "query": "What did the inline review comments on #40 say?"
+    },
+    {
+      "id": "linked-issues",
+      "category": "linked_issues",
+      "query": "Which issues does #40 close?"
+    },
+    {
+      "id": "preinstall-history",
+      "category": "preinstall_history",
+      "query": "What happened to #12 before the snapshot?"
+    }
+  ]
+}

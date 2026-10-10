@@ -1,4 +1,8 @@
-import { llmConfigFromEnv, loadEnv } from "@opencompanyos/config";
+import {
+  llmConfigFromEnv,
+  loadEnv,
+  type LlmConfig,
+} from "@opencompanyos/config";
 import { events, type Database } from "@opencompanyos/db";
 import { indexEvent } from "@opencompanyos/retrieval";
 import { materializeEventGraph } from "./entities.js";
@@ -18,6 +22,20 @@ export function recordKindForSource(sourceEventId: string): RecordKind {
   return "snapshot";
 }
 
+/**
+ * `undefined` keeps the worker behavior: index with whatever LiteLLM config the
+ * process env provides. `null` indexes full text only and does not call an
+ * embedding API.
+ */
+export function resolveIndexConfig(
+  explicit: LlmConfig | null | undefined,
+): LlmConfig | null {
+  if (explicit === undefined) {
+    return llmConfigFromProcess();
+  }
+  return explicit;
+}
+
 export async function upsertEvent(
   db: Database,
   input: {
@@ -27,6 +45,7 @@ export async function upsertEvent(
     eventTime: Date | null;
     payload: Record<string, unknown>;
     recordKind?: RecordKind;
+    indexConfig?: LlmConfig | null;
   },
 ): Promise<string> {
   const observedAt = new Date();
@@ -75,7 +94,7 @@ export async function upsertEvent(
     payload: input.payload,
   });
 
-  await indexEvent(db, eventId, llmConfigFromProcess());
+  await indexEvent(db, eventId, resolveIndexConfig(input.indexConfig));
 
   return eventId;
 }

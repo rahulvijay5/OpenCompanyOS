@@ -16,13 +16,25 @@
   box-sizing: border-box;
 }
 
+html {
+  --site-bg: #f6f4ef;
+  --site-text: #1a1916;
+  --site-muted: #5e5a53;
+  --site-faint: #706a60;
+  --site-line: #ddd8cf;
+  --site-ink: #1a1916;
+  --site-prose: #3a3834;
+  --site-danger: #8d2f2f;
+  --site-btn-hover: #2c2a26;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  background: #f6f4ef;
-  color: #1a1916;
+  background: var(--site-bg);
+  color: var(--site-text);
   font-family: var(--font-sans);
 }
 
@@ -186,12 +198,6 @@ summary {
 }
 
 .site {
-  --site-bg: #f6f4ef;
-  --site-text: #1a1916;
-  --site-muted: #5e5a53;
-  --site-faint: #706a60;
-  --site-line: #ddd8cf;
-  --site-ink: #1a1916;
   min-height: 100vh;
   background: var(--site-bg);
   color: var(--site-text);
@@ -344,7 +350,7 @@ summary {
 
 .site a.site-btn:hover,
 .site button.site-btn:hover:not(:disabled) {
-  background: #2c2a26;
+  background: var(--site-btn-hover);
   color: var(--site-bg);
 }
 
@@ -611,7 +617,7 @@ summary {
 .memo li,
 .defs dd,
 .roadmap dd {
-  color: #3a3834;
+  color: var(--site-prose);
 }
 
 .memo article ul,
@@ -760,7 +766,7 @@ summary {
 
 .md p,
 .md li {
-  color: #3a3834;
+  color: var(--site-prose);
   font-size: 1.05rem;
   line-height: 1.65;
 }
@@ -921,7 +927,7 @@ summary {
 }
 
 .site .error {
-  color: #8d2f2f;
+  color: var(--site-danger);
 }
 
 .site code {
