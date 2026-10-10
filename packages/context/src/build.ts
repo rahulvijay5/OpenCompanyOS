@@ -101,9 +101,9 @@ export async function buildContext(
         "Activity before this installation is a current snapshot. Earlier transitions were not reconstructed.",
     },
     {
-      code: "reviews_only_from_webhooks",
+      code: "inline_review_comments_unavailable",
       message:
-        "Reviews and review comments are included only when a webhook was received. A missing review here does not mean GitHub has no review.",
+        "Review decisions can be stored from a repository sync or a webhook. Inline review comments are not imported. A missing inline comment does not mean GitHub has none.",
     },
   ];
   if (scope.rejected.length > 0) {

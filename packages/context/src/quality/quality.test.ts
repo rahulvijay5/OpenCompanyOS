@@ -81,6 +81,9 @@ describe("context quality runner without a database", () => {
     expect(
       evaluation.report.contextPackage.cases.some((item) => item.id.startsWith("generated-")),
     ).toBe(false);
+    expect(evaluation.report.realCorpus.status).toBe("not_run");
+    expect(evaluation.report.realCorpus.reason).toBe("corpus_not_imported");
+    expect(evaluation.report.realCorpus.precision.status).toBe("unscored");
   });
 });
 

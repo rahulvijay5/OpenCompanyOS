@@ -136,7 +136,7 @@
     {
       "id": "uncertainty.reviews",
       "kind": "uncertainty",
-      "code": "reviews_only_from_webhooks"
+      "code": "inline_review_comments_unavailable"
     },
     {
       "id": "uncertainty.missing-time",

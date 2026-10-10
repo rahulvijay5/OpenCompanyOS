@@ -36,4 +36,12 @@ The local tenant, the company-brain index, and the product git remote are not pa
 
 The fixture covers subject resolution, an ambiguous issue number, selected and unselected repository scope, evidence source ids, relationship endpoints, occurrence timestamps at `2026-03-15T00:00:00.000Z`, a missing event time, required uncertainty codes, and invalid evidence ids dropped by the answer path.
 
-It does not establish complete review history, inline review comments, linked issues, pre-install transitions, or why an issue was closed. A repository sync can backfill the current issue-comment and pull-request review records. Inline review comments are still ignored. The package still includes `reviews_only_from_webhooks` and `no_reconstructed_history`.
+It does not establish complete review history, inline review comments, linked issues, pre-install transitions, or why an issue was closed. A repository sync can backfill the current issue-comment and pull-request review records. Inline review comments are still ignored. The package includes `inline_review_comments_unavailable` and `no_reconstructed_history`.
+
+`buildContext` searches the last seven days of GitHub `event_time` unless the caller passes `from` or `to`. A backfilled discussion older than that week is stored and indexed, and the default window omits it. That omission is a coverage gap. An explicit window that excludes the source timestamp is doing what it was asked, not a temporal-filter failure.
+
+## Real corpus, not imported
+
+A later FastAPI import, not this suite, would use `EVAL_DATABASE_URL` only and a new tenant. It would not attach that tenant to `local` or `company-brain`. The frozen manifest would list about 300–800 `tiangolo/fastapi` issues and pull requests, with GitHub id, number, `updated_at`, html URL, repository identity, and a content hash. The runner would refuse a hash mismatch. `updated_at` is not a close time. Comments and reviews would be filled only by the existing backfill for those records. Hand-checked facts would stay separate from generated questions. Template questions come first. A model-written question stays `verified: false` until its expected source ids match the manifest.
+
+Until that verified manifest exists, `realCorpus.status` is `not_run` and `realCorpus.reason` is `corpus_not_imported`. Recall, when scored later, uses expected evidence whose source timestamp is inside the requested window and counts only `evidence` hits. Rows that appear only in `events` are separate. Precision stays unscored without a verified relevant set. A temporal failure is a row inside the window missing from `events`, or a row outside the window present in `events`. Fixture pass counts are not combined with these measures.

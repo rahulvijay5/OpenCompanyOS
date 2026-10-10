@@ -7,7 +7,7 @@ export const UNCERTAINTY_CODES = [
   "ambiguous_subject",
   "unresolved_subject",
   "no_reconstructed_history",
-  "reviews_only_from_webhooks",
+  "inline_review_comments_unavailable",
   "event_time_missing",
   "model_unavailable",
   "insufficient_evidence",

@@ -36,6 +36,45 @@ export type EvalReport = {
     llmCalls: number;
   } & CountSummary & { cases: CaseResult[] };
   unsupported: CountSummary & { cases: CaseResult[] };
+  realCorpus: RealCorpusReport;
+};
+
+export type RealCorpusReport = {
+  status: "not_run";
+  reason: "corpus_not_imported";
+  recall: null;
+  precision: { status: "unscored"; reason: "verified relevant set is absent" };
+  eventsNotInEvidence: null;
+  temporalFailures: null;
+  scopeViolations: null;
+  commentReviewCoverage: null;
+  subjectResolution: null;
+  relationshipRetrieval: null;
+  notes: string[];
+};
+
+export const REAL_CORPUS_NOT_RUN: RealCorpusReport = {
+  status: "not_run",
+  reason: "corpus_not_imported",
+  recall: null,
+  precision: {
+    status: "unscored",
+    reason: "verified relevant set is absent",
+  },
+  eventsNotInEvidence: null,
+  temporalFailures: null,
+  scopeViolations: null,
+  commentReviewCoverage: null,
+  subjectResolution: null,
+  relationshipRetrieval: null,
+  notes: [
+    "Fixture results are separate from real-corpus retrieval.",
+    "Recall uses only expected evidence whose source timestamp is inside the requested window.",
+    "Absence outside that window is coverage, not a temporal-filter failure.",
+    "Evidence present only in events is not counted as retrieved evidence.",
+    "Precision stays unscored until a verified relevant set exists.",
+    "No blended quality score is computed.",
+  ],
 };
 
 export const REPORT_NOTES = [

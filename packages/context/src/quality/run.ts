@@ -12,7 +12,7 @@ import {
   repoRoot,
   summarize,
 } from "./dataset.js";
-import { REPORT_NOTES, type CaseResult, type EvalReport } from "./report.js";
+import { REAL_CORPUS_NOT_RUN, REPORT_NOTES, type CaseResult, type EvalReport } from "./report.js";
 import { entitySourceIds, scoreQuestion, type ScoredPackage } from "./score.js";
 import { cleanupIsolatedRun, createIsolatedRun } from "./seed.js";
 
@@ -54,6 +54,7 @@ export async function runContextQualityEvaluation(
       cases: [],
     },
     unsupported: { ...summarize(unsupportedCases), cases: unsupportedCases },
+    realCorpus: REAL_CORPUS_NOT_RUN,
   };
 
   if (integrity.failed > 0) {
