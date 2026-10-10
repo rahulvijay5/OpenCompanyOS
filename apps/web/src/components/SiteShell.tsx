@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const REPOSITORY_URL = "https://github.com/rahulvijay5/OpenCompanyOS";
 
@@ -13,10 +14,13 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <Link className="site-brand" href="/">
           OpenCompanyOS
         </Link>
-        <nav className="site-nav" aria-label="Public">
-          <Link href="/memo">Memo</Link>
-          <Link href="/app">Experiment</Link>
-        </nav>
+        <div className="site-tools">
+          <nav className="site-nav" aria-label="Public">
+            <Link href="/memo">Memo</Link>
+            <Link href="/app">Experiment</Link>
+          </nav>
+          <ThemeToggle />
+        </div>
       </header>
       <div id="content">{children}</div>
       <footer className="site-footer">

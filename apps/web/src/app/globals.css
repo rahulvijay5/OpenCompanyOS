@@ -16,13 +16,39 @@
   box-sizing: border-box;
 }
 
+html {
+  color-scheme: light;
+  --site-bg: #f6f4ef;
+  --site-text: #1a1916;
+  --site-muted: #5e5a53;
+  --site-faint: #706a60;
+  --site-line: #ddd8cf;
+  --site-ink: #1a1916;
+  --site-prose: #3a3834;
+  --site-danger: #8d2f2f;
+  --site-btn-hover: #2c2a26;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --site-bg: #141311;
+  --site-text: #f4f1ea;
+  --site-muted: #c4beb4;
+  --site-faint: #a8a194;
+  --site-line: #34322d;
+  --site-ink: #f4f1ea;
+  --site-prose: #e6e1d8;
+  --site-danger: #f0b4ae;
+  --site-btn-hover: #d9d3c8;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  background: #f6f4ef;
-  color: #1a1916;
+  background: var(--site-bg);
+  color: var(--site-text);
   font-family: var(--font-sans);
 }
 
@@ -186,12 +212,6 @@ summary {
 }
 
 .site {
-  --site-bg: #f6f4ef;
-  --site-text: #1a1916;
-  --site-muted: #5e5a53;
-  --site-faint: #706a60;
-  --site-line: #ddd8cf;
-  --site-ink: #1a1916;
   min-height: 100vh;
   background: var(--site-bg);
   color: var(--site-text);
@@ -238,10 +258,39 @@ summary {
 .site-bar {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 1.5rem;
   padding: 1.15rem 0;
   border-bottom: 1px solid var(--site-line);
+}
+
+.site-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.15rem;
+}
+
+.theme-toggle {
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+}
+
+.theme-toggle[data-next="dark"] {
+  background: #141311;
+  color: #f4f1ea;
+  border-color: #141311;
+}
+
+.theme-toggle[data-next="light"] {
+  background: #f6f4ef;
+  color: #1a1916;
+  border-color: #cfc9c0;
 }
 
 .site-brand {
@@ -344,7 +393,7 @@ summary {
 
 .site a.site-btn:hover,
 .site button.site-btn:hover:not(:disabled) {
-  background: #2c2a26;
+  background: var(--site-btn-hover);
   color: var(--site-bg);
 }
 
@@ -611,7 +660,7 @@ summary {
 .memo li,
 .defs dd,
 .roadmap dd {
-  color: #3a3834;
+  color: var(--site-prose);
 }
 
 .memo article ul,
@@ -760,7 +809,7 @@ summary {
 
 .md p,
 .md li {
-  color: #3a3834;
+  color: var(--site-prose);
   font-size: 1.05rem;
   line-height: 1.65;
 }
@@ -921,7 +970,7 @@ summary {
 }
 
 .site .error {
-  color: #8d2f2f;
+  color: var(--site-danger);
 }
 
 .site code {
