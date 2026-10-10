@@ -272,12 +272,15 @@ summary {
 }
 
 .theme-toggle {
+  box-sizing: border-box;
+  width: 4.75rem;
   border: 1px solid transparent;
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0.35rem 0.55rem;
+  text-align: center;
+  padding: 0.35rem 0;
   cursor: pointer;
 }
 
@@ -1170,12 +1173,71 @@ summary {
   --site-btn-hover: #d9d3c8;
 }
 
+.theme-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+}
+
 .theme-marquee {
   position: fixed;
   z-index: 45;
   box-sizing: border-box;
-  border: 2px solid #e08a3c;
+  border: 1px solid rgba(224, 138, 60, 0.85);
   pointer-events: none;
+}
+
+.theme-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: #e08a3c;
+  border-style: solid;
+}
+
+.theme-corner[data-at="nw"] {
+  top: -2px;
+  left: -2px;
+  border-width: 2px 0 0 2px;
+}
+
+.theme-corner[data-at="ne"] {
+  top: -2px;
+  right: -2px;
+  border-width: 2px 2px 0 0;
+}
+
+.theme-corner[data-at="sw"] {
+  bottom: -2px;
+  left: -2px;
+  border-width: 0 0 2px 2px;
+}
+
+.theme-corner[data-at="se"] {
+  right: -2px;
+  bottom: -2px;
+  border-width: 0 2px 2px 0;
+}
+
+html.theme-selecting,
+html.theme-selecting * {
+  cursor: none !important;
+}
+
+.theme-telemetry {
+  position: fixed;
+  z-index: 46;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: #e08a3c;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .theme-fullscreen-prompt {
