@@ -25,4 +25,7 @@ export {
   documentBody,
   extractQueryConstraints,
   fuseHits,
+  LEXICAL_SEPARATORS,
+  discussionContentTokens,
+  retainTopicComments,
 } from "./text.js";

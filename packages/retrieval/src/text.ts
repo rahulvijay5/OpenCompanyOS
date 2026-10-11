@@ -49,9 +49,57 @@ const STOP_WORDS = new Set([
   "about",
 ]);
 
+/**
+ * Characters split before the English parser. A slash otherwise keeps the
+ * rest of a path as one lexeme, so a later segment cannot match. Underscores
+ * and dots inside that lexeme are split too. Hyphens stay with the English
+ * parser, which already indexes both the compound word and its parts.
+ */
+export const LEXICAL_SEPARATORS = "[/_.]+";
+
+/**
+ * Event-type strings stored ahead of the real title and body.
+ * They are removed before separator splitting so "issue_comment.backfill"
+ * cannot satisfy a query for "comment" or "issue" by itself.
+ * Longer names come first because the database regex uses first match.
+ */
+export const SYNTHETIC_EVENT_TYPE_PATTERN =
+  "(pull_request_review|issue_comment|pull_request|issues)\\.[a-z0-9_]+";
+
+/** Query-time searchable text. Stored title and body bytes are left unchanged. */
+export function lexicalDocumentText(title: string, body: string): string {
+  return `${title} ${body}`
+    .replace(new RegExp(SYNTHETIC_EVENT_TYPE_PATTERN, "gi"), " ")
+    .replace(new RegExp(LEXICAL_SEPARATORS, "g"), " ");
+}
+
 /** OR prefix query so one useful term is enough to retrieve a document. */
 export function keywordOrQuery(text: string): string | null {
-  const tokens = [
+  const tokens = queryTokens(text);
+  if (tokens.length === 0) {
+    return null;
+  }
+  return tokens.map((token) => `${token}:*`).join(" | ");
+}
+
+const DISCUSSION_BOILERPLATE = new Set([
+  "stored",
+  "comment",
+  "comments",
+  "conversation",
+  "issue",
+  "issues",
+  "pull",
+  "request",
+  "requests",
+  "say",
+  "says",
+  "said",
+  "open",
+]);
+
+function queryTokens(text: string): string[] {
+  return [
     ...new Set(
       text
         .toLowerCase()
@@ -60,10 +108,50 @@ export function keywordOrQuery(text: string): string | null {
         .filter((token) => token.length >= 3 && !STOP_WORDS.has(token)),
     ),
   ];
-  if (tokens.length === 0) {
-    return null;
+}
+
+/**
+ * Topic words left after question boilerplate and issue/PR numbers are removed.
+ * An empty list means the question asks for the whole conversation.
+ */
+export const DISCUSSION_IDENTIFIER = "[a-z0-9]+(?:[-_:/]+[a-z0-9]+)+";
+
+export function discussionContentTokens(query: string): string[] {
+  const numbers = new Set([...query.matchAll(/#(\d+)\b/g)].map((match) => match[1] ?? ""));
+  return queryTokens(query).filter(
+    (token) => !DISCUSSION_BOILERPLATE.has(token) && !numbers.has(token),
+  );
+}
+
+/** Focused questions keep only comments that contain a topic word. A broad question keeps every comment. */
+export function retainTopicComments<T extends { text: string }>(
+  comments: readonly T[],
+  contentTokens: readonly string[],
+): T[] {
+  if (contentTokens.length === 0) {
+    return [...comments];
   }
-  return tokens.map((token) => `${token}:*`).join(" | ");
+  return comments.filter((comment) => textHasTopic(comment.text, contentTokens));
+}
+
+function textHasTopic(text: string, tokens: readonly string[]): boolean {
+  const words = discussionTopicText(text)
+    .replace(/[^a-z0-9]+/g, " ")
+    .split(/\s+/)
+    .filter((word) => word.length > 0);
+  return tokens.some((token) => words.some((word) => word.startsWith(token)));
+}
+
+/**
+ * Discussion topics are prose words. After the usual separator normalization,
+ * a remaining branch-style identifier joined by hyphens or colons is removed,
+ * so an inner piece cannot satisfy the topic by itself. Stored documents are
+ * not rewritten. Search then applies the English stemmer to the remaining prose.
+ */
+export function discussionTopicText(text: string): string {
+  return lexicalDocumentText("", text)
+    .toLowerCase()
+    .replace(new RegExp(DISCUSSION_IDENTIFIER, "g"), " ");
 }
 
 export type QueryConstraints = {

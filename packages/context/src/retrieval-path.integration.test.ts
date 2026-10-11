@@ -266,8 +266,8 @@ describe.skipIf(!db || resolution.status !== "ready")(
       expect(
         covered.uncertainties.some((item) => item.code === "inline_review_comments_unavailable"),
       ).toBe(true);
-      expect(covered.uncertainties.some((item) => item.code === "reviews_only_from_webhooks")).toBe(
-        false,
+      expect(covered.uncertainties.map((item) => item.code as string)).not.toContain(
+        "reviews_only_from_webhooks",
       );
 
       const knownId = reviewHit?.id;

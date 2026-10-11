@@ -1,0 +1,301 @@
+{
+  "version": 1,
+  "status": "adjudicated",
+  "preregistration": "discussion-preregistration-v1.json",
+  "fetchReport": "discussion-fetch-v1.json",
+  "notes": "Adjudicated labels for the 16 preregistered questions. The preregistration file stays unverified. verified here means the relevant set was checked against stored comment text and collection status. It does not mean retrieval succeeded. relevantSourceIds lists every stored row that supports the question. An empty array is a verified empty set. realCorpus stays not_run.",
+  "realCorpus": "not_run",
+  "windowPolicy": "Answerable questions use the inclusive span of stored comment event_time values on that target. event_time is updated_at. The span includes same-target comments that were judged not relevant, so the window is the stored discussion rather than the subset that retrieves best. It does not use created_at or the parent snapshot updatedAt. Verified-empty questions have no supporting comment or review event_time. Their probe window is the span of stored event times on that target, including the snapshot updatedAt when no comment exists or when the snapshot falls outside the comments. A probe window tests abstention. It is not a claim that the snapshot time is a comment time.",
+  "questions": [
+    {
+      "id": "comment-issue-5833",
+      "verified": true,
+      "relevanceStatus": "verified_relevant_set",
+      "relevantSourceIds": [
+        "github:issue_comment:1369875193",
+        "github:issue_comment:1370138075"
+      ],
+      "window": {
+        "from": "2023-01-03T15:06:48Z",
+        "to": "2023-01-03T19:19:54Z",
+        "role": "stored_comment_collection"
+      },
+      "windowRationale": "Both stored comments on issue #5833 are relevant. Their event times are 2023-01-03. The parent snapshot updatedAt is 2023-02-27T19:07:04Z and is outside this window on purpose.",
+      "judgments": [
+        {
+          "sourceId": "github:issue_comment:1369875193",
+          "relevant": true,
+          "eventTime": "2023-01-03T15:06:48Z",
+          "excerpt": "https://fastapi.tiangolo.com/advanced/middleware/#gzipmiddleware",
+          "reason": "Points to the GZipMiddleware documentation for response compression."
+        },
+        {
+          "sourceId": "github:issue_comment:1370138075",
+          "relevant": true,
+          "eventTime": "2023-01-03T19:19:54Z",
+          "excerpt": "Yes, thank you!!",
+          "reason": "Accepts that GZipMiddleware suggestion."
+        }
+      ]
+    },
+    {
+      "id": "comment-issue-10370",
+      "verified": true,
+      "relevanceStatus": "verified_relevant_set",
+      "relevantSourceIds": [
+        "github:issue_comment:1745618744"
+      ],
+      "notRelevantSourceIds": [
+        "github:issue_comment:1746816375",
+        "github:issue_comment:1751981948",
+        "github:issue_comment:1752824630",
+        "github:issue_comment:1762749084"
+      ],
+      "window": {
+        "from": "2023-10-03T19:45:49Z",
+        "to": "2023-10-14T09:10:50Z",
+        "role": "stored_comment_collection"
+      },
+      "windowRationale": "The window covers every stored comment on issue #10370. Only the comment that says roadmap items is relevant. The parent snapshot updatedAt is 2026-06-14T12:38:54Z and is outside this window.",
+      "judgments": [
+        {
+          "sourceId": "github:issue_comment:1745618744",
+          "relevant": true,
+          "eventTime": "2023-10-03T19:45:49Z",
+          "excerpt": "roadmap items",
+          "reason": "Asks for a list of pull requests mapped to roadmap items."
+        }
+      ]
+    },
+    {
+      "id": "comment-pr-16465",
+      "verified": true,
+      "relevanceStatus": "verified_relevant_set",
+      "relevantSourceIds": [
+        "github:issue_comment:6036051915"
+      ],
+      "notRelevantSourceIds": [
+        "github:issue_comment:6024522949"
+      ],
+      "window": {
+        "from": "2026-10-06T20:28:54Z",
+        "to": "2026-10-07T10:30:20Z",
+        "role": "stored_comment_collection"
+      },
+      "windowRationale": "The window covers both stored conversation comments on pull request #16465. The bot comment is inside the window and is not relevant. The parent snapshot updatedAt is 2026-10-07T10:30:20Z, which happens to equal the relevant comment time and is not why the window ends there.",
+      "judgments": [
+        {
+          "sourceId": "github:issue_comment:6036051915",
+          "relevant": true,
+          "eventTime": "2026-10-07T10:30:20Z",
+          "excerpt": "SkipJsonSchema",
+          "reason": "Discusses excluding a parameter from the OpenAPI schema with SkipJsonSchema."
+        },
+        {
+          "sourceId": "github:issue_comment:6024522949",
+          "relevant": false,
+          "eventTime": "2026-10-06T20:28:54Z",
+          "excerpt": "eltoder:feature/skip-json-schema",
+          "reason": "A performance bot names the branch eltoder:feature/skip-json-schema and does not discuss SkipJsonSchema."
+        }
+      ]
+    },
+    {
+      "id": "comment-pr-16480",
+      "verified": true,
+      "relevanceStatus": "verified_relevant_set",
+      "relevantSourceIds": [
+        "github:issue_comment:6095888500",
+        "github:issue_comment:6095889316",
+        "github:issue_comment:6096310470"
+      ],
+      "window": {
+        "from": "2026-10-10T08:56:58Z",
+        "to": "2026-10-10T09:53:40Z",
+        "role": "stored_comment_collection"
+      },
+      "windowRationale": "The question asks what a stored conversation comment says, without a narrower topic. The window is the span of the three stored conversation comments on pull request #16480.",
+      "judgments": [
+        {
+          "sourceId": "github:issue_comment:6095888500",
+          "relevant": true,
+          "eventTime": "2026-10-10T08:56:58Z",
+          "excerpt": "not alter performance",
+          "reason": "A stored conversation comment. It says merging the pull request will not alter performance."
+        },
+        {
+          "sourceId": "github:issue_comment:6095889316",
+          "relevant": true,
+          "eventTime": "2026-10-10T08:57:04Z",
+          "excerpt": "Docs preview",
+          "reason": "A stored conversation comment. It says a documentation preview was built."
+        },
+        {
+          "sourceId": "github:issue_comment:6096310470",
+          "relevant": true,
+          "eventTime": "2026-10-10T09:53:40Z",
+          "excerpt": "we plan to solve it in a different way",
+          "reason": "A stored conversation comment. It says the maintainers plan to solve the change a different way."
+        }
+      ]
+    },
+    {
+      "id": "comment-pr-16458",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "notRelevantSourceIds": [
+        "github:issue_comment:5998918108",
+        "github:issue_comment:5999149892",
+        "github:issue_comment:5999284810"
+      ],
+      "window": {
+        "from": "2026-10-05T16:44:42Z",
+        "to": "2026-10-05T17:07:33Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "No stored comment supports an answer about bytearray. The probe covers the three conversation comments. The branch name support-bytearray-encoder is inside the probe and is not relevant. The parent snapshot updatedAt equals the window end because that comment and the snapshot share 2026-10-05T17:07:33Z.",
+      "judgments": [
+        {
+          "sourceId": "github:issue_comment:5998918108",
+          "relevant": false,
+          "eventTime": "2026-10-05T16:44:42Z",
+          "excerpt": "jasraj1111:support-bytearray-encoder",
+          "reason": "The branch name jasraj1111:support-bytearray-encoder does not say what bytearray support does."
+        }
+      ]
+    },
+    {
+      "id": "comment-issue-16451",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The issue-comment collection completed with zero records, so there is no comment event_time. The probe is the only stored event for the target, the snapshot at 2026-10-02T04:34:43Z. The snapshot title mentions Mangum and is not a comment."
+    },
+    {
+      "id": "comment-issue-16254",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-08-27T06:40:45Z",
+        "to": "2026-08-27T06:40:45Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The issue-comment collection completed with zero records. The probe is the snapshot at 2026-08-27T06:40:45Z. No stored comment discusses the debug-mode report."
+    },
+    {
+      "id": "comment-issue-16390",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-09-23T05:54:20Z",
+        "to": "2026-09-23T05:54:20Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The issue-comment collection completed with zero records. The probe is the snapshot at 2026-09-23T05:54:20Z. No stored comment discusses the endpoint context cache."
+    },
+    {
+      "id": "review-pr-16470",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-07T20:37:11Z",
+        "to": "2026-10-08T17:20:20Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The review collection completed with zero records, so no review decision is stored. The probe spans the two conversation comments and the snapshot, which share the end time 2026-10-08T17:20:20Z. Conversation comments are not review decisions."
+    },
+    {
+      "id": "review-pr-16468",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-07T19:02:41Z",
+        "to": "2026-10-07T19:04:24Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The review collection completed with zero records. The probe runs from the only conversation comment to the snapshot updatedAt. Neither is a review decision."
+    },
+    {
+      "id": "review-pr-16476",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-08T10:46:14Z",
+        "to": "2026-10-08T11:51:43Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The review collection completed with zero records. The probe spans the conversation comments and the later snapshot. A documentation-preview comment that links to OpenTelemetry is not a review."
+    },
+    {
+      "id": "review-pr-16480",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-10T08:56:58Z",
+        "to": "2026-10-10T09:53:40Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The review collection completed with zero records. No review source id exists. The probe spans the conversation comments, which includes the snapshot time. Those comments do not establish a review decision. Abstention fits this question. It does not prove that review activity never occurred."
+    },
+    {
+      "id": "abstain-inline-review-16468",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-07T19:02:41Z",
+        "to": "2026-10-07T19:04:24Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "Inline review comments are not imported. The original reason stands. The probe is the same stored span as review-pr-16468. The stored performance comment is not an inline comment on a changed line."
+    },
+    {
+      "id": "abstain-issue-body-16451",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The issue body is not in the manifest or the comment fetch. The original reason stands. The probe is the snapshot time. A snapshot title is not the issue body."
+    },
+    {
+      "id": "abstain-outside-fetch-16345",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-09-11T11:10:42Z",
+        "to": "2026-09-11T11:10:42Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "Issue #16345 was outside the 20-target fetch. No comment was stored. The probe is the snapshot at 2026-09-11T11:10:42Z. Absence here is the fetch boundary, not proof that GitHub has no comments."
+    },
+    {
+      "id": "abstain-title-is-not-a-comment-16451",
+      "verified": true,
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z",
+        "role": "abstention_probe"
+      },
+      "windowRationale": "The completed issue-comment collection for #16451 is empty, so no comment source contains Mangum. The snapshot title contains Mangum and is not a relevant comment. The probe includes that snapshot so the title can be retrieved. expectedSourceIds in the preregistration stayed null; this artifact records the verified empty set."
+    }
+  ]
+}

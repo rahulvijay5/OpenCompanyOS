@@ -1,0 +1,710 @@
+{
+  "version": 1,
+  "manifestSha256": "eeb18b7376c4257900435e65bd31a7c18135126d219f477eee8bfab56ac66d9d",
+  "tenantSlug": "fastapi-v2-eeb18b73",
+  "comments": "not_fetched",
+  "reviews": "not_fetched",
+  "realCorpus": {
+    "status": "not_run",
+    "reason": "precision_unscored_without_verified_relevant_set"
+  },
+  "notes": "Sample of imported issue and pull-request snapshots. verification.status is metadata agreement between the frozen manifest and the imported events row. It is not retrieval success and it is not a manually verified relevant set. expectedInEvidence is recorded separately. A retrieved hit does not verify a fact. closedAt and mergedAt are payload metadata. event_time is updatedAt.",
+  "questions": [
+    {
+      "id": "issue-16451",
+      "category": "issue_lookup",
+      "question": "What is the recorded title of issue #16451?",
+      "query": "mangum #16451",
+      "expectedSourceIds": [
+        "github:issue:5671616833"
+      ],
+      "expectedSubjectSourceId": "github:issue:5671616833",
+      "fact": {
+        "summary": "Issue 16451 title and source id.",
+        "number": 16451,
+        "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+        "state": "closed",
+        "updatedAt": "2026-10-02T04:34:43Z",
+        "closedAt": "2026-10-02T04:34:15Z",
+        "eventTime": "2026-10-02T04:34:43Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "issue-10370",
+      "category": "issue_lookup",
+      "question": "What is the recorded title of open issue #10370?",
+      "query": "roadmap #10370",
+      "expectedSourceIds": [
+        "github:issue:1922795955"
+      ],
+      "expectedSubjectSourceId": "github:issue:1922795955",
+      "fact": {
+        "summary": "Issue 10370 is the only open issue in the frozen sample.",
+        "number": 10370,
+        "title": "🚀 Roadmap",
+        "state": "open",
+        "updatedAt": "2026-06-14T12:38:54Z",
+        "closedAt": null,
+        "eventTime": "2026-06-14T12:38:54Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-06-14T12:38:54Z",
+        "to": "2026-06-14T12:38:54Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "issue-16356",
+      "category": "issue_lookup",
+      "question": "What is the recorded title of issue #16356?",
+      "query": "csoai #16356",
+      "expectedSourceIds": [
+        "github:issue:5457243777"
+      ],
+      "expectedSubjectSourceId": "github:issue:5457243777",
+      "fact": {
+        "summary": "Issue 16356 title and source id.",
+        "number": 16356,
+        "title": "CSOAI — FastAPI AI governance framework",
+        "state": "closed",
+        "updatedAt": "2026-09-15T04:17:02Z",
+        "closedAt": "2026-09-15T04:17:02Z",
+        "eventTime": "2026-09-15T04:17:02Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-09-15T04:17:02Z",
+        "to": "2026-09-15T04:17:02Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "issue-16334",
+      "category": "issue_lookup",
+      "question": "What is the recorded title of issue #16334?",
+      "query": "asynciterator #16334",
+      "expectedSourceIds": [
+        "github:issue:5388731018"
+      ],
+      "expectedSubjectSourceId": "github:issue:5388731018",
+      "fact": {
+        "summary": "Issue 16334 title and source id.",
+        "number": 16334,
+        "title": "Annotated[AsyncIterator[T], ...] return annotations fail route registration",
+        "state": "closed",
+        "updatedAt": "2026-09-08T19:21:03Z",
+        "closedAt": "2026-09-08T19:21:03Z",
+        "eventTime": "2026-09-08T19:21:03Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-09-08T19:21:03Z",
+        "to": "2026-09-08T19:21:03Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "issue-5833",
+      "category": "issue_lookup",
+      "question": "What is the recorded title of issue #5833?",
+      "query": "jsonified #5833",
+      "expectedSourceIds": [
+        "github:issue:1517505859"
+      ],
+      "expectedSubjectSourceId": "github:issue:1517505859",
+      "fact": {
+        "summary": "Issue 5833 is the oldest issue in the frozen sample.",
+        "number": 5833,
+        "title": "Is there support for compression of jsonified pydantic objects sent in responses?",
+        "state": "closed",
+        "updatedAt": "2023-02-27T19:07:04Z",
+        "closedAt": "2023-02-27T19:07:04Z",
+        "eventTime": "2023-02-27T19:07:04Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2023-02-27T19:07:04Z",
+        "to": "2023-02-27T19:07:04Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "pr-16480",
+      "category": "pull_request_lookup",
+      "question": "What is the recorded title of pull request #16480?",
+      "query": "tutorial001 #16480",
+      "expectedSourceIds": [
+        "github:pull_request:4810018525"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4810018525",
+      "fact": {
+        "summary": "Pull request 16480 title and source id.",
+        "number": 16480,
+        "title": "Docs: migrate sql_databases/tutorial001_an_py310.py from on_event to lifespan",
+        "state": "open",
+        "updatedAt": "2026-10-10T08:57:04Z",
+        "closedAt": null,
+        "eventTime": "2026-10-10T08:57:04Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-10T08:57:04Z",
+        "to": "2026-10-10T08:57:04Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "pr-16465",
+      "category": "pull_request_lookup",
+      "question": "What is the recorded title of pull request #16465?",
+      "query": "skipjsonschema #16465",
+      "expectedSourceIds": [
+        "github:pull_request:4762942697"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4762942697",
+      "fact": {
+        "summary": "Pull request 16465 title and source id.",
+        "number": 16465,
+        "title": "Support SkipJsonSchema in Query()",
+        "state": "closed",
+        "updatedAt": "2026-10-07T10:30:20Z",
+        "closedAt": "2026-10-07T10:30:20Z",
+        "eventTime": "2026-10-07T10:30:20Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-07T10:30:20Z",
+        "to": "2026-10-07T10:30:20Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "pr-16458",
+      "category": "pull_request_lookup",
+      "question": "What is the recorded title of pull request #16458?",
+      "query": "bytearray #16458",
+      "expectedSourceIds": [
+        "github:pull_request:4748094004"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4748094004",
+      "fact": {
+        "summary": "Pull request 16458 title and source id.",
+        "number": 16458,
+        "title": "✨ Add support for bytearray in jsonable_encoder",
+        "state": "closed",
+        "updatedAt": "2026-10-05T17:07:33Z",
+        "closedAt": "2026-10-05T16:59:05Z",
+        "eventTime": "2026-10-05T17:07:33Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-05T17:07:33Z",
+        "to": "2026-10-05T17:07:33Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "pr-16421",
+      "category": "pull_request_lookup",
+      "question": "What is the recorded title of pull request #16421?",
+      "query": "markdownizer #16421",
+      "expectedSourceIds": [
+        "github:pull_request:4694685075"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4694685075",
+      "fact": {
+        "summary": "Pull request 16421 title and source id.",
+        "number": 16421,
+        "title": "📝 Add Markdownizer to the External Links docs",
+        "state": "closed",
+        "updatedAt": "2026-09-30T19:05:30Z",
+        "closedAt": "2026-09-30T19:05:30Z",
+        "eventTime": "2026-09-30T19:05:30Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-09-30T19:05:30Z",
+        "to": "2026-09-30T19:05:30Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "title-mangum",
+      "category": "title_match",
+      "question": "Which imported record has a title containing Mangum?",
+      "query": "mangum",
+      "expectedSourceIds": [
+        "github:issue:5671616833"
+      ],
+      "expectedSubjectSourceId": null,
+      "fact": {
+        "summary": "The token mangum occurs in one frozen title.",
+        "number": 16451,
+        "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+        "state": "closed",
+        "updatedAt": "2026-10-02T04:34:43Z",
+        "closedAt": "2026-10-02T04:34:15Z",
+        "eventTime": "2026-10-02T04:34:43Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "title-werkzeug",
+      "category": "title_match",
+      "question": "Which imported record has a title containing werkzeug?",
+      "query": "werkzeug",
+      "expectedSourceIds": [
+        "github:pull_request:4762386092"
+      ],
+      "expectedSubjectSourceId": null,
+      "fact": {
+        "summary": "The token werkzeug occurs in one frozen title.",
+        "number": 16464,
+        "title": "⬆ Bump werkzeug from 3.1.6 to 3.1.9",
+        "state": "open",
+        "updatedAt": "2026-10-06T17:37:03Z",
+        "closedAt": null,
+        "eventTime": "2026-10-06T17:37:03Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-06T17:37:03Z",
+        "to": "2026-10-06T17:37:03Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "title-asterisk",
+      "category": "title_match",
+      "question": "Which imported record has a title containing asterisk?",
+      "query": "asterisk",
+      "expectedSourceIds": [
+        "github:pull_request:4809042528"
+      ],
+      "expectedSubjectSourceId": null,
+      "fact": {
+        "summary": "The token asterisk occurs in one frozen title.",
+        "number": 16479,
+        "title": "Fix trailing asterisk in FastAPI README",
+        "state": "open",
+        "updatedAt": "2026-10-10T05:44:55Z",
+        "closedAt": null,
+        "eventTime": "2026-10-10T05:44:55Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-10T05:44:55Z",
+        "to": "2026-10-10T05:44:55Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "title-keyed",
+      "category": "title_match",
+      "question": "Which imported record has a title containing keyed?",
+      "query": "keyed",
+      "expectedSourceIds": [
+        "github:issue:5546669461"
+      ],
+      "expectedSubjectSourceId": null,
+      "fact": {
+        "summary": "The token keyed occurs in one frozen title.",
+        "number": 16390,
+        "title": "_endpoint_context_cache keyed by id(func) can return stale context after GC",
+        "state": "closed",
+        "updatedAt": "2026-09-23T05:54:20Z",
+        "closedAt": "2026-09-23T05:54:20Z",
+        "eventTime": "2026-09-23T05:54:20Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-09-23T05:54:20Z",
+        "to": "2026-09-23T05:54:20Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "state-16451",
+      "category": "state",
+      "question": "What state is recorded for issue #16451?",
+      "query": "mangum #16451",
+      "expectedSourceIds": [
+        "github:issue:5671616833"
+      ],
+      "expectedSubjectSourceId": "github:issue:5671616833",
+      "fact": {
+        "summary": "Issue 16451 state is closed. closedAt is metadata, not the event time.",
+        "number": 16451,
+        "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+        "state": "closed",
+        "updatedAt": "2026-10-02T04:34:43Z",
+        "closedAt": "2026-10-02T04:34:15Z",
+        "eventTime": "2026-10-02T04:34:43Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "state-10370",
+      "category": "state",
+      "question": "What state is recorded for issue #10370?",
+      "query": "roadmap #10370",
+      "expectedSourceIds": [
+        "github:issue:1922795955"
+      ],
+      "expectedSubjectSourceId": "github:issue:1922795955",
+      "fact": {
+        "summary": "Issue 10370 state is open and closedAt is null.",
+        "number": 10370,
+        "title": "🚀 Roadmap",
+        "state": "open",
+        "updatedAt": "2026-06-14T12:38:54Z",
+        "closedAt": null,
+        "eventTime": "2026-06-14T12:38:54Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-06-14T12:38:54Z",
+        "to": "2026-06-14T12:38:54Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "state-16480",
+      "category": "state",
+      "question": "What state is recorded for pull request #16480?",
+      "query": "tutorial001 #16480",
+      "expectedSourceIds": [
+        "github:pull_request:4810018525"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4810018525",
+      "fact": {
+        "summary": "Pull request 16480 state is open.",
+        "number": 16480,
+        "title": "Docs: migrate sql_databases/tutorial001_an_py310.py from on_event to lifespan",
+        "state": "open",
+        "updatedAt": "2026-10-10T08:57:04Z",
+        "closedAt": null,
+        "eventTime": "2026-10-10T08:57:04Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-10T08:57:04Z",
+        "to": "2026-10-10T08:57:04Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "state-16465",
+      "category": "state",
+      "question": "What state is recorded for pull request #16465?",
+      "query": "skipjsonschema #16465",
+      "expectedSourceIds": [
+        "github:pull_request:4762942697"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4762942697",
+      "fact": {
+        "summary": "Pull request 16465 state is closed and merged is false.",
+        "number": 16465,
+        "title": "Support SkipJsonSchema in Query()",
+        "state": "closed",
+        "updatedAt": "2026-10-07T10:30:20Z",
+        "closedAt": "2026-10-07T10:30:20Z",
+        "eventTime": "2026-10-07T10:30:20Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-07T10:30:20Z",
+        "to": "2026-10-07T10:30:20Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "merged-16470",
+      "category": "merged",
+      "question": "Is pull request #16470 recorded as merged?",
+      "query": "isolate #16470",
+      "expectedSourceIds": [
+        "github:pull_request:4778146414"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4778146414",
+      "fact": {
+        "summary": "Pull request 16470 merged is true. mergedAt is earlier than updatedAt.",
+        "number": 16470,
+        "title": "🐛 Isolate FastAPI telemetry for excluded requests",
+        "state": "closed",
+        "updatedAt": "2026-10-08T17:20:20Z",
+        "closedAt": "2026-10-07T21:02:50Z",
+        "eventTime": "2026-10-08T17:20:20Z",
+        "merged": true,
+        "mergedAt": "2026-10-07T21:02:50Z"
+      },
+      "window": {
+        "from": "2026-10-08T17:20:20Z",
+        "to": "2026-10-08T17:20:20Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "merged-16468",
+      "category": "merged",
+      "question": "Is pull request #16468 recorded as merged?",
+      "query": "deduplication #16468",
+      "expectedSourceIds": [
+        "github:pull_request:4776946757"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4776946757",
+      "fact": {
+        "summary": "Pull request 16468 merged is true.",
+        "number": 16468,
+        "title": "🐛 Cache OpenTelemetry tracers to preserve warning deduplication",
+        "state": "closed",
+        "updatedAt": "2026-10-07T19:04:24Z",
+        "closedAt": "2026-10-07T19:04:20Z",
+        "eventTime": "2026-10-07T19:04:24Z",
+        "merged": true,
+        "mergedAt": "2026-10-07T19:04:20Z"
+      },
+      "window": {
+        "from": "2026-10-07T19:04:24Z",
+        "to": "2026-10-07T19:04:24Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "merged-16479",
+      "category": "merged",
+      "question": "Is pull request #16479 recorded as merged?",
+      "query": "asterisk #16479",
+      "expectedSourceIds": [
+        "github:pull_request:4809042528"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4809042528",
+      "fact": {
+        "summary": "Pull request 16479 is open and merged is false.",
+        "number": 16479,
+        "title": "Fix trailing asterisk in FastAPI README",
+        "state": "open",
+        "updatedAt": "2026-10-10T05:44:55Z",
+        "closedAt": null,
+        "eventTime": "2026-10-10T05:44:55Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-10T05:44:55Z",
+        "to": "2026-10-10T05:44:55Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "merged-16458",
+      "category": "merged",
+      "question": "Is pull request #16458 recorded as merged?",
+      "query": "bytearray #16458",
+      "expectedSourceIds": [
+        "github:pull_request:4748094004"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4748094004",
+      "fact": {
+        "summary": "Pull request 16458 is closed and merged is false.",
+        "number": 16458,
+        "title": "✨ Add support for bytearray in jsonable_encoder",
+        "state": "closed",
+        "updatedAt": "2026-10-05T17:07:33Z",
+        "closedAt": "2026-10-05T16:59:05Z",
+        "eventTime": "2026-10-05T17:07:33Z",
+        "merged": false,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-05T17:07:33Z",
+        "to": "2026-10-05T17:07:33Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "time-16451",
+      "category": "source_timestamp",
+      "question": "What source timestamp is stored for issue #16451?",
+      "query": "mangum #16451",
+      "expectedSourceIds": [
+        "github:issue:5671616833"
+      ],
+      "expectedSubjectSourceId": "github:issue:5671616833",
+      "fact": {
+        "summary": "event_time is updatedAt. closedAt is 28 seconds earlier and is not the event time.",
+        "number": 16451,
+        "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+        "state": "closed",
+        "updatedAt": "2026-10-02T04:34:43Z",
+        "closedAt": "2026-10-02T04:34:15Z",
+        "eventTime": "2026-10-02T04:34:43Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "time-16470",
+      "category": "source_timestamp",
+      "question": "What source timestamp is stored for pull request #16470?",
+      "query": "isolate #16470",
+      "expectedSourceIds": [
+        "github:pull_request:4778146414"
+      ],
+      "expectedSubjectSourceId": "github:pull_request:4778146414",
+      "fact": {
+        "summary": "event_time is updatedAt. mergedAt and closedAt match each other and are earlier.",
+        "number": 16470,
+        "title": "🐛 Isolate FastAPI telemetry for excluded requests",
+        "state": "closed",
+        "updatedAt": "2026-10-08T17:20:20Z",
+        "closedAt": "2026-10-07T21:02:50Z",
+        "eventTime": "2026-10-08T17:20:20Z",
+        "merged": true,
+        "mergedAt": "2026-10-07T21:02:50Z"
+      },
+      "window": {
+        "from": "2026-10-08T17:20:20Z",
+        "to": "2026-10-08T17:20:20Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    },
+    {
+      "id": "time-5833",
+      "category": "source_timestamp",
+      "question": "What source timestamp is stored for issue #5833?",
+      "query": "jsonified #5833",
+      "expectedSourceIds": [
+        "github:issue:1517505859"
+      ],
+      "expectedSubjectSourceId": "github:issue:1517505859",
+      "fact": {
+        "summary": "event_time is updatedAt. closedAt has the same clock value and remains payload metadata.",
+        "number": 5833,
+        "title": "Is there support for compression of jsonified pydantic objects sent in responses?",
+        "state": "closed",
+        "updatedAt": "2023-02-27T19:07:04Z",
+        "closedAt": "2023-02-27T19:07:04Z",
+        "eventTime": "2023-02-27T19:07:04Z",
+        "merged": null,
+        "mergedAt": null
+      },
+      "window": {
+        "from": "2023-02-27T19:07:04Z",
+        "to": "2023-02-27T19:07:04Z"
+      },
+      "verification": {
+        "status": "verified",
+        "method": "Compared title, state, merged flag, updatedAt, closedAt, and mergedAt with fastapi-v2/manifest.json and the imported events row. Retrieval output was not used."
+      }
+    }
+  ]
+}

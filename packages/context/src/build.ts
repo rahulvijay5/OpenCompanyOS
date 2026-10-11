@@ -1,9 +1,9 @@
 import type { LlmConfig } from "@opencompanyos/config";
-import { entities, relationships, type Database } from "@opencompanyos/db";
+import { entities, events, documents, relationships, type Database } from "@opencompanyos/db";
 import {
   asksAboutChanges,
+  discussionContentTokens,
   extractQueryConstraints,
-  listChanges,
   searchEvidence,
 } from "@opencompanyos/retrieval";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
@@ -13,14 +13,17 @@ import {
   partitionOccurrences,
   resolveCandidates,
 } from "./resolve.js";
+import { selectAnswerEvidence, sourcePrefixForEvidence, type EvidenceKind } from "./evidence.js";
+import { resolveEvidenceKind } from "./intent.js";
+import { subjectSnapshotEvidence } from "./subject-evidence.js";
 import { resolveScope } from "./scope.js";
 import {
   AUTHORIZATION_LOCAL_OWNER,
   CONTEXT_PACKAGE_VERSION,
   RELATIONSHIP_TYPES,
+  type ContextEvidence,
   type ContextEntityRef,
   type ContextEvent,
-  type ContextEvidence,
   type ContextPackage,
   type ContextRelationship,
   type ContextState,
@@ -40,6 +43,11 @@ export type BuildContextInput = {
   from?: Date;
   to?: Date;
   now?: Date;
+  /**
+   * Restricts answer evidence. An explicit value overrides query-intent rules.
+   * Omitted values use those rules, and an unmatched question stays a metadata query.
+   */
+  evidenceKind?: EvidenceKind;
 };
 
 type EntityHit = {
@@ -157,27 +165,59 @@ export async function buildContext(
       ? await loadRelationships(db, input.tenantId, subject.entity.id)
       : [];
 
+  const evidenceKind = resolveEvidenceKind(input.query, input.evidenceKind);
+  const sourceIdPrefix = sourcePrefixForEvidence(evidenceKind);
+  const asksForNumber = issueNumbers(input.query).length > 0;
+  const commentNumbers = evidenceKind === "issue_comment" ? issueNumbers(input.query) : [];
+  const reviewNumbers = evidenceKind === "pull_request_review" ? issueNumbers(input.query) : [];
+  const snapshotDecision = subjectSnapshotEvidence({
+    ...(evidenceKind ? { evidenceKind } : {}),
+    subject,
+    states: currentState,
+    from: range.from,
+    to: range.to,
+    asksForNumber,
+  });
   const searched =
-    scope.repositoryIds.length === 0
+    snapshotDecision.mode === "snapshots" || scope.repositoryIds.length === 0
       ? []
       : await searchEvidence(db, {
           tenantId: input.tenantId,
           repositoryIds: scope.repositoryIds,
           text: input.query,
           since: range.from,
-          config: input.config,
-        });
-  const changes =
-    scope.repositoryIds.length === 0
-      ? []
-      : await listChanges(db, input.tenantId, {
-          since: range.from,
           until: range.to,
-          repositoryIds: scope.repositoryIds,
-          limit: 8,
+          config: input.config,
+          ...(sourceIdPrefix ? { sourceIdPrefix } : {}),
+          ...(commentNumbers.length > 0
+            ? {
+                subjectNumbers: commentNumbers,
+                discussionContentTokens: discussionContentTokens(input.query),
+              }
+            : {}),
+          ...(reviewNumbers.length > 0 ? { subjectNumbers: reviewNumbers } : {}),
         });
 
-  const evidence = mergeEvidence(searched, changes);
+  const evidence =
+    snapshotDecision.mode === "snapshots"
+      ? await loadSnapshotEvidence(
+          db,
+          input.tenantId,
+          scope.repositoryIds,
+          snapshotDecision.sourceIds,
+        )
+      : selectAnswerEvidence(
+          searched.map((hit) => ({
+            id: hit.id,
+            sourceId: hit.sourceId,
+            title: hit.title,
+            url: hit.url,
+            snippet: hit.snippet,
+            score: hit.score,
+            repositoryId: hit.repositoryId,
+          })),
+          evidenceKind,
+        );
   if (evidence.length === 0) {
     uncertainties.push({
       code: "insufficient_evidence",
@@ -199,6 +239,51 @@ export async function buildContext(
     evidence,
     uncertainties,
   };
+}
+
+async function loadSnapshotEvidence(
+  db: Database,
+  tenantId: string,
+  repositoryIds: string[],
+  sourceIds: string[],
+): Promise<ContextEvidence[]> {
+  if (sourceIds.length === 0 || repositoryIds.length === 0) {
+    return [];
+  }
+  const [docs, rows] = await Promise.all([
+    db.query.documents.findMany({
+      where: and(eq(documents.tenantId, tenantId), inArray(documents.sourceId, sourceIds)),
+    }),
+    db.query.events.findMany({
+      where: and(eq(events.tenantId, tenantId), inArray(events.sourceEventId, sourceIds)),
+    }),
+  ]);
+  const repositoryBySource = new Map<string, string>();
+  for (const row of rows) {
+    const repositoryId = row.payload.repositoryId;
+    if (typeof repositoryId === "string" && repositoryIds.includes(repositoryId)) {
+      repositoryBySource.set(row.sourceEventId, repositoryId);
+    }
+  }
+  const bySource = new Map(docs.map((doc) => [doc.sourceId, doc]));
+  return sourceIds.flatMap((sourceId) => {
+    const doc = bySource.get(sourceId);
+    const repositoryId = repositoryBySource.get(sourceId);
+    if (!doc || !repositoryId) {
+      return [];
+    }
+    return [
+      {
+        id: doc.id,
+        sourceId: doc.sourceId,
+        title: doc.title,
+        url: doc.url,
+        snippet: doc.body?.slice(0, 400) ?? null,
+        score: 1,
+        repositoryId,
+      },
+    ];
+  });
 }
 
 function requestedSubject(input: BuildContextInput): boolean {
@@ -474,43 +559,4 @@ async function loadRelationships(
 
 function isRelationshipType(value: string): value is RelationshipType {
   return (RELATIONSHIP_TYPES as readonly string[]).includes(value);
-}
-
-function mergeEvidence(
-  searched: Awaited<ReturnType<typeof searchEvidence>>,
-  changes: Awaited<ReturnType<typeof listChanges>>,
-): ContextEvidence[] {
-  const merged: ContextEvidence[] = [];
-  const seen = new Set<string>();
-  for (const hit of searched) {
-    if (seen.has(hit.sourceId)) {
-      continue;
-    }
-    seen.add(hit.sourceId);
-    merged.push({
-      id: hit.id,
-      sourceId: hit.sourceId,
-      title: hit.title,
-      url: hit.url,
-      snippet: hit.snippet,
-      score: hit.score,
-      repositoryId: hit.repositoryId,
-    });
-  }
-  for (const change of changes) {
-    if (seen.has(change.sourceEventId) || merged.length >= 8) {
-      continue;
-    }
-    seen.add(change.sourceEventId);
-    merged.push({
-      id: change.id,
-      sourceId: change.sourceEventId,
-      title: change.title,
-      url: change.url,
-      snippet: change.kind,
-      score: 1,
-      repositoryId: change.repository?.id ?? null,
-    });
-  }
-  return merged.slice(0, 8);
 }

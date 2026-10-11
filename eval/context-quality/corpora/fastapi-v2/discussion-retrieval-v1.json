@@ -1,0 +1,1309 @@
+{
+  "version": 1,
+  "realCorpus": {
+    "status": "not_run",
+    "reason": "This is a 16-question discussion slice. facts.json is empty, generated questions are unverified, and the 24-question lexical benchmark has no verified relevant set."
+  },
+  "database": "opencompanyos_eval",
+  "tenantSlug": "fastapi-v2-eeb18b73",
+  "snapshots": 600,
+  "reviews": 0,
+  "frozenDigests": {
+    "benchmark-v1.json": "c1053d454050230d40c4d823c1a34201214666e5523ad8dcd900ffd692f5a9f1",
+    "benchmark-v1-results.json": "9d54917f00a184f4419877f1d1298d24ac095cf9c39a09dbf1ba08376016b3b8",
+    "benchmark-v1-results-lexical-v1.json": "9d54917f00a184f4419877f1d1298d24ac095cf9c39a09dbf1ba08376016b3b8",
+    "benchmark-v1-results-repro.json": "9d54917f00a184f4419877f1d1298d24ac095cf9c39a09dbf1ba08376016b3b8",
+    "facts.json": "db4857e99b71f50a317dc69194abcc960d3c1d447e16e869a30982cb6ee3158b",
+    "generated-questions.json": "763c3e55e4670b19547663ff622e459d4913c597ba2d56614025f490adfdcb87"
+  },
+  "measures": {
+    "recall": "Fraction of verified relevant source ids present in that retrieval list. Null when the relevant set is empty.",
+    "precision": "Fraction of retrieved source ids that are in the verified relevant set. Null when nothing was retrieved. Scored only because this label file verifies the full set.",
+    "claimSupport": "supports when every retrieved id is relevant and every relevant id was retrieved. mixed when relevant and non-relevant text are both retrieved. does_not_support when no relevant text was retrieved. abstained when the verified set is empty and nothing was retrieved.",
+    "abstention": "For a verified empty set, abstained is true only when that retrieval list is empty."
+  },
+  "questions": [
+    {
+      "id": "comment-issue-5833",
+      "query": "What does a stored comment on issue #5833 say about response compression?",
+      "lexicalQuery": "stored:* | comment:* | issue:* | 5833:* | say:* | response:* | compression:*",
+      "relevanceStatus": "verified_relevant_set",
+      "relevantSourceIds": [
+        "github:issue_comment:1369875193",
+        "github:issue_comment:1370138075"
+      ],
+      "window": {
+        "from": "2023-01-03T15:06:48Z",
+        "to": "2023-01-03T19:19:54Z",
+        "role": "stored_comment_collection"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue_comment:1369875193",
+          "github:issue_comment:1370138075"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:1369875193",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\njgould22\nIs this what you are looking for ?\r\n\r\nhttps://fastapi.tiangolo.com/advanced/middleware/#gzipmiddleware"
+          },
+          {
+            "sourceId": "github:issue_comment:1370138075",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nzachglee\n> Is this what you are looking for ?\r\n> \r\n> https://fastapi.tiangolo.com/advanced/middleware/#gzipmiddleware\r\n\r\nYes, thank you!!"
+          }
+        ],
+        "hits": [
+          "github:issue_comment:1369875193",
+          "github:issue_comment:1370138075"
+        ],
+        "missing": [],
+        "extras": [],
+        "recall": 1,
+        "precision": 1,
+        "claimSupport": "supports",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue_comment:1369875193",
+          "github:issue_comment:1370138075"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:1369875193",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\njgould22\nIs this what you are looking for ?\r\n\r\nhttps://fastapi.tiangolo.com/advanced/middleware/#gzipmiddleware"
+          },
+          {
+            "sourceId": "github:issue_comment:1370138075",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nzachglee\n> Is this what you are looking for ?\r\n> \r\n> https://fastapi.tiangolo.com/advanced/middleware/#gzipmiddleware\r\n\r\nYes, thank you!!"
+          }
+        ],
+        "hits": [
+          "github:issue_comment:1369875193",
+          "github:issue_comment:1370138075"
+        ],
+        "missing": [],
+        "extras": [],
+        "recall": 1,
+        "precision": 1,
+        "claimSupport": "supports",
+        "abstained": false
+      }
+    },
+    {
+      "id": "comment-issue-10370",
+      "query": "What does a stored comment on open issue #10370 say about the roadmap?",
+      "lexicalQuery": "stored:* | comment:* | open:* | issue:* | 10370:* | say:* | roadmap:*",
+      "relevanceStatus": "verified_relevant_set",
+      "relevantSourceIds": [
+        "github:issue_comment:1745618744"
+      ],
+      "window": {
+        "from": "2023-10-03T19:45:49Z",
+        "to": "2023-10-14T09:10:50Z",
+        "role": "stored_comment_collection"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue_comment:1745618744",
+          "github:issue_comment:1762749084",
+          "github:issue_comment:1752824630",
+          "github:issue_comment:1746816375",
+          "github:issue_comment:1751981948"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:1745618744",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\niudeen\nThis is lovely! \n\nA suggestion...will it be possible to have a list of PRs mapped with these roadmap items, so that we can check and contribute to those which are not started. "
+          },
+          {
+            "sourceId": "github:issue_comment:1762749084",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nafallou\nA note on the maintenance section.\r\n> I have requested to still review each PR myself.\r\n\r\nThat is a major issue IMO. We've deployed a FastAPI app in production for one of our microservices, as "
+          },
+          {
+            "sourceId": "github:issue_comment:1752824630",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nantonrh\nSmall comment regarding `Errors based on RFC 7807`: it has already been obsoleted by RFC 9457 - https://www.rfc-editor.org/rfc/rfc9457.html."
+          },
+          {
+            "sourceId": "github:issue_comment:1746816375",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nelsakeirouz\nDon't you plan on adding RefreshUrl to the OAuth2 Password Flow?"
+          },
+          {
+            "sourceId": "github:issue_comment:1751981948",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nwangxin688\nIs there any plans to add class based view natively support by fastapi?"
+          }
+        ],
+        "hits": [
+          "github:issue_comment:1745618744"
+        ],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:1762749084",
+          "github:issue_comment:1752824630",
+          "github:issue_comment:1746816375",
+          "github:issue_comment:1751981948"
+        ],
+        "recall": 1,
+        "precision": 0.2,
+        "claimSupport": "mixed",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue_comment:1745618744",
+          "github:issue_comment:1762749084",
+          "github:issue_comment:1752824630",
+          "github:issue_comment:1746816375",
+          "github:issue_comment:1751981948"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:1745618744",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\niudeen\nThis is lovely! \n\nA suggestion...will it be possible to have a list of PRs mapped with these roadmap items, so that we can check and contribute to those which are not started. "
+          },
+          {
+            "sourceId": "github:issue_comment:1762749084",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nafallou\nA note on the maintenance section.\r\n> I have requested to still review each PR myself.\r\n\r\nThat is a major issue IMO. We've deployed a FastAPI app in production for one of our microservices, as "
+          },
+          {
+            "sourceId": "github:issue_comment:1752824630",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nantonrh\nSmall comment regarding `Errors based on RFC 7807`: it has already been obsoleted by RFC 9457 - https://www.rfc-editor.org/rfc/rfc9457.html."
+          },
+          {
+            "sourceId": "github:issue_comment:1746816375",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nelsakeirouz\nDon't you plan on adding RefreshUrl to the OAuth2 Password Flow?"
+          },
+          {
+            "sourceId": "github:issue_comment:1751981948",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nwangxin688\nIs there any plans to add class based view natively support by fastapi?"
+          }
+        ],
+        "hits": [
+          "github:issue_comment:1745618744"
+        ],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:1762749084",
+          "github:issue_comment:1752824630",
+          "github:issue_comment:1746816375",
+          "github:issue_comment:1751981948"
+        ],
+        "recall": 1,
+        "precision": 0.2,
+        "claimSupport": "mixed",
+        "abstained": false
+      }
+    },
+    {
+      "id": "comment-pr-16465",
+      "query": "What does a stored conversation comment on pull request #16465 say about SkipJsonSchema?",
+      "lexicalQuery": "stored:* | conversation:* | comment:* | pull:* | request:* | 16465:* | say:* | skipjsonschema:*",
+      "relevanceStatus": "verified_relevant_set",
+      "relevantSourceIds": [
+        "github:issue_comment:6036051915"
+      ],
+      "window": {
+        "from": "2026-10-06T20:28:54Z",
+        "to": "2026-10-07T10:30:20Z",
+        "role": "stored_comment_collection"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue_comment:6036051915",
+          "github:issue_comment:6024522949",
+          "github:pull_request:4529796084",
+          "github:pull_request:4762942697",
+          "github:pull_request:4764656111"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6036051915",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nYuriiMotov\nI'm not sure we need to support this use case (excluding the parameter from openapi schema using the `SkipJsonSchema`). Such things increase the gap between the openapi schema and actual val"
+          },
+          {
+            "sourceId": "github:issue_comment:6024522949",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>eltoder:feature/skip-json"
+          },
+          {
+            "sourceId": "github:pull_request:4529796084",
+            "title": "📝 Clarify comment about SSE event terminator",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\nYuriiMotov"
+          },
+          {
+            "sourceId": "github:pull_request:4762942697",
+            "title": "Support SkipJsonSchema in Query()",
+            "snippet": "pull_request.closed\nfastapi/fastapi\nclosed\neltoder"
+          },
+          {
+            "sourceId": "github:pull_request:4764656111",
+            "title": "📝 Add a section on handling errors inside background tasks",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\ntsayin4"
+          }
+        ],
+        "hits": [
+          "github:issue_comment:6036051915"
+        ],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:6024522949",
+          "github:pull_request:4529796084",
+          "github:pull_request:4762942697",
+          "github:pull_request:4764656111"
+        ],
+        "recall": 1,
+        "precision": 0.2,
+        "claimSupport": "mixed",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue_comment:6036051915",
+          "github:issue_comment:6024522949",
+          "github:pull_request:4529796084",
+          "github:pull_request:4762942697",
+          "github:pull_request:4764656111"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6036051915",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nYuriiMotov\nI'm not sure we need to support this use case (excluding the parameter from openapi schema using the `SkipJsonSchema`). Such things increase the gap between the openapi schema and actual val"
+          },
+          {
+            "sourceId": "github:issue_comment:6024522949",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>eltoder:feature/skip-json"
+          },
+          {
+            "sourceId": "github:pull_request:4529796084",
+            "title": "📝 Clarify comment about SSE event terminator",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\nYuriiMotov"
+          },
+          {
+            "sourceId": "github:pull_request:4762942697",
+            "title": "Support SkipJsonSchema in Query()",
+            "snippet": "pull_request.closed\nfastapi/fastapi\nclosed\neltoder"
+          },
+          {
+            "sourceId": "github:pull_request:4764656111",
+            "title": "📝 Add a section on handling errors inside background tasks",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\ntsayin4"
+          }
+        ],
+        "hits": [
+          "github:issue_comment:6036051915"
+        ],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:6024522949",
+          "github:pull_request:4529796084",
+          "github:pull_request:4762942697",
+          "github:pull_request:4764656111"
+        ],
+        "recall": 1,
+        "precision": 0.2,
+        "claimSupport": "mixed",
+        "abstained": false
+      }
+    },
+    {
+      "id": "comment-pr-16480",
+      "query": "What does a stored conversation comment on pull request #16480 say?",
+      "lexicalQuery": "stored:* | conversation:* | comment:* | pull:* | request:* | 16480:* | say:*",
+      "relevanceStatus": "verified_relevant_set",
+      "relevantSourceIds": [
+        "github:issue_comment:6095888500",
+        "github:issue_comment:6095889316",
+        "github:issue_comment:6096310470"
+      ],
+      "window": {
+        "from": "2026-10-10T08:56:58Z",
+        "to": "2026-10-10T09:53:40Z",
+        "role": "stored_comment_collection"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue_comment:6096310470",
+          "github:issue_comment:6095888500",
+          "github:pull_request:4810018525",
+          "github:issue_comment:6095889316"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6096310470",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nYuriiMotov\nThanks for your interest and efforts, but we plan to solve it in a different way.\r\n\r\nAlso, please follow the rules of the repository.\r\n\r\nWe ask people to only open PRs when it's explicitly r"
+          },
+          {
+            "sourceId": "github:issue_comment:6095888500",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n<details>\n<summary>:warning: <b>20 benchmarks spent significant time in system calls</b"
+          },
+          {
+            "sourceId": "github:pull_request:4810018525",
+            "title": "Docs: migrate sql_databases/tutorial001_an_py310.py from on_event to lifespan",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\nOsaka67-67"
+          },
+          {
+            "sourceId": "github:issue_comment:6095889316",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ngithub-actions[bot]\n## 📝 Docs preview\n\nLast commit 3c1661366eb53ab424bf8c8452fd0c201f136f9b at: https://b46e2336.fastapitiangolo.pages.dev"
+          }
+        ],
+        "hits": [
+          "github:issue_comment:6095888500",
+          "github:issue_comment:6095889316",
+          "github:issue_comment:6096310470"
+        ],
+        "missing": [],
+        "extras": [
+          "github:pull_request:4810018525"
+        ],
+        "recall": 1,
+        "precision": 0.75,
+        "claimSupport": "mixed",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue_comment:6096310470",
+          "github:issue_comment:6095888500",
+          "github:pull_request:4810018525",
+          "github:issue_comment:6095889316"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6096310470",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nYuriiMotov\nThanks for your interest and efforts, but we plan to solve it in a different way.\r\n\r\nAlso, please follow the rules of the repository.\r\n\r\nWe ask people to only open PRs when it's explicitly r"
+          },
+          {
+            "sourceId": "github:issue_comment:6095888500",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n<details>\n<summary>:warning: <b>20 benchmarks spent significant time in system calls</b"
+          },
+          {
+            "sourceId": "github:pull_request:4810018525",
+            "title": "Docs: migrate sql_databases/tutorial001_an_py310.py from on_event to lifespan",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\nOsaka67-67"
+          },
+          {
+            "sourceId": "github:issue_comment:6095889316",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ngithub-actions[bot]\n## 📝 Docs preview\n\nLast commit 3c1661366eb53ab424bf8c8452fd0c201f136f9b at: https://b46e2336.fastapitiangolo.pages.dev"
+          }
+        ],
+        "hits": [
+          "github:issue_comment:6095888500",
+          "github:issue_comment:6095889316",
+          "github:issue_comment:6096310470"
+        ],
+        "missing": [],
+        "extras": [
+          "github:pull_request:4810018525"
+        ],
+        "recall": 1,
+        "precision": 0.75,
+        "claimSupport": "mixed",
+        "abstained": false
+      }
+    },
+    {
+      "id": "comment-pr-16458",
+      "query": "What does a stored conversation comment on pull request #16458 say about bytearray?",
+      "lexicalQuery": "stored:* | conversation:* | comment:* | pull:* | request:* | 16458:* | say:* | bytearray:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-05T16:44:42Z",
+        "to": "2026-10-05T17:07:33Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue_comment:5998918108",
+          "github:issue_comment:5999149892",
+          "github:pull_request:4748094004",
+          "github:issue_comment:5999284810"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:5998918108",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>jasraj1111:support-bytear"
+          },
+          {
+            "sourceId": "github:issue_comment:5999149892",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nYuriiMotov\n@jasraj1111, thanks for your interest and efforts, but please, follow the rules of the repository.\r\n\r\nWe ask people to only open PRs when it's explicitly requested by maintainers.\r\nSee https"
+          },
+          {
+            "sourceId": "github:pull_request:4748094004",
+            "title": "✨ Add support for bytearray in jsonable_encoder",
+            "snippet": "pull_request.closed\nfastapi/fastapi\nclosed\njasraj1111"
+          },
+          {
+            "sourceId": "github:issue_comment:5999284810",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\njasraj1111\n@YuriiMotov Understood, I will make sure to start with a GitHub Discussion first next time. Appreciate the feedback and all your work on FastAPI!"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:5998918108",
+          "github:issue_comment:5999149892",
+          "github:pull_request:4748094004",
+          "github:issue_comment:5999284810"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue_comment:5998918108",
+          "github:issue_comment:5999149892",
+          "github:pull_request:4748094004",
+          "github:issue_comment:5999284810"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:5998918108",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>jasraj1111:support-bytear"
+          },
+          {
+            "sourceId": "github:issue_comment:5999149892",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nYuriiMotov\n@jasraj1111, thanks for your interest and efforts, but please, follow the rules of the repository.\r\n\r\nWe ask people to only open PRs when it's explicitly requested by maintainers.\r\nSee https"
+          },
+          {
+            "sourceId": "github:pull_request:4748094004",
+            "title": "✨ Add support for bytearray in jsonable_encoder",
+            "snippet": "pull_request.closed\nfastapi/fastapi\nclosed\njasraj1111"
+          },
+          {
+            "sourceId": "github:issue_comment:5999284810",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\njasraj1111\n@YuriiMotov Understood, I will make sure to start with a GitHub Discussion first next time. Appreciate the feedback and all your work on FastAPI!"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:5998918108",
+          "github:issue_comment:5999149892",
+          "github:pull_request:4748094004",
+          "github:issue_comment:5999284810"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "comment-issue-16451",
+      "query": "What does a stored comment on issue #16451 say about Mangum or Lambda?",
+      "lexicalQuery": "stored:* | comment:* | issue:* | 16451:* | say:* | mangum:* | lambda:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue:5671616833"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5671616833",
+            "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nigormcsouza"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5671616833"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue:5671616833"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5671616833",
+            "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nigormcsouza"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5671616833"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "comment-issue-16254",
+      "query": "What does a stored comment on issue #16254 say about the debug-mode report?",
+      "lexicalQuery": "stored:* | comment:* | issue:* | 16254:* | say:* | debug:* | mode:* | report:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-08-27T06:40:45Z",
+        "to": "2026-08-27T06:40:45Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue:5262003151"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5262003151",
+            "title": "[security] Debug mode (debug=True) leaks internal file paths, line numbers, and function names via ResponseValidationErr",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nfailsafesecurity"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5262003151"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue:5262003151"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5262003151",
+            "title": "[security] Debug mode (debug=True) leaks internal file paths, line numbers, and function names via ResponseValidationErr",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nfailsafesecurity"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5262003151"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "comment-issue-16390",
+      "query": "What does a stored comment on issue #16390 say about the endpoint context cache?",
+      "lexicalQuery": "stored:* | comment:* | issue:* | 16390:* | say:* | endpoint:* | context:* | cache:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-09-23T05:54:20Z",
+        "to": "2026-09-23T05:54:20Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue:5546669461"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5546669461",
+            "title": "_endpoint_context_cache keyed by id(func) can return stale context after GC",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nege-arhan"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5546669461"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue:5546669461"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5546669461",
+            "title": "_endpoint_context_cache keyed by id(func) can return stale context after GC",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nege-arhan"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5546669461"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "review-pr-16470",
+      "query": "What review decision is stored for pull request #16470?",
+      "lexicalQuery": "review:* | decision:* | stored:* | pull:* | request:* | 16470:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-07T20:37:11Z",
+        "to": "2026-10-08T17:20:20Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:pull_request:4778146414",
+          "github:pull_request:4778470392",
+          "github:pull_request:4588827726",
+          "github:pull_request:4785541113",
+          "github:pull_request:4786366273",
+          "github:issue_comment:6065286367",
+          "github:issue_comment:6046383688"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:pull_request:4778146414",
+            "title": "🐛 Isolate FastAPI telemetry for excluded requests",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          },
+          {
+            "sourceId": "github:pull_request:4778470392",
+            "title": "🔖 Release version 0.142.4",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\npr-submit[bot]"
+          },
+          {
+            "sourceId": "github:pull_request:4588827726",
+            "title": "🐛 Fix explicit response_model ignored on streaming generator endpoints",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\nMayankSharma-2812"
+          },
+          {
+            "sourceId": "github:pull_request:4785541113",
+            "title": "💥 Require opt-in for automatic OpenTelemetry exporter setup",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          },
+          {
+            "sourceId": "github:pull_request:4786366273",
+            "title": "🔖 Release version 0.143.0",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\npr-submit[bot]"
+          },
+          {
+            "sourceId": "github:issue_comment:6065286367",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\n0xamlab\nVerified locally. On the PR merge commit the three new telemetry tests pass: 10 passed in 3.65s. On the base commit the same tests fail 8/10, with the inner excluded request inheriting the oute"
+          },
+          {
+            "sourceId": "github:issue_comment:6046383688",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>codex/isolate-excluded-re"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:pull_request:4778146414",
+          "github:pull_request:4778470392",
+          "github:pull_request:4588827726",
+          "github:pull_request:4785541113",
+          "github:pull_request:4786366273",
+          "github:issue_comment:6065286367",
+          "github:issue_comment:6046383688"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:pull_request:4778146414",
+          "github:pull_request:4778470392",
+          "github:pull_request:4588827726",
+          "github:pull_request:4785541113",
+          "github:pull_request:4786366273",
+          "github:issue_comment:6065286367",
+          "github:issue_comment:6046383688",
+          "github:issue_comment:6058184632"
+        ],
+        "addedByListChanges": [
+          "github:issue_comment:6058184632"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:pull_request:4778146414",
+            "title": "🐛 Isolate FastAPI telemetry for excluded requests",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          },
+          {
+            "sourceId": "github:pull_request:4778470392",
+            "title": "🔖 Release version 0.142.4",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\npr-submit[bot]"
+          },
+          {
+            "sourceId": "github:pull_request:4588827726",
+            "title": "🐛 Fix explicit response_model ignored on streaming generator endpoints",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\nMayankSharma-2812"
+          },
+          {
+            "sourceId": "github:pull_request:4785541113",
+            "title": "💥 Require opt-in for automatic OpenTelemetry exporter setup",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          },
+          {
+            "sourceId": "github:pull_request:4786366273",
+            "title": "🔖 Release version 0.143.0",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\npr-submit[bot]"
+          },
+          {
+            "sourceId": "github:issue_comment:6065286367",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\n0xamlab\nVerified locally. On the PR merge commit the three new telemetry tests pass: 10 passed in 3.65s. On the base commit the same tests fail 8/10, with the inner excluded request inheriting the oute"
+          },
+          {
+            "sourceId": "github:issue_comment:6046383688",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>codex/isolate-excluded-re"
+          },
+          {
+            "sourceId": "github:issue_comment:6058184632",
+            "title": "## 📝 Docs preview Last commit 1d646ff891da2bb43e97cfe875bffc0899f6dc75 at: https://b940b36a.fastapitiangolo.pages.dev #",
+            "snippet": "commented"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:pull_request:4778146414",
+          "github:pull_request:4778470392",
+          "github:pull_request:4588827726",
+          "github:pull_request:4785541113",
+          "github:pull_request:4786366273",
+          "github:issue_comment:6065286367",
+          "github:issue_comment:6046383688",
+          "github:issue_comment:6058184632"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "review-pr-16468",
+      "query": "What review decision is stored for pull request #16468?",
+      "lexicalQuery": "review:* | decision:* | stored:* | pull:* | request:* | 16468:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-07T19:02:41Z",
+        "to": "2026-10-07T19:04:24Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue_comment:6044575210",
+          "github:pull_request:4776946757"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6044575210",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>codex/cache-native-teleme"
+          },
+          {
+            "sourceId": "github:pull_request:4776946757",
+            "title": "🐛 Cache OpenTelemetry tracers to preserve warning deduplication",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:6044575210",
+          "github:pull_request:4776946757"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue_comment:6044575210",
+          "github:pull_request:4776946757"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6044575210",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>codex/cache-native-teleme"
+          },
+          {
+            "sourceId": "github:pull_request:4776946757",
+            "title": "🐛 Cache OpenTelemetry tracers to preserve warning deduplication",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:6044575210",
+          "github:pull_request:4776946757"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "review-pr-16476",
+      "query": "What does a stored review on pull request #16476 say about OpenTelemetry?",
+      "lexicalQuery": "stored:* | review:* | pull:* | request:* | 16476:* | say:* | opentelemetry:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-08T10:46:14Z",
+        "to": "2026-10-08T11:51:43Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:pull_request:4785541113",
+          "github:issue_comment:6058184632"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:pull_request:4785541113",
+            "title": "💥 Require opt-in for automatic OpenTelemetry exporter setup",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          },
+          {
+            "sourceId": "github:issue_comment:6058184632",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ngithub-actions[bot]\n## 📝 Docs preview\n\nLast commit 1d646ff891da2bb43e97cfe875bffc0899f6dc75 at: https://b940b36a.fastapitiangolo.pages.dev\n\n### Modified Pages\n\n* https://b940b36a.fastapitiangolo.pages"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:pull_request:4785541113",
+          "github:issue_comment:6058184632"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:pull_request:4785541113",
+          "github:issue_comment:6058184632",
+          "github:issue_comment:6058162768"
+        ],
+        "addedByListChanges": [
+          "github:issue_comment:6058162768"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:pull_request:4785541113",
+            "title": "💥 Require opt-in for automatic OpenTelemetry exporter setup",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          },
+          {
+            "sourceId": "github:issue_comment:6058184632",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ngithub-actions[bot]\n## 📝 Docs preview\n\nLast commit 1d646ff891da2bb43e97cfe875bffc0899f6dc75 at: https://b940b36a.fastapitiangolo.pages.dev\n\n### Modified Pages\n\n* https://b940b36a.fastapitiangolo.pages"
+          },
+          {
+            "sourceId": "github:issue_comment:6058162768",
+            "title": "<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ --> ## Merging this PR will **not alter performance** `✅ 24` untouched benc",
+            "snippet": "commented"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:pull_request:4785541113",
+          "github:issue_comment:6058184632",
+          "github:issue_comment:6058162768"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "review-pr-16480",
+      "query": "Is a review decision stored for open pull request #16480?",
+      "lexicalQuery": "review:* | decision:* | stored:* | open:* | pull:* | request:* | 16480:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-10T08:56:58Z",
+        "to": "2026-10-10T09:53:40Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue_comment:6096310470",
+          "github:pull_request:4810018525"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6096310470",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nYuriiMotov\nThanks for your interest and efforts, but we plan to solve it in a different way.\r\n\r\nAlso, please follow the rules of the repository.\r\n\r\nWe ask people to only open PRs when it's explicitly r"
+          },
+          {
+            "sourceId": "github:pull_request:4810018525",
+            "title": "Docs: migrate sql_databases/tutorial001_an_py310.py from on_event to lifespan",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\nOsaka67-67"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:6096310470",
+          "github:pull_request:4810018525"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue_comment:6096310470",
+          "github:pull_request:4810018525",
+          "github:issue_comment:6095889316",
+          "github:issue_comment:6095888500"
+        ],
+        "addedByListChanges": [
+          "github:issue_comment:6095889316",
+          "github:issue_comment:6095888500"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6096310470",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\nYuriiMotov\nThanks for your interest and efforts, but we plan to solve it in a different way.\r\n\r\nAlso, please follow the rules of the repository.\r\n\r\nWe ask people to only open PRs when it's explicitly r"
+          },
+          {
+            "sourceId": "github:pull_request:4810018525",
+            "title": "Docs: migrate sql_databases/tutorial001_an_py310.py from on_event to lifespan",
+            "snippet": "pull_request.open\nfastapi/fastapi\nopen\nOsaka67-67"
+          },
+          {
+            "sourceId": "github:issue_comment:6095889316",
+            "title": "## 📝 Docs preview Last commit 3c1661366eb53ab424bf8c8452fd0c201f136f9b at: https://b46e2336.fastapitiangolo.pages.dev",
+            "snippet": "commented"
+          },
+          {
+            "sourceId": "github:issue_comment:6095888500",
+            "title": "<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ --> ## Merging this PR will **not alter performance** <details> <summary>:w",
+            "snippet": "commented"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:6096310470",
+          "github:pull_request:4810018525",
+          "github:issue_comment:6095889316",
+          "github:issue_comment:6095888500"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "abstain-inline-review-16468",
+      "query": "What does an inline review comment on pull request #16468 say about a changed line?",
+      "lexicalQuery": "inline:* | review:* | comment:* | pull:* | request:* | 16468:* | say:* | changed:* | line:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-07T19:02:41Z",
+        "to": "2026-10-07T19:04:24Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue_comment:6044575210",
+          "github:pull_request:4776946757"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6044575210",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>codex/cache-native-teleme"
+          },
+          {
+            "sourceId": "github:pull_request:4776946757",
+            "title": "🐛 Cache OpenTelemetry tracers to preserve warning deduplication",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:6044575210",
+          "github:pull_request:4776946757"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue_comment:6044575210",
+          "github:pull_request:4776946757"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue_comment:6044575210",
+            "title": "issue_comment.backfill",
+            "snippet": "issue_comment.backfill\nfastapi/fastapi\ncodspeed[bot]\n<!-- __CODSPEED_PERFORMANCE_REPORT_COMMENT__ -->\n## Merging this PR will **not alter performance**\n\n\n`✅ 24` untouched benchmarks  \n\n\n\n\n\n---\n\n<sub>Comparing <code>codex/cache-native-teleme"
+          },
+          {
+            "sourceId": "github:pull_request:4776946757",
+            "title": "🐛 Cache OpenTelemetry tracers to preserve warning deduplication",
+            "snippet": "pull_request.merged\nfastapi/fastapi\nclosed\ntiangolo"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue_comment:6044575210",
+          "github:pull_request:4776946757"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "abstain-issue-body-16451",
+      "query": "Quote the issue body of #16451.",
+      "lexicalQuery": "quote:* | issue:* | body:* | 16451:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue:5671616833"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5671616833",
+            "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nigormcsouza"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5671616833"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue:5671616833"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5671616833",
+            "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nigormcsouza"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5671616833"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "abstain-outside-fetch-16345",
+      "query": "What does a stored comment on issue #16345 say?",
+      "lexicalQuery": "stored:* | comment:* | issue:* | 16345:* | say:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-09-11T11:10:42Z",
+        "to": "2026-09-11T11:10:42Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue:5423615347"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5423615347",
+            "title": "Opened in error — please disregard",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nKaramalawaj"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5423615347"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue:5423615347"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5423615347",
+            "title": "Opened in error — please disregard",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nKaramalawaj"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5423615347"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    },
+    {
+      "id": "abstain-title-is-not-a-comment-16451",
+      "query": "Which stored comment on issue #16451 contains the word Mangum?",
+      "lexicalQuery": "stored:* | comment:* | issue:* | 16451:* | contains:* | word:* | mangum:*",
+      "relevanceStatus": "verified_empty",
+      "relevantSourceIds": [],
+      "window": {
+        "from": "2026-10-02T04:34:43Z",
+        "to": "2026-10-02T04:34:43Z",
+        "role": "abstention_probe"
+      },
+      "searchEvidence": {
+        "sourceIds": [
+          "github:issue:5671616833"
+        ],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5671616833",
+            "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nigormcsouza"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5671616833"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      },
+      "buildContext": {
+        "sourceIds": [
+          "github:issue:5671616833"
+        ],
+        "addedByListChanges": [],
+        "snippets": [
+          {
+            "sourceId": "github:issue:5671616833",
+            "title": "Docs: note that native OpenTelemetry works on AWS Lambda (Mangum)",
+            "snippet": "issues.closed\nfastapi/fastapi\nclosed\nigormcsouza"
+          }
+        ],
+        "hits": [],
+        "missing": [],
+        "extras": [
+          "github:issue:5671616833"
+        ],
+        "recall": null,
+        "precision": 0,
+        "claimSupport": "does_not_support",
+        "abstained": false
+      }
+    }
+  ]
+}

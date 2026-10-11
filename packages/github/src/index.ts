@@ -20,6 +20,17 @@ export {
 } from "./fetch.js";
 
 export {
+  BOUNDED_MAX_PAGES,
+  BOUNDED_PAGE_SIZE,
+  fetchBoundedCollection,
+  linkHasNext,
+  stepAfterPage,
+  type BoundedCollection,
+  type CollectionPage,
+  type CollectionStatus,
+} from "./bounded-collection.js";
+
+export {
   discussionClientFromOctokit,
   fetchIssueComments,
   fetchPullRequestReviews,

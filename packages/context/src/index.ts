@@ -1,6 +1,13 @@
 export { answerFromPackage } from "./answer.js";
 export { buildContext, type BuildContextInput } from "./build.js";
 export {
+  EVIDENCE_KINDS,
+  selectAnswerEvidence,
+  sourcePrefixForEvidence,
+  type EvidenceKind,
+} from "./evidence.js";
+export { resolveEvidenceKind, resolveQueryIntent } from "./intent.js";
+export {
   issueNumbers,
   matchExactLogin,
   partitionOccurrences,

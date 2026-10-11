@@ -1,5 +1,5 @@
 import { llmConfigFromEnv, type Env } from "@opencompanyos/config";
-import { buildContext } from "@opencompanyos/context";
+import { EVIDENCE_KINDS, buildContext } from "@opencompanyos/context";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import type { AppContext } from "../app.js";
@@ -11,6 +11,7 @@ const bodySchema = z.object({
   sourceId: z.string().min(1).max(500).optional(),
   from: z.string().datetime({ offset: true }).optional(),
   to: z.string().datetime({ offset: true }).optional(),
+  evidenceKind: z.enum(EVIDENCE_KINDS).optional(),
 });
 
 export function contextInput(
@@ -27,6 +28,7 @@ export function contextInput(
     ...(body.sourceId ? { sourceId: body.sourceId } : {}),
     ...(body.from ? { from: new Date(body.from) } : {}),
     ...(body.to ? { to: new Date(body.to) } : {}),
+    ...(body.evidenceKind ? { evidenceKind: body.evidenceKind } : {}),
   };
 }
 
