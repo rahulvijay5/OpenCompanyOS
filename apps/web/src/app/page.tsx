@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SiteShell } from "@/components/SiteShell";
+import { REPOSITORY_URL, SiteShell } from "@/components/SiteShell";
 
 export const metadata: Metadata = {
   title: "OpenCompanyOS",
@@ -30,9 +30,9 @@ export default function LandingPage() {
               from the systems where work happens—starting with GitHub.
             </p>
             <div className="hero-actions">
-              <Link className="site-btn" href="/app">
+              <a className="site-btn" href={REPOSITORY_URL}>
                 Explore the experiment
-              </Link>
+              </a>
               <Link className="site-btn site-btn-quiet" href="/memo">
                 Read the memo
               </Link>
@@ -139,9 +139,9 @@ export default function LandingPage() {
                 still open work. The workspace at /app is the experiment
                 itself, not a preview of a finished product.
               </p>
-              <Link className="site-btn" href="/app">
+              <a className="site-btn" href={REPOSITORY_URL}>
                 Open the experiment
-              </Link>
+              </a>
             </div>
             <ul className="fact-list">
               <li>Repository selection and synchronization</li>

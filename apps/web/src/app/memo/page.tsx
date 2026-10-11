@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SiteShell } from "@/components/SiteShell";
 
 export const metadata: Metadata = {
@@ -229,7 +228,7 @@ export default function MemoPage() {
               </li>
               <li>
                 A human-facing query API and a structured context API, with a
-                small workspace at <Link href="/app">/app</Link>.
+                small workspace at /app.
               </li>
             </ul>
             <p>

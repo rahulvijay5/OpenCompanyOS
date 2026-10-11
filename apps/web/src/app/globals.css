@@ -324,6 +324,16 @@ summary {
   color: var(--site-text);
 }
 
+.site-github {
+  display: inline-flex;
+  color: var(--site-text);
+  line-height: 0;
+}
+
+.site-github:hover {
+  color: var(--site-muted);
+}
+
 .kicker,
 .section-index,
 .pipeline span,
