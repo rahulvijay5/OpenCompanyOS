@@ -7,7 +7,15 @@ import {
 import { and, eq, inArray, sql } from "drizzle-orm";
 import type { LlmConfig } from "@opencompanyos/config";
 import { embedTexts } from "./llm.js";
-import { chunkText, documentBody, fuseHits, keywordOrQuery } from "./text.js";
+import {
+  chunkText,
+  documentBody,
+  fuseHits,
+  keywordOrQuery,
+  LEXICAL_SEPARATORS,
+  SYNTHETIC_EVENT_TYPE_PATTERN,
+  DISCUSSION_IDENTIFIER,
+} from "./text.js";
 
 type EventRow = {
   id: string;
@@ -135,6 +143,46 @@ type RetrievedDoc = {
   score: number;
 };
 
+const SEARCH_CANDIDATE_LIMIT = 12;
+const EVIDENCE_RESULT_LIMIT = 8;
+
+/**
+ * Kind filtering happens before the result cap.
+ * A lower-ranked comment still fits when higher-ranked snapshots are a different kind.
+ */
+export function selectCappedEvidence<T extends { sourceId: string }>(
+  ranked: readonly T[],
+  sourceIdPrefix: string | undefined,
+  limit = EVIDENCE_RESULT_LIMIT,
+): T[] {
+  const eligible =
+    sourceIdPrefix === undefined
+      ? [...ranked]
+      : ranked.filter((row) => row.sourceId.startsWith(sourceIdPrefix));
+  return eligible.slice(0, limit);
+}
+
+function sourceLikePattern(prefix: string | undefined): string | null {
+  if (!prefix) {
+    return null;
+  }
+  return `${prefix.replace(/[!%_]/g, (character) => `!${character}`)}%`;
+}
+
+function subjectNumberSql(numbers: readonly number[] | undefined) {
+  if (!numbers || numbers.length === 0) {
+    return sql`FALSE`;
+  }
+  const list = sql.join(
+    numbers.map((number) => sql`${String(number)}`),
+    sql`, `,
+  );
+  return sql`(
+    e.payload->>'issueNumber' IN (${list})
+    OR e.payload->>'pullRequestNumber' IN (${list})
+  )`;
+}
+
 export type EvidenceSearchHit = {
   id: string;
   sourceId: string;
@@ -153,30 +201,46 @@ export async function searchEvidence(
     repositoryIds: string[];
     text: string;
     since: Date | null;
+    until?: Date | null;
     config: LlmConfig | null;
+    sourceIdPrefix?: string;
+    subjectNumbers?: readonly number[];
+    discussionContentTokens?: readonly string[];
   },
 ): Promise<EvidenceSearchHit[]> {
   if (input.repositoryIds.length === 0) {
     return [];
   }
-  const constraints = { since: input.since, text: input.text };
+  const constraints = {
+    since: input.since,
+    until: input.until ?? null,
+    text: input.text,
+    sourceIdPrefix: input.sourceIdPrefix,
+    subjectNumbers: input.subjectNumbers,
+    discussionContentTokens: input.discussionContentTokens,
+  };
   const textHits = await searchText(
     db,
     input.tenantId,
     input.repositoryIds,
     constraints,
   );
-  const vectorHits = input.config
-    ? await searchVectors(
-        db,
-        input.tenantId,
-        input.config,
-        input.repositoryIds,
-        constraints,
-      )
-    : [];
-  const fused = fuseHits(textHits, vectorHits).slice(0, 8);
-  const docs = await loadDocuments(db, input.tenantId, fused);
+  const vectorHits =
+    input.config && input.discussionContentTokens === undefined
+      ? await searchVectors(
+          db,
+          input.tenantId,
+          input.config,
+          input.repositoryIds,
+          constraints,
+        )
+      : [];
+  const fused = fuseHits(textHits, vectorHits);
+  const docs = selectCappedEvidence(
+    await loadDocuments(db, input.tenantId, fused),
+    input.sourceIdPrefix,
+    EVIDENCE_RESULT_LIMIT,
+  );
   const repositoryBySource = await repositoryIdsForSources(
     db,
     input.tenantId,
@@ -205,18 +269,65 @@ async function searchText(
   db: Database,
   tenantId: string,
   repositoryIds: string[],
-  constraints: { since: Date | null; text: string },
+  constraints: {
+    since: Date | null;
+    until: Date | null;
+    text: string;
+    sourceIdPrefix: string | undefined;
+    subjectNumbers: readonly number[] | undefined;
+    discussionContentTokens: readonly string[] | undefined;
+  },
 ): Promise<Array<{ documentId: string; score: number }>> {
   const since = constraints.since?.toISOString() ?? null;
+  const until = constraints.until?.toISOString() ?? null;
+  const sourcePattern = sourceLikePattern(constraints.sourceIdPrefix);
+  const lexicalDocument = sql`regexp_replace(regexp_replace(coalesce(d.title, '') || ' ' || coalesce(d.body, ''), ${SYNTHETIC_EVENT_TYPE_PATTERN}, ' ', 'gi'), ${LEXICAL_SEPARATORS}, ' ', 'g')`;
+  if (constraints.discussionContentTokens !== undefined) {
+    const contentQuery =
+      constraints.discussionContentTokens.length === 0
+        ? null
+        : constraints.discussionContentTokens.map((token) => `${token}:*`).join(" | ");
+    const topicDocument = sql`regexp_replace(lower(${lexicalDocument}), ${DISCUSSION_IDENTIFIER}, ' ', 'g')`;
+    const contentRank = contentQuery
+      ? sql`ts_rank(to_tsvector('english', ${topicDocument}), to_tsquery('english', ${contentQuery}))`
+      : sql`0`;
+    const contentMatch = contentQuery
+      ? sql`to_tsvector('english', ${topicDocument}) @@ to_tsquery('english', ${contentQuery})`
+      : sql`TRUE`;
+    const rows = await db.execute<{ id: string; score: number }>(sql`
+      SELECT d.id, ${contentRank} AS score
+      FROM documents d
+      LEFT JOIN events e
+        ON e.tenant_id = d.tenant_id
+       AND e.source_system = d.source_system
+       AND e.source_event_id = d.source_id
+      WHERE d.tenant_id = ${tenantId}
+        AND ${repositoryFilter(repositoryIds)}
+        AND (${sourcePattern}::text IS NULL OR d.source_id LIKE ${sourcePattern} ESCAPE '!')
+        AND ${subjectNumberSql(constraints.subjectNumbers)}
+        AND ${contentMatch}
+        AND (${since}::timestamptz IS NULL OR e.event_time >= ${since})
+        AND (${until}::timestamptz IS NULL OR e.event_time <= ${until})
+      ORDER BY score DESC
+      LIMIT ${SEARCH_CANDIDATE_LIMIT}
+    `);
+    return rows.map((row) => ({
+      documentId: row.id,
+      score: Number(row.score),
+    }));
+  }
   const orQuery = keywordOrQuery(constraints.text);
-  if (!orQuery) {
+  if (!orQuery && (!constraints.subjectNumbers || constraints.subjectNumbers.length === 0)) {
     return [];
   }
+  const lexicalRank = orQuery
+    ? sql`ts_rank(to_tsvector('english', ${lexicalDocument}), to_tsquery('english', ${orQuery}))`
+    : sql`0`;
+  const lexicalMatch = orQuery
+    ? sql`to_tsvector('english', ${lexicalDocument}) @@ to_tsquery('english', ${orQuery})`
+    : sql`FALSE`;
   const rows = await db.execute<{ id: string; score: number }>(sql`
-    SELECT d.id, ts_rank(
-      to_tsvector('english', coalesce(d.title, '') || ' ' || coalesce(d.body, '')),
-      to_tsquery('english', ${orQuery})
-    ) AS score
+    SELECT d.id, ${lexicalRank} AS score
     FROM documents d
     LEFT JOIN events e
       ON e.tenant_id = d.tenant_id
@@ -224,11 +335,15 @@ async function searchText(
      AND e.source_event_id = d.source_id
     WHERE d.tenant_id = ${tenantId}
       AND ${repositoryFilter(repositoryIds)}
-      AND to_tsvector('english', coalesce(d.title, '') || ' ' || coalesce(d.body, ''))
-          @@ to_tsquery('english', ${orQuery})
+      AND (${sourcePattern}::text IS NULL OR d.source_id LIKE ${sourcePattern} ESCAPE '!')
+      AND (
+        ${lexicalMatch}
+        OR (${sourcePattern}::text IS NOT NULL AND ${subjectNumberSql(constraints.subjectNumbers)})
+      )
       AND (${since}::timestamptz IS NULL OR e.event_time >= ${since})
+      AND (${until}::timestamptz IS NULL OR e.event_time <= ${until})
     ORDER BY score DESC
-    LIMIT 12
+    LIMIT ${SEARCH_CANDIDATE_LIMIT}
   `);
 
   return rows.map((row) => ({
@@ -242,7 +357,13 @@ async function searchVectors(
   tenantId: string,
   config: LlmConfig,
   repositoryIds: string[],
-  constraints: { since: Date | null; text: string },
+  constraints: {
+    since: Date | null;
+    until: Date | null;
+    text: string;
+    sourceIdPrefix: string | undefined;
+    subjectNumbers: readonly number[] | undefined;
+  },
 ): Promise<Array<{ documentId: string; score: number }>> {
   let vector: number[];
   try {
@@ -258,6 +379,8 @@ async function searchVectors(
 
   const literal = `[${vector.join(",")}]`;
   const since = constraints.since?.toISOString() ?? null;
+  const until = constraints.until?.toISOString() ?? null;
+  const sourcePattern = sourceLikePattern(constraints.sourceIdPrefix);
   const rows = await db.execute<{ document_id: string; score: number }>(sql`
     SELECT c.document_id, (1 - (c.embedding <=> ${literal}::vector)) AS score
     FROM document_chunks c
@@ -268,10 +391,12 @@ async function searchVectors(
      AND e.source_event_id = d.source_id
     WHERE d.tenant_id = ${tenantId}
       AND ${repositoryFilter(repositoryIds)}
+      AND (${sourcePattern}::text IS NULL OR d.source_id LIKE ${sourcePattern} ESCAPE '!')
       AND c.embedding IS NOT NULL
       AND (${since}::timestamptz IS NULL OR e.event_time >= ${since})
+      AND (${until}::timestamptz IS NULL OR e.event_time <= ${until})
     ORDER BY c.embedding <=> ${literal}::vector
-    LIMIT 12
+    LIMIT ${SEARCH_CANDIDATE_LIMIT}
   `);
 
   return rows.map((row) => ({

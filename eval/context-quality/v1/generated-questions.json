@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "notes": "Unverified questions. The deterministic runner does not score this file. Promote a question only after its facts and source records are validated and moved into questions.json.",
+  "questions": [
+    {
+      "id": "generated-why-billing-export",
+      "verified": false,
+      "query": "Why did the billing export retries change?",
+      "category": "causal"
+    }
+  ]
+}

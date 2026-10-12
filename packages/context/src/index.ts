@@ -1,5 +1,25 @@
 export { answerFromPackage } from "./answer.js";
-export { buildContext, type BuildContextInput } from "./build.js";
+export { buildContext, resolveContextWindow, type BuildContextInput } from "./build.js";
+export {
+  EVIDENCE_KINDS,
+  selectAnswerEvidence,
+  sourcePrefixForEvidence,
+  type EvidenceKind,
+} from "./evidence.js";
+export { resolveEvidenceKind, resolveQueryIntent } from "./intent.js";
+export {
+  ABSTENTION_STATES,
+  abstentionForQuery,
+  acceptTransitionEvidence,
+  asksRollingSevenDays,
+  classifyAbstention,
+  eventInRollingInterval,
+  rollingSevenDayInterval,
+  type AbstentionClassification,
+  type AbstentionState,
+  type IngestionCoverage,
+  type RollingSevenDayInterval,
+} from "./interval.js";
 export {
   issueNumbers,
   matchExactLogin,

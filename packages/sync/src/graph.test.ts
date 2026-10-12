@@ -92,4 +92,44 @@ describe("projectCanonicalGraph", () => {
     const issue = closed.entities.find((entity) => entity.type === "Issue");
     expect(issue?.metadata.state).toBe("closed");
   });
+
+  it("links a pull request conversation comment without creating an issue", () => {
+    const graph = projectCanonicalGraph({
+      sourceEventId: "github:issue_comment:9",
+      payload: {
+        body: "Looks good",
+        userLogin: "carol",
+        pullRequestId: 77,
+        issueNumber: 4,
+        fullName: "opencompanyos-org/company-brain",
+      },
+    });
+
+    expect(graph.entities.some((entity) => entity.type === "Issue")).toBe(false);
+    expect(graph.entities.some((entity) => entity.type === "Review")).toBe(false);
+    expect(graph.relationships).toEqual(
+      expect.arrayContaining([
+        {
+          source: { type: "Comment", sourceId: "github:issue_comment:9" },
+          relationshipType: "DISCUSSES",
+          target: { type: "PullRequest", sourceId: "github:pull_request:77" },
+        },
+      ]),
+    );
+  });
+
+  it("does not discuss an unresolved comment", () => {
+    const graph = projectCanonicalGraph({
+      sourceEventId: "github:issue_comment:10",
+      payload: {
+        body: "orphan",
+        issueNumber: 404,
+        association: "unresolved",
+        fullName: "opencompanyos-org/company-brain",
+      },
+    });
+    expect(graph.relationships.some((edge) => edge.relationshipType === "DISCUSSES")).toBe(
+      false,
+    );
+  });
 });

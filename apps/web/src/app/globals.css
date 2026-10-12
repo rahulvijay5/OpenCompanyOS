@@ -906,6 +906,12 @@ summary {
   text-decoration: none;
 }
 
+.answer-rail .record-meta {
+  display: block;
+  margin-top: 0.2rem;
+  text-align: left;
+}
+
 .answer-rail a:hover {
   text-decoration: underline;
 }

@@ -71,6 +71,9 @@ describe("loadEnv", () => {
 
   it("leaves the model unset when LiteLLM is not configured", () => {
     expect(llmConfigFromEnv(loadEnv({ ...validGithubEnv }))).toBeNull();
+    expect(
+      llmConfigFromEnv(loadEnv({ ...validGithubEnv, LITELLM_BASE_URL: "", LITELLM_API_KEY: "" })),
+    ).toBeNull();
   });
 
   it("rejects missing GitHub credentials", () => {

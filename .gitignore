@@ -20,6 +20,8 @@ out/
 
 # Test / coverage
 coverage/
+eval/context-quality/reports/
+eval/context-quality/cache/
 
 # IDE
 .idea/

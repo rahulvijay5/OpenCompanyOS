@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "notes": "Synthetic events projected by the existing graph code. Issue 120012 snapshot event_time is updated_at. The close occurrence has its own event_time. closedAt on the snapshot payload is not the snapshot event_time.",
+  "repositories": [
+    {
+      "key": "selected-a",
+      "ownerLogin": "eval-fixture",
+      "name": "engine-a",
+      "fullName": "eval-fixture/engine-a",
+      "selected": true,
+      "githubRepositoryId": 880001,
+      "defaultBranch": "main"
+    },
+    {
+      "key": "selected-b",
+      "ownerLogin": "eval-fixture",
+      "name": "engine-b",
+      "fullName": "eval-fixture/engine-b",
+      "selected": true,
+      "githubRepositoryId": 880002,
+      "defaultBranch": "main"
+    },
+    {
+      "key": "hidden",
+      "ownerLogin": "eval-fixture",
+      "name": "hidden",
+      "fullName": "eval-fixture/hidden",
+      "selected": false,
+      "githubRepositoryId": 880003,
+      "defaultBranch": "main"
+    }
+  ],
+  "events": [
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:issue_comment:501",
+      "eventType": "issue_comment.created",
+      "eventTime": "2026-03-11T10:00:00.000Z",
+      "payload": {
+        "id": 501,
+        "body": "The billing export retries should wait for the lock.",
+        "userLogin": "grace",
+        "issueId": 120012,
+        "issueNumber": 12,
+        "htmlUrl": "https://example.test/comment/501"
+      }
+    },
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:issue:120012:labeled",
+      "eventType": "issues.labeled",
+      "eventTime": "2026-02-01T00:00:00.000Z",
+      "payload": {
+        "id": 120012,
+        "number": 12,
+        "title": "billing export retries",
+        "state": "open",
+        "userLogin": "ada",
+        "htmlUrl": "https://example.test/issues/12"
+      }
+    },
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:issue:120012:untimed",
+      "eventType": "issues.edited",
+      "eventTime": null,
+      "payload": {
+        "id": 120012,
+        "number": 12,
+        "title": "billing export retries",
+        "state": "open",
+        "userLogin": "ada",
+        "htmlUrl": "https://example.test/issues/12"
+      }
+    },
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:issue:120012:closed",
+      "eventType": "issues.closed",
+      "eventTime": "2026-03-10T15:00:00.000Z",
+      "payload": {
+        "id": 120012,
+        "number": 12,
+        "title": "billing export retries",
+        "state": "closed",
+        "userLogin": "ada",
+        "htmlUrl": "https://example.test/issues/12"
+      }
+    },
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:issue:120012",
+      "eventType": "issues.snapshot",
+      "eventTime": "2026-03-02T12:00:00.000Z",
+      "payload": {
+        "id": 120012,
+        "number": 12,
+        "title": "billing export retries",
+        "state": "open",
+        "userLogin": "ada",
+        "body": "Retries for the billing export are stuck.",
+        "createdAt": "2026-03-01T00:00:00.000Z",
+        "updatedAt": "2026-03-02T12:00:00.000Z",
+        "closedAt": "2026-03-10T15:00:00.000Z",
+        "htmlUrl": "https://example.test/issues/12"
+      }
+    },
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:issue:70001",
+      "eventType": "issues.snapshot",
+      "eventTime": "2026-03-09T00:00:00.000Z",
+      "payload": {
+        "id": 70001,
+        "number": 7,
+        "title": "shared topic alpha",
+        "state": "open",
+        "userLogin": "ada",
+        "body": "Shared topic notes for engine A.",
+        "updatedAt": "2026-03-09T00:00:00.000Z",
+        "htmlUrl": "https://example.test/engine-a/issues/7"
+      }
+    },
+    {
+      "repositoryKey": "selected-b",
+      "sourceEventId": "github:issue:70002",
+      "eventType": "issues.snapshot",
+      "eventTime": "2026-03-09T01:00:00.000Z",
+      "payload": {
+        "id": 70002,
+        "number": 7,
+        "title": "shared topic beta",
+        "state": "open",
+        "userLogin": "grace",
+        "body": "Shared topic notes for engine B.",
+        "updatedAt": "2026-03-09T01:00:00.000Z",
+        "htmlUrl": "https://example.test/engine-b/issues/7"
+      }
+    },
+    {
+      "repositoryKey": "hidden",
+      "sourceEventId": "github:issue:990099",
+      "eventType": "issues.snapshot",
+      "eventTime": "2026-03-12T00:00:00.000Z",
+      "payload": {
+        "id": 990099,
+        "number": 99,
+        "title": "vault rotation token",
+        "state": "open",
+        "userLogin": "ada",
+        "body": "Rotate the vault token in the unselected repository.",
+        "updatedAt": "2026-03-12T00:00:00.000Z",
+        "htmlUrl": "https://example.test/hidden/issues/99"
+      }
+    },
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:pull_request_review:88001",
+      "eventType": "pull_request_review.submitted",
+      "eventTime": "2026-03-12T08:00:00.000Z",
+      "payload": {
+        "id": 88001,
+        "state": "APPROVED",
+        "body": "Approve the billing export pull request.",
+        "userLogin": "grace",
+        "pullRequestId": 40040,
+        "pullRequestNumber": 40,
+        "submittedAt": "2026-03-12T08:00:00.000Z",
+        "htmlUrl": "https://example.test/pull/40#pullrequestreview-88001"
+      }
+    },
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:pull_request:40040",
+      "eventType": "pull_request.snapshot",
+      "eventTime": "2026-03-11T00:00:00.000Z",
+      "payload": {
+        "id": 40040,
+        "number": 40,
+        "title": "billing export pull request",
+        "state": "open",
+        "merged": false,
+        "userLogin": "ada",
+        "body": "Approve the billing export once retries are bounded.",
+        "updatedAt": "2026-03-11T00:00:00.000Z",
+        "htmlUrl": "https://example.test/pull/40"
+      }
+    },
+    {
+      "repositoryKey": "selected-a",
+      "sourceEventId": "github:commit:abc123def4567890abcd1234ef567890abcd1234",
+      "eventType": "push.commit",
+      "eventTime": "2026-03-09T12:00:00.000Z",
+      "payload": {
+        "sha": "abc123def4567890abcd1234ef567890abcd1234",
+        "message": "record billing export commit",
+        "authorLogin": "ada",
+        "htmlUrl": "https://example.test/commit/abc123def456"
+      }
+    }
+  ]
+}

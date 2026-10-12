@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "notes": "Verified questions. Expected values come only from facts.json fact ids.",
+  "questions": [
+    {
+      "id": "resolve-issue-12",
+      "query": "billing export retries #12",
+      "from": "2026-03-01T00:00:00.000Z",
+      "factIds": [
+        "subject.issue-12",
+        "scope.selected-a",
+        "scope.selected-b",
+        "scope.not-hidden",
+        "evidence.issue-12",
+        "evidence.not-hidden",
+        "rel.authored-12",
+        "rel.belongs-12",
+        "rel.discusses-12",
+        "time.issue-12.updated",
+        "time.issue-12.closed",
+        "time.issue-12.older-absent",
+        "time.issue-12.untimed-absent",
+        "time.issue-12.distinct",
+        "uncertainty.history",
+        "uncertainty.reviews",
+        "uncertainty.missing-time"
+      ]
+    },
+    {
+      "id": "ambiguous-issue-7",
+      "query": "shared topic #7",
+      "factIds": [
+        "subject.issue-7-ambiguous",
+        "uncertainty.ambiguous",
+        "uncertainty.history",
+        "uncertainty.reviews"
+      ]
+    },
+    {
+      "id": "scope-unknown-repository",
+      "query": "billing export retries #12",
+      "repositoryKeys": ["selected-a"],
+      "extraRepositoryIds": ["00000000-0000-4000-8000-000000000099"],
+      "factIds": [
+        "uncertainty.scope",
+        "scope.selected-a",
+        "scope.not-selected-b",
+        "scope.not-hidden",
+        "subject.issue-12",
+        "uncertainty.history",
+        "uncertainty.reviews",
+        "uncertainty.missing-time"
+      ]
+    },
+    {
+      "id": "occurrence-timestamps",
+      "query": "billing export retries #12",
+      "factIds": [
+        "time.issue-12.updated",
+        "time.issue-12.closed",
+        "time.issue-12.older-absent",
+        "time.issue-12.untimed-absent",
+        "time.issue-12.distinct",
+        "uncertainty.missing-time",
+        "uncertainty.history",
+        "uncertainty.reviews"
+      ]
+    },
+    {
+      "id": "hidden-repository-excluded",
+      "query": "vault rotation token",
+      "from": "2026-03-01T00:00:00.000Z",
+      "factIds": [
+        "evidence.not-hidden",
+        "scope.not-hidden",
+        "scope.selected-a",
+        "uncertainty.history",
+        "uncertainty.reviews"
+      ]
+    },
+    {
+      "id": "pull-request-review-edge",
+      "query": "approve billing export #40",
+      "from": "2026-03-01T00:00:00.000Z",
+      "factIds": [
+        "subject.pr-40",
+        "subject.not-review-entity",
+        "rel.reviewed-40",
+        "uncertainty.history",
+        "uncertainty.reviews"
+      ]
+    },
+    {
+      "id": "commit-modifies",
+      "query": "record billing export commit",
+      "sourceId": "github:commit:abc123def4567890abcd1234ef567890abcd1234",
+      "from": "2026-03-01T00:00:00.000Z",
+      "factIds": [
+        "subject.commit",
+        "rel.modifies-commit",
+        "uncertainty.history",
+        "uncertainty.reviews"
+      ]
+    },
+    {
+      "id": "drop-invalid-evidence-id",
+      "query": "billing export retries #12",
+      "from": "2026-03-01T00:00:00.000Z",
+      "answer": "drop_unknown_evidence",
+      "factIds": [
+        "citation.drops-unknown",
+        "uncertainty.history",
+        "uncertainty.reviews"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,399 @@
+{
+  "version": 1,
+  "status": "preregistered",
+  "verified": false,
+  "tenantSlug": "fastapi-v2-eeb18b73",
+  "manifestSha256": "eeb18b7376c4257900435e65bd31a7c18135126d219f477eee8bfab56ac66d9d",
+  "notes": "Draft only. verified false means the comment or review text has not been fetched or checked. relevantSourceIds stays null until a person lists every stored row that supports the answer. Several comments may all be relevant. A parent snapshot id is not evidence. A completed review fetch with zero records creates no review source id and does not prove that no review activity ever occurred. not_fetched and incomplete_bounded stay unverified. This set does not measure general retrieval quality.",
+  "fetchLimits": {
+    "pageSize": 100,
+    "maxPagesPerCollection": 2,
+    "scope": "Each issue comment collection, each pull-request conversation collection, and each pull-request review collection stops on its own after two pages.",
+    "complete": "The pagination response offers no next page, including a finished page with zero records. A full page is complete only when no next page is offered.",
+    "incompleteBounded": "The two-page cap was reached while the pagination response still offered a next page. The stored rows are a prefix, not the collection.",
+    "notFetched": "The collection was not requested, or the call stopped on HTTP 403 or 429. Do not store that as zero records."
+  },
+  "targets": [
+    {
+      "kind": "issue",
+      "number": 16451,
+      "sourceId": "github:issue:5671616833",
+      "state": "closed",
+      "updatedAt": "2026-10-02T04:34:43Z"
+    },
+    {
+      "kind": "issue",
+      "number": 10370,
+      "sourceId": "github:issue:1922795955",
+      "state": "open",
+      "updatedAt": "2026-06-14T12:38:54Z"
+    },
+    {
+      "kind": "issue",
+      "number": 15969,
+      "sourceId": "github:issue:4852026509",
+      "state": "closed",
+      "updatedAt": "2026-07-10T05:34:17Z"
+    },
+    {
+      "kind": "issue",
+      "number": 16254,
+      "sourceId": "github:issue:5262003151",
+      "state": "closed",
+      "updatedAt": "2026-08-27T06:40:45Z"
+    },
+    {
+      "kind": "issue",
+      "number": 16301,
+      "sourceId": "github:issue:5354821532",
+      "state": "closed",
+      "updatedAt": "2026-09-07T05:20:37Z"
+    },
+    {
+      "kind": "issue",
+      "number": 16334,
+      "sourceId": "github:issue:5388731018",
+      "state": "closed",
+      "updatedAt": "2026-09-08T19:21:03Z"
+    },
+    {
+      "kind": "issue",
+      "number": 16356,
+      "sourceId": "github:issue:5457243777",
+      "state": "closed",
+      "updatedAt": "2026-09-15T04:17:02Z"
+    },
+    {
+      "kind": "issue",
+      "number": 16390,
+      "sourceId": "github:issue:5546669461",
+      "state": "closed",
+      "updatedAt": "2026-09-23T05:54:20Z"
+    },
+    {
+      "kind": "issue",
+      "number": 16417,
+      "sourceId": "github:issue:5644286779",
+      "state": "closed",
+      "updatedAt": "2026-09-30T09:51:40Z"
+    },
+    {
+      "kind": "issue",
+      "number": 5833,
+      "sourceId": "github:issue:1517505859",
+      "state": "closed",
+      "updatedAt": "2023-02-27T19:07:04Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16480,
+      "sourceId": "github:pull_request:4810018525",
+      "state": "open",
+      "merged": false,
+      "updatedAt": "2026-10-10T08:57:04Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16479,
+      "sourceId": "github:pull_request:4809042528",
+      "state": "open",
+      "merged": false,
+      "updatedAt": "2026-10-10T05:44:55Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16464,
+      "sourceId": "github:pull_request:4762386092",
+      "state": "open",
+      "merged": false,
+      "updatedAt": "2026-10-06T17:37:03Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16476,
+      "sourceId": "github:pull_request:4785541113",
+      "state": "closed",
+      "merged": true,
+      "updatedAt": "2026-10-08T11:51:43Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16470,
+      "sourceId": "github:pull_request:4778146414",
+      "state": "closed",
+      "merged": true,
+      "updatedAt": "2026-10-08T17:20:20Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16468,
+      "sourceId": "github:pull_request:4776946757",
+      "state": "closed",
+      "merged": true,
+      "updatedAt": "2026-10-07T19:04:24Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16465,
+      "sourceId": "github:pull_request:4762942697",
+      "state": "closed",
+      "merged": false,
+      "updatedAt": "2026-10-07T10:30:20Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16458,
+      "sourceId": "github:pull_request:4748094004",
+      "state": "closed",
+      "merged": false,
+      "updatedAt": "2026-10-05T17:07:33Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16454,
+      "sourceId": "github:pull_request:4725216442",
+      "state": "closed",
+      "merged": false,
+      "updatedAt": "2026-10-05T07:27:44Z"
+    },
+    {
+      "kind": "pull_request",
+      "number": 16421,
+      "sourceId": "github:pull_request:4694685075",
+      "state": "closed",
+      "merged": false,
+      "updatedAt": "2026-09-30T19:05:30Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "comment-issue-16451",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored comment on issue #16451 say about Mangum or Lambda?",
+      "targetSourceIds": [
+        "github:issue:5671616833"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "An issue comment body associated with github:issue:5671616833.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "comment-issue-10370",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored comment on open issue #10370 say about the roadmap?",
+      "targetSourceIds": [
+        "github:issue:1922795955"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "An issue comment body associated with github:issue:1922795955.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "comment-issue-16254",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored comment on issue #16254 say about the debug-mode report?",
+      "targetSourceIds": [
+        "github:issue:5262003151"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "An issue comment body associated with github:issue:5262003151.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "comment-issue-16390",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored comment on issue #16390 say about the endpoint context cache?",
+      "targetSourceIds": [
+        "github:issue:5546669461"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "An issue comment body associated with github:issue:5546669461.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "comment-issue-5833",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored comment on issue #5833 say about response compression?",
+      "targetSourceIds": [
+        "github:issue:1517505859"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "An issue comment body associated with github:issue:1517505859. The parent snapshot updatedAt is 2023-02-27T19:07:04Z. After fetch, the scoring window must include every relevant comment event_time. A 2026-only window is incorrect.",
+      "window": null,
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null
+    },
+    {
+      "id": "comment-pr-16480",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored conversation comment on pull request #16480 say?",
+      "targetSourceIds": [
+        "github:pull_request:4810018525"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "A pull-request conversation comment associated with github:pull_request:4810018525, not a stub issue.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "comment-pr-16465",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored conversation comment on pull request #16465 say about SkipJsonSchema?",
+      "targetSourceIds": [
+        "github:pull_request:4762942697"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "A pull-request conversation comment associated with github:pull_request:4762942697.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "comment-pr-16458",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored conversation comment on pull request #16458 say about bytearray?",
+      "targetSourceIds": [
+        "github:pull_request:4748094004"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "A pull-request conversation comment associated with github:pull_request:4748094004.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "review-pr-16470",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What review decision is stored for pull request #16470?",
+      "targetSourceIds": [
+        "github:pull_request:4778146414"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "A pull-request review record for github:pull_request:4778146414. The snapshot merged flag is not that review.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "review-pr-16468",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What review decision is stored for pull request #16468?",
+      "targetSourceIds": [
+        "github:pull_request:4776946757"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "A pull-request review record for github:pull_request:4776946757.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "review-pr-16476",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "What does a stored review on pull request #16476 say about OpenTelemetry?",
+      "targetSourceIds": [
+        "github:pull_request:4785541113"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "A pull-request review body or state for github:pull_request:4785541113.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "review-pr-16480",
+      "verified": false,
+      "intendedOutcome": "unknown_until_fetch",
+      "question": "Is a review decision stored for open pull request #16480?",
+      "targetSourceIds": [
+        "github:pull_request:4810018525"
+      ],
+      "expectedSourceIds": null,
+      "relevantSourceIds": null,
+      "fetchOutcomes": {
+        "recordsReturned": "Review source ids may be checked. Only a person marks which are relevant.",
+        "completedZeroRecords": "No review source id is established. Abstention may fit this question as phrased. This does not prove that a review decision exists or that no review activity ever occurred.",
+        "incompleteOrBlocked": "Stay verified false. Do not treat 403, 429, or incomplete_bounded as zero reviews."
+      },
+      "evidenceRequired": "A pull-request review record for github:pull_request:4810018525 only if the fetch returns records. A completed zero-record fetch supports abstention for this wording and does not create a source id.",
+      "groundedInImportedMetadata": false,
+      "window": null
+    },
+    {
+      "id": "abstain-inline-review-16468",
+      "verified": false,
+      "intendedOutcome": "abstain",
+      "question": "What does an inline review comment on pull request #16468 say about a changed line?",
+      "targetSourceIds": [
+        "github:pull_request:4776946757"
+      ],
+      "expectedSourceIds": [],
+      "evidenceRequired": "An inline pull-request review comment. This importer does not store that collection.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "abstain-issue-body-16451",
+      "verified": false,
+      "intendedOutcome": "abstain",
+      "question": "Quote the issue body of #16451.",
+      "targetSourceIds": [
+        "github:issue:5671616833"
+      ],
+      "expectedSourceIds": [],
+      "evidenceRequired": "The issue body. The manifest and the planned comment fetch do not include it.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "abstain-outside-fetch-16345",
+      "verified": false,
+      "intendedOutcome": "abstain",
+      "question": "What does a stored comment on issue #16345 say?",
+      "targetSourceIds": [
+        "github:issue:5423615347"
+      ],
+      "expectedSourceIds": [],
+      "evidenceRequired": "A comment on issue 16345. That issue is in the frozen corpus and outside the 20-target fetch.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    },
+    {
+      "id": "abstain-title-is-not-a-comment-16451",
+      "verified": false,
+      "intendedOutcome": "abstain",
+      "question": "Which stored comment on issue #16451 contains the word Mangum?",
+      "targetSourceIds": [
+        "github:issue:5671616833"
+      ],
+      "expectedSourceIds": null,
+      "evidenceRequired": "A comment body that contains Mangum. The parent title contains Mangum and is not a comment.",
+      "groundedInImportedMetadata": false,
+      "relevantSourceIds": null,
+      "window": null
+    }
+  ]
+}

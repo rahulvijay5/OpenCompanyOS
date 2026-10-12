@@ -1,5 +1,5 @@
 import { config as loadDotenv } from "dotenv";
-import { loadEnv } from "@opencompanyos/config";
+import { loadEnv, loadRuntimeEnv, type Env } from "@opencompanyos/config";
 import { createDb } from "@opencompanyos/db";
 import {
   claimNextSyncJob,
@@ -18,20 +18,37 @@ loadDotenv({ path: path.join(rootDir, ".env") });
 
 const POLL_MS = 2_000;
 
-async function main() {
-  const env = loadEnv();
-  const db = createDb(env.DATABASE_URL);
-  const credentials = {
+function githubCredentials(env: Env) {
+  return {
     appId: env.GITHUB_APP_ID,
     privateKey: env.GITHUB_PRIVATE_KEY,
     clientId: env.GITHUB_CLIENT_ID,
     clientSecret: env.GITHUB_CLIENT_SECRET,
   };
+}
 
-  console.log("[worker] polling for sync jobs and webhook deliveries");
+async function main() {
+  const runtime = loadRuntimeEnv();
+  const db = createDb(runtime.DATABASE_URL);
+  let credentials: ReturnType<typeof githubCredentials> | null = null;
+  try {
+    credentials = githubCredentials(loadEnv());
+  } catch (error) {
+    console.error(
+      "[worker] GitHub App credentials are missing. Sync and webhook processing stay idle until they are set.",
+      error instanceof Error ? error.message : error,
+    );
+  }
+
+  console.log("[worker] polling Postgres for sync jobs and webhook deliveries");
 
   for (;;) {
     try {
+      if (!credentials) {
+        await new Promise((resolve) => setTimeout(resolve, POLL_MS));
+        continue;
+      }
+
       const deliveryId = await claimNextWebhookDelivery(db);
       if (deliveryId) {
         console.log(`[worker] processing webhook delivery ${deliveryId}`);

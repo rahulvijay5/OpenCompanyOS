@@ -20,6 +20,36 @@ export {
 } from "./fetch.js";
 
 export {
+  BOUNDED_MAX_PAGES,
+  BOUNDED_PAGE_SIZE,
+  fetchBoundedCollection,
+  linkHasNext,
+  stepAfterPage,
+  type BoundedCollection,
+  type CollectionPage,
+  type CollectionStatus,
+} from "./bounded-collection.js";
+
+export {
+  discussionClientFromOctokit,
+  fetchIssueComments,
+  fetchPullRequestReviews,
+  issueNumberFromUrl,
+  mapIssueComment,
+  mapPullRequestReview,
+  type DiscussionClient,
+  type DiscussionFetch,
+  type DiscussionRecord,
+  type GitHubPage,
+} from "./discussions.js";
+
+export {
+  RateLimitExceeded,
+  RetryableHttpError,
+  withBoundedRetry,
+} from "./retry.js";
+
+export {
   normalizeGithubWebhook,
   verifyGithubWebhookSignature,
   type NormalizedWebhookEvent,

@@ -14,7 +14,9 @@
     "db:migrate": "pnpm --filter @opencompanyos/db migrate",
     "db:studio": "pnpm --filter @opencompanyos/db studio",
     "eval": "node scripts/benchmark.mjs",
-    "export:site": "node scripts/export-site.mjs"
+    "export:site": "node scripts/export-site.mjs",
+    "eval:context": "pnpm --filter @opencompanyos/github build && pnpm --filter @opencompanyos/sync build && pnpm --filter @opencompanyos/db exec tsx ../context/src/quality/cli.ts",
+    "eval:context:judge": "pnpm --filter @opencompanyos/github build && pnpm --filter @opencompanyos/sync build && pnpm --filter @opencompanyos/db exec tsx ../context/src/quality/judge-cli.ts"
   },
   "devDependencies": {
     "typescript": "^5.8.2",

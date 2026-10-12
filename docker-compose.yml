@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: opencompanyos
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PUBLISH_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -16,11 +16,122 @@ services:
       timeout: 5s
       retries: 10
 
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["node", "packages/db/dist/migrate.js"]
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/opencompanyos
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["node", "apps/api/dist/index.js"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/opencompanyos
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      API_URL: http://api:4000
+      API_PORT: "4000"
+      NODE_ENV: production
+      LITELLM_BASE_URL: ${COMPOSE_LITELLM_BASE_URL:-}
+      LITELLM_API_KEY: ${COMPOSE_LITELLM_API_KEY:-}
+    ports:
+      - "${API_PUBLISH_PORT:-4000}:4000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/ready').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+    command:
+      [
+        "pnpm",
+        "--filter",
+        "@opencompanyos/web",
+        "exec",
+        "next",
+        "start",
+        "--port",
+        "3000",
+      ]
+    environment:
+      API_URL: http://api:4000
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+    ports:
+      - "${WEB_PUBLISH_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/app').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["node", "apps/worker/dist/index.js"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/opencompanyos
+      API_URL: http://api:4000
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      NODE_ENV: production
+      LITELLM_BASE_URL: ${COMPOSE_LITELLM_BASE_URL:-}
+      LITELLM_API_KEY: ${COMPOSE_LITELLM_API_KEY:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "apps/worker/dist/healthcheck.js"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
   litellm:
+    profiles: ["llm"]
     image: docker.litellm.ai/berriai/litellm:main-latest
     restart: unless-stopped
     ports:
-      - "4001:4000"
+      - "${LITELLM_PUBLISH_PORT:-4001}:4000"
     environment:
       LITELLM_MASTER_KEY: ${LITELLM_API_KEY:-sk-local-dev}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}

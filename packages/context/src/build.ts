@@ -1,9 +1,9 @@
 import type { LlmConfig } from "@opencompanyos/config";
-import { entities, relationships, type Database } from "@opencompanyos/db";
+import { entities, events, documents, relationships, type Database } from "@opencompanyos/db";
 import {
   asksAboutChanges,
+  discussionContentTokens,
   extractQueryConstraints,
-  listChanges,
   searchEvidence,
 } from "@opencompanyos/retrieval";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
@@ -13,14 +13,26 @@ import {
   partitionOccurrences,
   resolveCandidates,
 } from "./resolve.js";
+import { selectAnswerEvidence, sourcePrefixForEvidence, type EvidenceKind } from "./evidence.js";
+import { resolveEvidenceKind } from "./intent.js";
+import {
+  abstentionForQuery,
+  acceptTransitionEvidence,
+  asksRollingSevenDays,
+  eventInRollingInterval,
+  rollingSevenDayInterval,
+  type RollingSevenDayInterval,
+} from "./interval.js";
+import { subjectSnapshotEvidence } from "./subject-evidence.js";
 import { resolveScope } from "./scope.js";
 import {
   AUTHORIZATION_LOCAL_OWNER,
   CONTEXT_PACKAGE_VERSION,
   RELATIONSHIP_TYPES,
+  type ContextEvidence,
+  type EvidenceInclusionReason,
   type ContextEntityRef,
   type ContextEvent,
-  type ContextEvidence,
   type ContextPackage,
   type ContextRelationship,
   type ContextState,
@@ -40,6 +52,11 @@ export type BuildContextInput = {
   from?: Date;
   to?: Date;
   now?: Date;
+  /**
+   * Restricts answer evidence. An explicit value overrides query-intent rules.
+   * Omitted values use those rules, and an unmatched question stays a metadata query.
+   */
+  evidenceKind?: EvidenceKind;
 };
 
 type EntityHit = {
@@ -65,23 +82,27 @@ function repositoryPredicate(repositoryIds: string[]) {
   )})`;
 }
 
-function windowFor(
+export function resolveContextWindow(
   query: string,
   from: Date | undefined,
   to: Date | undefined,
   now: Date,
-): { from: Date | null; to: Date | null } {
+): { from: Date | null; to: Date | null; interval: RollingSevenDayInterval | null } {
   if (from || to) {
-    return { from: from ?? null, to: to ?? null };
+    return { from: from ?? null, to: to ?? null, interval: null };
+  }
+  if (asksRollingSevenDays(query)) {
+    const interval = rollingSevenDayInterval(now);
+    return { from: new Date(interval.start), to: new Date(interval.end), interval };
   }
   const extracted = extractQueryConstraints(query, now);
   if (extracted.since) {
-    return { from: extracted.since, to: null };
+    return { from: extracted.since, to: null, interval: null };
   }
   if (asksAboutChanges(query, now)) {
-    return { from: new Date(now.getTime() - WEEK_MS), to: null };
+    return { from: new Date(now.getTime() - WEEK_MS), to: null, interval: null };
   }
-  return { from: new Date(now.getTime() - WEEK_MS), to: null };
+  return { from: new Date(now.getTime() - WEEK_MS), to: null, interval: null };
 }
 
 export async function buildContext(
@@ -101,9 +122,9 @@ export async function buildContext(
         "Activity before this installation is a current snapshot. Earlier transitions were not reconstructed.",
     },
     {
-      code: "reviews_only_from_webhooks",
+      code: "inline_review_comments_unavailable",
       message:
-        "Reviews and review comments are included only when a webhook was received. A missing review here does not mean GitHub has no review.",
+        "Review decisions can be stored from a repository sync or a webhook. Inline review comments are not imported. A missing inline comment does not mean GitHub has none.",
     },
   ];
   if (scope.rejected.length > 0) {
@@ -113,7 +134,7 @@ export async function buildContext(
     });
   }
 
-  const range = windowFor(input.query, input.from, input.to, now);
+  const range = resolveContextWindow(input.query, input.from, input.to, now);
   const subject = await resolveSubject(db, input, scope.repositoryIds);
   if (subject.status === "ambiguous") {
     uncertainties.push({
@@ -144,6 +165,15 @@ export async function buildContext(
     range.to,
   );
   const partitioned = partitionOccurrences(observed, range.from, range.to);
+  const retrievalInterval = range.interval;
+  const includedEvents = retrievalInterval
+    ? partitioned.included.filter((event) =>
+        acceptTransitionEvidence(
+          { eventTime: event.eventTime, recordKind: event.recordKind },
+          retrievalInterval,
+        ),
+      )
+    : partitioned.included;
   if (partitioned.missingTime || (await hasUntimedOccurrences(db, input.tenantId, scope.repositoryIds))) {
     uncertainties.push({
       code: "event_time_missing",
@@ -157,27 +187,72 @@ export async function buildContext(
       ? await loadRelationships(db, input.tenantId, subject.entity.id)
       : [];
 
+  const evidenceKind = resolveEvidenceKind(input.query, input.evidenceKind);
+  const sourceIdPrefix = sourcePrefixForEvidence(evidenceKind);
+  const asksForNumber = issueNumbers(input.query).length > 0;
+  const commentNumbers = evidenceKind === "issue_comment" ? issueNumbers(input.query) : [];
+  const reviewNumbers = evidenceKind === "pull_request_review" ? issueNumbers(input.query) : [];
+  const snapshotDecision = subjectSnapshotEvidence({
+    ...(evidenceKind ? { evidenceKind } : {}),
+    subject,
+    states: currentState,
+    from: range.from,
+    to: range.to,
+    asksForNumber,
+  });
   const searched =
-    scope.repositoryIds.length === 0
+    snapshotDecision.mode === "snapshots" || scope.repositoryIds.length === 0
       ? []
       : await searchEvidence(db, {
           tenantId: input.tenantId,
           repositoryIds: scope.repositoryIds,
           text: input.query,
           since: range.from,
-          config: input.config,
-        });
-  const changes =
-    scope.repositoryIds.length === 0
-      ? []
-      : await listChanges(db, input.tenantId, {
-          since: range.from,
           until: range.to,
-          repositoryIds: scope.repositoryIds,
-          limit: 8,
+          config: input.config,
+          ...(sourceIdPrefix ? { sourceIdPrefix } : {}),
+          ...(commentNumbers.length > 0
+            ? {
+                subjectNumbers: commentNumbers,
+                discussionContentTokens: discussionContentTokens(input.query),
+              }
+            : {}),
+          ...(reviewNumbers.length > 0 ? { subjectNumbers: reviewNumbers } : {}),
         });
 
-  const evidence = mergeEvidence(searched, changes);
+  const searchedEvidence = selectAnswerEvidence(
+    searched.map((hit) => ({
+      id: hit.id,
+      sourceId: hit.sourceId,
+      title: hit.title,
+      url: hit.url,
+      snippet: hit.snippet,
+      score: hit.score,
+      repositoryId: hit.repositoryId,
+    })),
+    evidenceKind,
+  );
+  const loadedEvidence =
+    snapshotDecision.mode === "snapshots"
+      ? await loadSnapshotEvidence(
+          db,
+          input.tenantId,
+          scope.repositoryIds,
+          snapshotDecision.sourceIds,
+        )
+      : await annotateSearchEvidence(db, input.tenantId, searchedEvidence, {
+          changeQuestion: asksAboutChanges(input.query, now),
+          interval: range.interval,
+        });
+  const interval = range.interval;
+  const evidence =
+    interval === null
+      ? loadedEvidence
+      : loadedEvidence.filter((item) =>
+          item.inclusionReason === "current_snapshot"
+            ? item.eventTime !== null && eventInRollingInterval(new Date(item.eventTime), interval)
+            : true,
+        );
   if (evidence.length === 0) {
     uncertainties.push({
       code: "insufficient_evidence",
@@ -194,11 +269,135 @@ export async function buildContext(
     },
     subject,
     currentState,
-    events: partitioned.included,
+    events: includedEvents,
     relationships: hops,
     evidence,
     uncertainties,
+    interval: range.interval,
+    coverage: abstentionForQuery(input.query),
   };
+}
+
+async function loadSnapshotEvidence(
+  db: Database,
+  tenantId: string,
+  repositoryIds: string[],
+  sourceIds: string[],
+): Promise<ContextEvidence[]> {
+  if (sourceIds.length === 0 || repositoryIds.length === 0) {
+    return [];
+  }
+  const [docs, rows] = await Promise.all([
+    db.query.documents.findMany({
+      where: and(eq(documents.tenantId, tenantId), inArray(documents.sourceId, sourceIds)),
+    }),
+    db.query.events.findMany({
+      where: and(eq(events.tenantId, tenantId), inArray(events.sourceEventId, sourceIds)),
+    }),
+  ]);
+  const repositoryBySource = new Map<string, string>();
+  for (const row of rows) {
+    const repositoryId = row.payload.repositoryId;
+    if (typeof repositoryId === "string" && repositoryIds.includes(repositoryId)) {
+      repositoryBySource.set(row.sourceEventId, repositoryId);
+    }
+  }
+  const bySource = new Map(docs.map((doc) => [doc.sourceId, doc]));
+  const eventTimeBySource = new Map<string, string | null>();
+  for (const row of rows) {
+    if (row.recordKind !== "snapshot" || eventTimeBySource.has(row.sourceEventId)) {
+      continue;
+    }
+    eventTimeBySource.set(
+      row.sourceEventId,
+      row.eventTime ? new Date(row.eventTime).toISOString() : null,
+    );
+  }
+  return sourceIds.flatMap((sourceId) => {
+    const doc = bySource.get(sourceId);
+    const repositoryId = repositoryBySource.get(sourceId);
+    if (!doc || !repositoryId) {
+      return [];
+    }
+    return [
+      {
+        id: doc.id,
+        sourceId: doc.sourceId,
+        title: doc.title,
+        url: doc.url,
+        snippet: doc.body?.slice(0, 400) ?? null,
+        score: 1,
+        repositoryId,
+        eventTime: eventTimeBySource.get(sourceId) ?? null,
+        recordKind: "snapshot" as const,
+        inclusionReason: "current_snapshot" as const,
+      },
+    ];
+  });
+}
+
+async function annotateSearchEvidence(
+  db: Database,
+  tenantId: string,
+  hits: Array<Omit<ContextEvidence, "eventTime" | "recordKind" | "inclusionReason">>,
+  options: { changeQuestion: boolean; interval: RollingSevenDayInterval | null },
+): Promise<ContextEvidence[]> {
+  const facts = await loadEventFacts(
+    db,
+    tenantId,
+    hits.map((hit) => hit.sourceId),
+  );
+  const annotated = hits.map((hit) => {
+    const fact = facts.get(hit.sourceId);
+    const inclusionReason: EvidenceInclusionReason =
+      options.changeQuestion && options.interval ? "event_in_interval" : "stored_search_hit";
+    return {
+      ...hit,
+      url: hit.url,
+      eventTime: fact?.eventTime ?? null,
+      recordKind: fact?.recordKind ?? null,
+      inclusionReason,
+    };
+  });
+  if (!options.changeQuestion) {
+    return annotated;
+  }
+  return annotated.filter((item) =>
+    acceptTransitionEvidence(
+      { eventTime: item.eventTime, recordKind: item.recordKind },
+      options.interval,
+    ),
+  );
+}
+
+async function loadEventFacts(db: Database, tenantId: string, sourceIds: string[]) {
+  const facts = new Map<string, { eventTime: string | null; recordKind: "snapshot" | "occurrence" | null }>();
+  if (sourceIds.length === 0) {
+    return facts;
+  }
+  const rows = await db.execute<{
+    source_event_id: string;
+    record_kind: string;
+    event_time: Date | null;
+  }>(sql`
+    select source_event_id, record_kind, event_time
+    from events
+    where tenant_id = ${tenantId}
+      and source_event_id in (${sql.join(
+        sourceIds.map((id) => sql`${id}`),
+        sql`, `,
+      )})
+  `);
+  for (const row of rows) {
+    const recordKind =
+      row.record_kind === "snapshot" || row.record_kind === "occurrence" ? row.record_kind : null;
+    const eventTime = row.event_time ? new Date(row.event_time).toISOString() : null;
+    const current = facts.get(row.source_event_id);
+    if (!current || (current.eventTime === null && eventTime !== null)) {
+      facts.set(row.source_event_id, { eventTime, recordKind });
+    }
+  }
+  return facts;
 }
 
 function requestedSubject(input: BuildContextInput): boolean {
@@ -474,43 +673,4 @@ async function loadRelationships(
 
 function isRelationshipType(value: string): value is RelationshipType {
   return (RELATIONSHIP_TYPES as readonly string[]).includes(value);
-}
-
-function mergeEvidence(
-  searched: Awaited<ReturnType<typeof searchEvidence>>,
-  changes: Awaited<ReturnType<typeof listChanges>>,
-): ContextEvidence[] {
-  const merged: ContextEvidence[] = [];
-  const seen = new Set<string>();
-  for (const hit of searched) {
-    if (seen.has(hit.sourceId)) {
-      continue;
-    }
-    seen.add(hit.sourceId);
-    merged.push({
-      id: hit.id,
-      sourceId: hit.sourceId,
-      title: hit.title,
-      url: hit.url,
-      snippet: hit.snippet,
-      score: hit.score,
-      repositoryId: hit.repositoryId,
-    });
-  }
-  for (const change of changes) {
-    if (seen.has(change.sourceEventId) || merged.length >= 8) {
-      continue;
-    }
-    seen.add(change.sourceEventId);
-    merged.push({
-      id: change.id,
-      sourceId: change.sourceEventId,
-      title: change.title,
-      url: change.url,
-      snippet: change.kind,
-      score: 1,
-      repositoryId: change.repository?.id ?? null,
-    });
-  }
-  return merged.slice(0, 8);
 }

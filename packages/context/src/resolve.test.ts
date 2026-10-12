@@ -76,6 +76,9 @@ describe("evidence and time", () => {
       snippet: "stored",
       score: 1,
       repositoryId: "repo",
+      eventTime: "2026-10-02T04:34:43.000Z",
+      recordKind: "snapshot",
+      inclusionReason: "current_snapshot",
     },
   ];
 

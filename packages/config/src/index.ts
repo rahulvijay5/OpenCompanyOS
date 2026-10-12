@@ -15,8 +15,8 @@ const envSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string().min(1),
   GITHUB_PRIVATE_KEY: z.string().min(1),
   GITHUB_WEBHOOK_SECRET: z.string().min(1),
-  LITELLM_BASE_URL: z.string().url().optional(),
-  LITELLM_API_KEY: z.string().min(1).optional(),
+  LITELLM_BASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+  LITELLM_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   EMBEDDING_MODEL: z.string().min(1).default("embedding"),
   EMBEDDING_DIMENSIONS: z.coerce.number().int().positive().default(768),
   CHAT_MODEL: z.string().min(1).default("gemini"),
@@ -26,6 +26,13 @@ const envSchema = z.object({
 });
 
 export type Env = z.infer<typeof envSchema>;
+
+function emptyToUndefined(value: unknown): unknown {
+  if (typeof value === "string" && value.trim() === "") {
+    return undefined;
+  }
+  return value;
+}
 
 function normalizePrivateKey(value: string): string {
   let key = value.trim();

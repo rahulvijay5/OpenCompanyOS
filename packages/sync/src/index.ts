@@ -1,3 +1,4 @@
+import type { LlmConfig } from "@opencompanyos/config";
 import {
   githubInstallations,
   repositories,
@@ -5,12 +6,21 @@ import {
   type Database,
 } from "@opencompanyos/db";
 import {
+  createInstallationOctokit,
+  discussionClientFromOctokit,
+  fetchIssueComments,
+  fetchPullRequestReviews,
   fetchRepositoryCommits,
   fetchRepositoryIssues,
   fetchRepositoryPullRequests,
+  type DiscussionClient,
   type GitHubAppCredentials,
+  type SyncedCommit,
+  type SyncedIssue,
+  type SyncedPullRequest,
 } from "@opencompanyos/github";
 import { and, eq } from "drizzle-orm";
+import { storeDiscussionRecords } from "./discussions.js";
 import { upsertEvent } from "./events.js";
 
 export { listRecentEvents, upsertEvent, type EventSummary } from "./events.js";
@@ -24,6 +34,8 @@ export {
   type EntitySummary,
 } from "./entities.js";
 export { projectCanonicalGraph } from "./graph.js";
+export { mergeOccurrence } from "./merge.js";
+export { resolveCommentPayload, storeDiscussionRecords } from "./discussions.js";
 export {
   claimNextWebhookDelivery,
   processWebhookDelivery,
@@ -145,10 +157,35 @@ export async function claimNextSyncJob(db: Database): Promise<string | null> {
   return updated[0]?.id ?? null;
 }
 
+export type RepositorySyncOptions = {
+  indexConfig?: LlmConfig | null;
+  discussionClient?: DiscussionClient;
+  fetchIssues?: (
+    credentials: GitHubAppCredentials,
+    installationId: number,
+    owner: string,
+    repo: string,
+  ) => Promise<SyncedIssue[]>;
+  fetchPullRequests?: (
+    credentials: GitHubAppCredentials,
+    installationId: number,
+    owner: string,
+    repo: string,
+  ) => Promise<SyncedPullRequest[]>;
+  fetchCommits?: (
+    credentials: GitHubAppCredentials,
+    installationId: number,
+    owner: string,
+    repo: string,
+    defaultBranch: string | null,
+  ) => Promise<SyncedCommit[]>;
+};
+
 export async function runRepositorySyncJob(
   db: Database,
   credentials: GitHubAppCredentials,
   jobId: string,
+  options?: RepositorySyncOptions,
 ): Promise<SyncJobView> {
   const job = await db.query.syncJobs.findFirst({
     where: eq(syncJobs.id, jobId),
@@ -188,7 +225,7 @@ export async function runRepositorySyncJob(
       .set({ cursor: "issues", status: "running" })
       .where(eq(syncJobs.id, jobId));
 
-    const issues = await fetchRepositoryIssues(
+    const issues = await (options?.fetchIssues ?? fetchRepositoryIssues)(
       credentials,
       installation.githubInstallationId,
       repository.ownerLogin,
@@ -205,6 +242,7 @@ export async function runRepositorySyncJob(
           repositoryId: repository.id,
           fullName: repository.fullName,
         },
+        ...(options?.indexConfig !== undefined ? { indexConfig: options.indexConfig } : {}),
       });
       processedCount += 1;
     }
@@ -213,7 +251,7 @@ export async function runRepositorySyncJob(
       .set({ processedCount, cursor: "pull_requests" })
       .where(eq(syncJobs.id, jobId));
 
-    const pullRequests = await fetchRepositoryPullRequests(
+    const pullRequests = await (options?.fetchPullRequests ?? fetchRepositoryPullRequests)(
       credentials,
       installation.githubInstallationId,
       repository.ownerLogin,
@@ -230,6 +268,7 @@ export async function runRepositorySyncJob(
           repositoryId: repository.id,
           fullName: repository.fullName,
         },
+        ...(options?.indexConfig !== undefined ? { indexConfig: options.indexConfig } : {}),
       });
       processedCount += 1;
     }
@@ -238,7 +277,7 @@ export async function runRepositorySyncJob(
       .set({ processedCount, cursor: "commits" })
       .where(eq(syncJobs.id, jobId));
 
-    const commits = await fetchRepositoryCommits(
+    const commits = await (options?.fetchCommits ?? fetchRepositoryCommits)(
       credentials,
       installation.githubInstallationId,
       repository.ownerLogin,
@@ -256,8 +295,59 @@ export async function runRepositorySyncJob(
           repositoryId: repository.id,
           fullName: repository.fullName,
         },
+        ...(options?.indexConfig !== undefined ? { indexConfig: options.indexConfig } : {}),
       });
       processedCount += 1;
+    }
+
+    await db
+      .update(syncJobs)
+      .set({ processedCount, cursor: "comments" })
+      .where(eq(syncJobs.id, jobId));
+
+    const discussionClient =
+      options?.discussionClient ??
+      discussionClientFromOctokit(
+        createInstallationOctokit(credentials, installation.githubInstallationId),
+      );
+    const comments = await fetchIssueComments(
+      discussionClient,
+      repository.ownerLogin,
+      repository.name,
+    );
+    processedCount += await storeDiscussionRecords(db, {
+      tenantId: job.tenantId,
+      repositoryId: repository.id,
+      fullName: repository.fullName,
+      records: comments.records,
+      ...(options?.indexConfig !== undefined ? { indexConfig: options.indexConfig } : {}),
+    });
+
+    await db
+      .update(syncJobs)
+      .set({ processedCount, cursor: "reviews" })
+      .where(eq(syncJobs.id, jobId));
+
+    for (const pr of pullRequests) {
+      const pullId = pr.payload.id;
+      const pullNumber = pr.payload.number;
+      if (typeof pullId !== "number" || typeof pullNumber !== "number") {
+        continue;
+      }
+      const reviews = await fetchPullRequestReviews(
+        discussionClient,
+        repository.ownerLogin,
+        repository.name,
+        { id: pullId, number: pullNumber },
+      );
+      processedCount += await storeDiscussionRecords(db, {
+        tenantId: job.tenantId,
+        repositoryId: repository.id,
+        fullName: repository.fullName,
+        records: reviews.records,
+        resolveComments: false,
+        ...(options?.indexConfig !== undefined ? { indexConfig: options.indexConfig } : {}),
+      });
     }
 
     const completedAt = new Date();
