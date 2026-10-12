@@ -1,3 +1,5 @@
+import type { AbstentionClassification, RollingSevenDayInterval } from "./interval.js";
+
 export const CONTEXT_PACKAGE_VERSION = 1 as const;
 
 export const AUTHORIZATION_LOCAL_OWNER = "local-owner" as const;
@@ -67,6 +69,8 @@ export type ContextRelationship = {
   validFrom: string | null;
 };
 
+export type EvidenceInclusionReason = "event_in_interval" | "current_snapshot" | "stored_search_hit";
+
 export type ContextEvidence = {
   id: string;
   sourceId: string;
@@ -75,6 +79,10 @@ export type ContextEvidence = {
   snippet: string | null;
   score: number;
   repositoryId: string | null;
+  /** Source event time. Null when the stored event has no event time. Ingestion time is not used. */
+  eventTime: string | null;
+  recordKind: "snapshot" | "occurrence" | null;
+  inclusionReason: EvidenceInclusionReason;
 };
 
 export type ContextUncertainty = {
@@ -95,6 +103,13 @@ export type ContextPackage = {
   relationships: ContextRelationship[];
   evidence: ContextEvidence[];
   uncertainties: ContextUncertainty[];
+  /** Set for a rolling seven-day question. Null when the caller or another phrase supplies the window. */
+  interval: RollingSevenDayInterval | null;
+  /**
+   * Ingestion knowledge for this question.
+   * `no_relevant_evidence` is not emitted here: collection of a kind is not established by an empty result.
+   */
+  coverage: AbstentionClassification;
 };
 
 export type ContextAnswer = {

@@ -1,4 +1,23 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+const DEFAULT_API_URL = "http://localhost:4000";
+
+export function resolveApiUrl(input: {
+  server: boolean;
+  internalUrl?: string | undefined;
+  publicUrl?: string | undefined;
+}): string {
+  if (!input.server) {
+    return input.publicUrl || DEFAULT_API_URL;
+  }
+  return input.internalUrl || input.publicUrl || DEFAULT_API_URL;
+}
+
+function apiUrl(): string {
+  return resolveApiUrl({
+    server: typeof window === "undefined",
+    internalUrl: process.env.API_URL,
+    publicUrl: process.env.NEXT_PUBLIC_API_URL,
+  });
+}
 
 export type InstallationSummary = {
   id: string;
@@ -21,7 +40,7 @@ export type RepositorySummary = {
 };
 
 export async function fetchRepositories(installationId?: string) {
-  const url = new URL(`${API_URL}/api/v1/integrations/github/repositories`);
+  const url = new URL(`${apiUrl()}/api/v1/integrations/github/repositories`);
   if (installationId) {
     url.searchParams.set("installationId", installationId);
   }
@@ -38,7 +57,7 @@ export async function fetchRepositories(installationId?: string) {
 }
 
 export async function completeGithubSetup(installationId: string) {
-  const url = new URL(`${API_URL}/api/v1/integrations/github/setup`);
+  const url = new URL(`${apiUrl()}/api/v1/integrations/github/setup`);
   url.searchParams.set("installation_id", installationId);
 
   const response = await fetch(url, { cache: "no-store" });
@@ -63,7 +82,7 @@ export async function selectRepositories(
   githubRepositoryIds: number[],
 ) {
   const response = await fetch(
-    `${API_URL}/api/v1/integrations/github/repositories/select`,
+    `${apiUrl()}/api/v1/integrations/github/repositories/select`,
     {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -94,7 +113,7 @@ export async function startRepositorySync(
   installationId: string,
   repositoryId: string,
 ) {
-  const response = await fetch(`${API_URL}/api/v1/integrations/github/sync`, {
+  const response = await fetch(`${apiUrl()}/api/v1/integrations/github/sync`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ installationId, repositoryId }),
@@ -112,7 +131,7 @@ export async function startRepositorySync(
 
 export async function fetchSyncJob(jobId: string) {
   const response = await fetch(
-    `${API_URL}/api/v1/integrations/github/sync/${jobId}`,
+    `${apiUrl()}/api/v1/integrations/github/sync/${jobId}`,
     { cache: "no-store" },
   );
   if (!response.ok) {
@@ -142,7 +161,7 @@ export type EntityListItem = {
 };
 
 export async function fetchEntities(limit = 40) {
-  const url = new URL(`${API_URL}/api/v1/entities`);
+  const url = new URL(`${apiUrl()}/api/v1/entities`);
   url.searchParams.set("limit", String(limit));
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
@@ -166,7 +185,7 @@ export type ChangeListItem = {
 };
 
 export async function fetchChanges(limit = 20) {
-  const url = new URL(`${API_URL}/api/v1/changes`);
+  const url = new URL(`${apiUrl()}/api/v1/changes`);
   url.searchParams.set("limit", String(limit));
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
@@ -176,7 +195,7 @@ export async function fetchChanges(limit = 20) {
 }
 
 export async function fetchEntity(id: string) {
-  const response = await fetch(`${API_URL}/api/v1/entities/${id}`, {
+  const response = await fetch(`${apiUrl()}/api/v1/entities/${id}`, {
     cache: "no-store",
   });
   if (response.status === 404) {
@@ -209,7 +228,7 @@ export type TimelineEvent = {
 };
 
 export async function fetchEntityTimeline(id: string) {
-  const response = await fetch(`${API_URL}/api/v1/entities/${id}/timeline`, {
+  const response = await fetch(`${apiUrl()}/api/v1/entities/${id}/timeline`, {
     cache: "no-store",
   });
   if (!response.ok) {
@@ -239,7 +258,7 @@ export type RelationshipItem = {
 
 export async function fetchEntityRelationships(id: string) {
   const response = await fetch(
-    `${API_URL}/api/v1/entities/${id}/relationships`,
+    `${apiUrl()}/api/v1/entities/${id}/relationships`,
     { cache: "no-store" },
   );
   if (!response.ok) {
@@ -249,7 +268,7 @@ export async function fetchEntityRelationships(id: string) {
 }
 
 export async function fetchChange(id: string) {
-  const response = await fetch(`${API_URL}/api/v1/changes/${id}`, {
+  const response = await fetch(`${apiUrl()}/api/v1/changes/${id}`, {
     cache: "no-store",
   });
   if (response.status === 404) {
@@ -274,7 +293,7 @@ export async function fetchChange(id: string) {
 }
 
 export async function fetchRecentEvents(limit = 20) {
-  const url = new URL(`${API_URL}/api/v1/events`);
+  const url = new URL(`${apiUrl()}/api/v1/events`);
   url.searchParams.set("limit", String(limit));
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
@@ -284,5 +303,9 @@ export async function fetchRecentEvents(limit = 20) {
 }
 
 export function githubInstallHref(): string {
-  return `${API_URL}/api/v1/integrations/github/install`;
+  const publicUrl = resolveApiUrl({
+    server: false,
+    publicUrl: process.env.NEXT_PUBLIC_API_URL,
+  });
+  return `${publicUrl}/api/v1/integrations/github/install`;
 }

@@ -40,6 +40,11 @@ describe("context request schema", () => {
     expect(contextBodySchema.safeParse({ query: "roadmap", evidenceKind: "snapshot" }).success).toBe(
       false,
     );
+    expect(contextBodySchema.safeParse({ query: "" }).success).toBe(false);
+    expect(contextBodySchema.safeParse({ query: "   " }).success).toBe(false);
+    expect(contextBodySchema.parse({ query: "  What changed this week?  " }).query).toBe(
+      "  What changed this week?  ",
+    );
   });
 
   it("passes a requested kind through and leaves other fields alone", () => {
@@ -60,23 +65,46 @@ describe("query and context routes", () => {
   beforeEach(() => {
     buildContext.mockReset();
     answerFromPackage.mockReset();
-    buildContext.mockResolvedValue({
+    const contextPackage = {
       version: 1,
-      evidence: [{ id: "e1", sourceId: "github:issue:1", title: "Snapshot", url: null, snippet: null, score: 1, repositoryId: null }],
-      uncertainties: [],
+      evidence: [{
+        id: "e1",
+        sourceId: "github:issue_comment:1",
+        title: "Comment",
+        url: "https://github.com/org/repo/issues/1#issuecomment-1",
+        snippet: null,
+        score: 1,
+        repositoryId: null,
+        eventTime: "2026-10-05T00:00:00.000Z",
+        recordKind: "occurrence",
+        inclusionReason: "event_in_interval",
+      }],
+      uncertainties: [{ code: "insufficient_evidence", message: "No indexed evidence was found inside the selected repositories." }],
       subject: { status: "unresolved" },
       currentState: [],
       events: [],
       relationships: [],
       scope: { tenantId: "tenant-1", repositoryIds: [], authorization: "local-owner" },
-    });
-    answerFromPackage.mockResolvedValue({
+      interval: {
+        timezone: "UTC",
+        label: "rolling-seven-days",
+        start: "2026-10-04T15:30:00.000Z",
+        end: "2026-10-11T15:30:00.000Z",
+      },
+      coverage: { state: "untracked_coverage" },
+    };
+    buildContext.mockResolvedValue(contextPackage);
+    answerFromPackage.mockImplementation(async (_db: unknown, input: { package: typeof contextPackage }) => ({
       answer: "listed",
       confidence: 0,
-      evidence: [],
-      uncertainties: [],
+      evidence: input.package.evidence,
+      uncertainties: [
+        ...input.package.uncertainties,
+        { code: "model_unavailable", message: "No model is configured. The answer lists stored evidence titles only." },
+      ],
       traceId: "trace-1",
-    });
+      context: input.package,
+    }));
   });
 
   it("forwards the kind on both routes and omits it for a plain UI query", async () => {
@@ -91,6 +119,16 @@ describe("query and context routes", () => {
       payload: { query: "comment on #16451", evidenceKind: "issue_comment" },
     });
     expect(contextResponse.statusCode).toBe(200);
+    expect(contextResponse.json()).toMatchObject({
+      interval: { timezone: "UTC", label: "rolling-seven-days" },
+      coverage: { state: "untracked_coverage" },
+      evidence: [{
+        url: "https://github.com/org/repo/issues/1#issuecomment-1",
+        eventTime: "2026-10-05T00:00:00.000Z",
+        recordKind: "occurrence",
+        inclusionReason: "event_in_interval",
+      }],
+    });
     expect(buildContext).toHaveBeenCalledWith(
       ctx.db,
       expect.objectContaining({ evidenceKind: "issue_comment", query: "comment on #16451" }),
@@ -115,6 +153,32 @@ describe("query and context routes", () => {
     expect(uiResponse.statusCode).toBe(200);
     const uiInput = buildContext.mock.calls.at(-1)?.[1] as { evidenceKind?: string };
     expect(uiInput.evidenceKind).toBeUndefined();
+    expect(uiResponse.json()).toMatchObject({
+      uncertainties: [
+        { code: "insufficient_evidence" },
+        { code: "model_unavailable" },
+      ],
+      context: {
+        interval: { timezone: "UTC", label: "rolling-seven-days", end: "2026-10-11T15:30:00.000Z" },
+        coverage: { state: "untracked_coverage" },
+      },
+      evidence: [{ inclusionReason: "event_in_interval", recordKind: "occurrence" }],
+    });
+
+    const emptyQuery = await app.inject({
+      method: "POST",
+      url: "/api/v1/query",
+      payload: { query: "   " },
+    });
+    expect(emptyQuery.statusCode).toBe(400);
+    expect(emptyQuery.json()).toEqual({
+      error: "invalid_body",
+      message: "Enter a question before asking.",
+    });
+    expect(buildContext).not.toHaveBeenCalledWith(
+      ctx.db,
+      expect.objectContaining({ query: "   " }),
+    );
 
     const rejected = await app.inject({
       method: "POST",
