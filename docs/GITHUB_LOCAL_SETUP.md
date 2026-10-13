@@ -123,6 +123,8 @@ After changing the webhook URL in GitHub App settings, use **Recent Deliveries â
 
 ## 4. Test the real flow
 
+Live webhook delivery has not been accepted for the current demo. The steps below are the setup procedure, not a record that a signed delivery or a duplicate redelivery reached this app.
+
 1. Open `http://localhost:3000`.
 2. Click **Connect GitHub**.
 3. GitHub opens installation UI.

@@ -57,14 +57,22 @@ Do not bind host ports 3000, 4000, or 5432 to both the host processes and Compos
 
 ## Demo
 
-1. Open `/app` and connect the GitHub App. After GitHub redirects, you land back on `/app`.
-2. Select one repository and start a sync. The worker performs the sync.
-3. Ask “What changed this week?”. The panel shows the rolling UTC interval and source-linked evidence.
-4. Open an entity to see its current snapshot, occurrence timeline, and relationships.
+Start Compose, then use one repository. The credential checklist is [`docs/GITHUB_LOCAL_SETUP.md`](docs/GITHUB_LOCAL_SETUP.md).
 
-`/` is the front door. The workspace stays at `/app`.
+1. `docker compose up --build`, then open http://localhost:3000/app.
+2. Choose **Connect GitHub**. GitHub should return the browser to `/integrations/github/setup`, which sends you back to `/app` with the installation listed.
+3. Select one repository, choose **Save selection**, then **Start sync**. Wait until the worker finishes. Recent activity lists that repository only.
+4. Ask “What changed this week?”. The evidence panel is the block titled “Why am I seeing this?”.
+5. Check the rolling UTC interval, each source link, the event time, and whether the row says Occurrence or Snapshot. A snapshot line says it is the current stored record, not a change during the interval.
 
-The initial sync stores issues and pull requests as current snapshots. It does not reconstruct a change history from before the install. Webhook transitions after install are occurrences. Commits, comments, and reviews are occurrences. A snapshot is never labeled as a change. If evidence is empty and coverage is `untracked_coverage`, the panel says collection completeness is unverified, so we cannot conclude that nothing happened. When evidence is present, the same state is only a note that collection completeness has not been verified. Inline review comments are not collected.
+Without LiteLLM, the answer says the model is unavailable and still lists the stored evidence. That is the expected demo. Do not start the `llm` profile for this walkthrough.
+
+The first sync stores issues and pull requests as current snapshots. It does not rebuild history from before the install. Commits, comments, and reviews collected by that sync are occurrences. Inline review comments are not collected. An empty week with `untracked_coverage` means collection completeness is unverified, not that nothing happened.
+
+Two checks are not part of this demo’s acceptance:
+
+- The live GitHub Setup URL was not confirmed in the App settings. If the redirect does not return to this app, set the Setup URL to `http://localhost:3000/integrations/github/setup` and record the previous value so you can restore it.
+- Live webhook delivery and duplicate redelivery are unverified. Activity that arrives only through a webhook is not part of the accepted demo.
 
 ## Query
 
@@ -79,3 +87,5 @@ Change questions also attach occurrence rows from the requested time window.
 `pnpm eval` checks the indexed context on a running API. It confirms the repository entity, that a repository timeline is made of occurrences, and that the change feed stays inside the last 7 days. It does not call a model.
 
 `pnpm eval:context` scores a hand-authored ContextPackage fixture suite. It uses `EVAL_DATABASE_URL` and does not call a model or read the company-brain index. See [eval/context-quality/README.md](eval/context-quality/README.md).
+
+The shipping query path is Postgres full text. An offline EmbeddingGemma comparison did not replace it. The measurements and the reason are in [`docs/EMBEDDINGGEMMA_RETRIEVAL.md`](docs/EMBEDDINGGEMMA_RETRIEVAL.md).
